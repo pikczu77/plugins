@@ -1,0 +1,13 @@
+{
+	"required": true,
+	"minVersion": "0.8",
+	"package": "io.github.pikczu77.blockopener.mixin",
+	"compatibilityLevel": "JAVA_21",
+	"mixins": [
+		"EntityMixin",
+		"LivingEntityMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:loot_table",
+          "value": "minecraft:chests/ruined_portal",
+          "weight": 55
+        },
+        {
+          "type": "minecraft:loot_table",
+          "value": "minecraft:chests/bastion_treasure",
+          "weight": 25
+        },
+        {
+          "type": "minecraft:loot_table",
+          "value": "minecraft:chests/bastion_other",
+          "weight": 20
+        }
+      ]
+    }
+  ]
+}

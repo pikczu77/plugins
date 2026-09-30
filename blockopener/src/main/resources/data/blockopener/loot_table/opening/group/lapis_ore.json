@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:loot_table",
+          "value": "minecraft:chests/shipwreck_treasure",
+          "weight": 60
+        },
+        {
+          "type": "minecraft:loot_table",
+          "value": "blockopener:opening/group/diamond_ore",
+          "weight": 40
+        }
+      ]
+    }
+  ]
+}

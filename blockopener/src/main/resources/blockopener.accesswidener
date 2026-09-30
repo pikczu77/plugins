@@ -1,0 +1,4 @@
+accessWidener v2 named
+
+# Summoned bees keep their stinger so they can attack more than once.
+accessible method net/minecraft/world/entity/animal/bee/Bee setHasStung (Z)V

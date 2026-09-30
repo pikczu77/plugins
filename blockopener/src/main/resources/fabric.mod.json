@@ -1,0 +1,37 @@
+{
+	"schemaVersion": 1,
+	"id": "blockopener",
+	"version": "${version}",
+	"name": "Block Opener",
+	"description": "Minecraft, but you can open any block. Most blocks hide a bit of loot, ores hide structure chests, and 10 secret blocks hide overpowered custom items.",
+	"authors": [
+		"pikczu77"
+	],
+	"contact": {
+		"sources": "https://github.com/pikczu77/plugins"
+	},
+	"icon": "assets/blockopener/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"io.github.pikczu77.blockopener.BlockOpener"
+		],
+		"client": [
+			"io.github.pikczu77.blockopener.client.BlockOpenerClient"
+		]
+	},
+	"mixins": [
+		"blockopener.mixins.json",
+		{
+			"config": "blockopener.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"accessWidener": "blockopener.accesswidener",
+	"depends": {
+		"fabricloader": ">=0.19.5",
+		"minecraft": "~1.21.11",
+		"java": ">=21",
+		"fabric-api": "*"
+	}
+}

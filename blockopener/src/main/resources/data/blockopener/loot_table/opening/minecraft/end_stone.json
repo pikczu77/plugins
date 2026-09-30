@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:iron_ingot",
+          "weight": 70
+        },
+        {
+          "type": "minecraft:loot_table",
+          "value": "minecraft:chests/end_city_treasure",
+          "weight": 30
+        }
+      ]
+    }
+  ]
+}

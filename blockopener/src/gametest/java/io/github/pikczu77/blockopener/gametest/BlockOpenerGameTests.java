@@ -1,0 +1,156 @@
+package io.github.pikczu77.blockopener.gametest;
+
+import io.github.pikczu77.blockopener.entity.MossphereEntity;
+import io.github.pikczu77.blockopener.opening.BlockOpening;
+import io.github.pikczu77.blockopener.opening.OpeningLoot;
+import io.github.pikczu77.blockopener.progress.SecretItem;
+import io.github.pikczu77.blockopener.registry.ModEntities;
+import io.github.pikczu77.blockopener.registry.ModFluids;
+import io.github.pikczu77.blockopener.registry.ModItems;
+import java.util.List;
+import net.fabricmc.fabric.api.gametest.v1.GameTest;
+import net.minecraft.core.BlockPos;
+import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.animal.pig.Pig;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.monster.zombie.Zombie;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.StairBlock;
+import net.minecraft.world.level.block.entity.ChestBlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.phys.Vec3;
+
+public class BlockOpenerGameTests {
+	private static final BlockPos POS = new BlockPos(2, 2, 2);
+
+	private static void floor(GameTestHelper helper) {
+		for (int x = 0; x < 5; x++) {
+			for (int z = 0; z < 5; z++) {
+				helper.setBlock(new BlockPos(x, 1, z), Blocks.STONE);
+			}
+		}
+	}
+
+	private static List<ItemStack> roll(GameTestHelper helper, BlockState state) {
+		return OpeningLoot.roll(helper.getLevel(), helper.absolutePos(POS), state, null, 1);
+	}
+
+	@GameTest(maxTicks = 80)
+	public void pumpkinPopsOutPumpkinBoots(GameTestHelper helper) {
+		floor(helper);
+		helper.setBlock(POS, Blocks.PUMPKIN);
+		List<ItemStack> loot = BlockOpening.open(helper.getLevel(), helper.absolutePos(POS), null);
+		helper.assertTrue(loot.stream().anyMatch(stack -> stack.is(ModItems.PUMPKIN_BOOTS)), "a pumpkin should hide the Pumpkin Boots");
+		helper.assertBlockPresent(Blocks.AIR, POS);
+		helper.succeedWhen(() -> helper.assertItemEntityCountIs(ModItems.PUMPKIN_BOOTS, POS, 3.0, 1));
+	}
+
+	@GameTest
+	public void everySecretBlockHidesItsItem(GameTestHelper helper) {
+		for (SecretItem secret : SecretItem.values()) {
+			for (var block : secret.sourceBlocks()) {
+				List<ItemStack> loot = roll(helper, block.defaultBlockState());
+				helper.assertTrue(loot.stream().anyMatch(stack -> stack.is(secret.item())),
+					block.getName().getString() + " should hide " + secret.id() + " but gave " + loot);
+			}
+		}
+		List<ItemStack> moss = roll(helper, Blocks.MOSS_BLOCK.defaultBlockState());
+		helper.assertTrue(moss.getFirst().getCount() >= 3, "moss should give several Mosspheres");
+		helper.succeed();
+	}
+
+	@GameTest
+	public void videoJokesAreKept(GameTestHelper helper) {
+		List<ItemStack> iron = roll(helper, Blocks.IRON_BLOCK.defaultBlockState());
+		helper.assertTrue(iron.size() == 1 && iron.getFirst().is(Items.IRON_INGOT) && iron.getFirst().getCount() == 1, "iron block gives one iron: " + iron);
+		List<ItemStack> gold = roll(helper, Blocks.GOLD_BLOCK.defaultBlockState());
+		helper.assertTrue(gold.size() == 1 && gold.getFirst().is(Items.COAL), "gold block gives one coal: " + gold);
+		helper.succeed();
+	}
+
+	@GameTest
+	public void oresHideStructureLoot(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		for (BlockState ore : List.of(Blocks.DIAMOND_ORE.defaultBlockState(), Blocks.DEEPSLATE_REDSTONE_ORE.defaultBlockState(),
+			Blocks.COPPER_ORE.defaultBlockState(), Blocks.DEEPSLATE_LAPIS_ORE.defaultBlockState())) {
+			helper.assertFalse(OpeningLoot.tableFor(level, ore).equals(OpeningLoot.DEFAULT), ore + " should have its own loot");
+			helper.assertFalse(roll(helper, ore).isEmpty(), ore + " should not be empty");
+		}
+		helper.assertValueEqual(OpeningLoot.tableFor(level, Blocks.DIRT.defaultBlockState()), OpeningLoot.DEFAULT, "dirt uses the default loot");
+		helper.assertFalse(roll(helper, Blocks.DIRT.defaultBlockState()).isEmpty(), "default loot is never empty");
+		helper.succeed();
+	}
+
+	@GameTest
+	public void technicalBlocksCannotBeOpened(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		BlockPos pos = helper.absolutePos(POS);
+		helper.assertFalse(BlockOpening.canOpen(level, pos, Blocks.BARRIER.defaultBlockState()), "barrier");
+		helper.assertFalse(BlockOpening.canOpen(level, pos, Blocks.END_PORTAL_FRAME.defaultBlockState()), "end portal frame");
+		helper.assertFalse(BlockOpening.canOpen(level, pos, Blocks.WATER.defaultBlockState()), "water");
+		helper.assertTrue(BlockOpening.canOpen(level, pos, Blocks.BEDROCK.defaultBlockState()), "bedrock CAN be opened");
+		helper.succeed();
+	}
+
+	@GameTest(maxTicks = 40)
+	public void waterloggedBlocksLeaveWaterAndChestsSpill(GameTestHelper helper) {
+		floor(helper);
+		BlockPos stairs = new BlockPos(1, 2, 1);
+		helper.setBlock(stairs, Blocks.OAK_STAIRS.defaultBlockState().setValue(StairBlock.WATERLOGGED, true));
+		BlockOpening.open(helper.getLevel(), helper.absolutePos(stairs), null);
+		helper.assertBlockPresent(Blocks.WATER, stairs);
+
+		BlockPos chest = new BlockPos(3, 2, 3);
+		helper.setBlock(chest, Blocks.CHEST);
+		if (helper.getLevel().getBlockEntity(helper.absolutePos(chest)) instanceof ChestBlockEntity entity) {
+			entity.setItem(0, new ItemStack(Items.DIAMOND, 5));
+		}
+		BlockOpening.open(helper.getLevel(), helper.absolutePos(chest), null);
+		helper.succeedWhen(() -> helper.assertItemEntityCountIs(Items.DIAMOND, chest, 3.0, 5));
+	}
+
+	@GameTest(maxTicks = 60)
+	public void mossphereKillsInstantly(GameTestHelper helper) {
+		floor(helper);
+		Zombie zombie = helper.spawn(EntityType.ZOMBIE, POS);
+		zombie.setNoAi(true);
+		MossphereEntity ball = new MossphereEntity(ModEntities.MOSSPHERE, helper.getLevel());
+		Vec3 above = helper.absoluteVec(Vec3.atBottomCenterOf(POS).add(0.0, 3.0, 0.0));
+		ball.setPos(above.x, above.y, above.z);
+		ball.setDeltaMovement(0.0, -1.0, 0.0);
+		helper.getLevel().addFreshEntity(ball);
+		helper.succeedWhen(() -> helper.assertTrue(!zombie.isAlive(), "zombie should be dead"));
+	}
+
+	@GameTest(maxTicks = 80)
+	public void voidWaterHurtsAndEatsItems(GameTestHelper helper) {
+		floor(helper);
+		helper.setBlock(POS, ModFluids.VOID_WATER.defaultFluidState().createLegacyBlock());
+		Pig pig = helper.spawn(EntityType.PIG, POS);
+		float health = pig.getHealth();
+		Vec3 at = helper.absoluteVec(Vec3.atCenterOf(POS));
+		ItemEntity item = new ItemEntity(helper.getLevel(), at.x, at.y, at.z, new ItemStack(Items.DIAMOND));
+		helper.getLevel().addFreshEntity(item);
+		helper.succeedWhen(() -> {
+			helper.assertTrue(item.isRemoved(), "void water should swallow the item");
+			helper.assertTrue(!pig.isAlive() || pig.getHealth() < health, "void water should hurt the pig");
+		});
+	}
+
+	@GameTest
+	public void voidWaterIgnoresNormalBuckets(GameTestHelper helper) {
+		helper.setBlock(POS, ModFluids.VOID_WATER.defaultFluidState().createLegacyBlock());
+		BlockState state = helper.getBlockState(POS);
+		helper.assertTrue(state.is(ModFluids.VOID_WATER_BLOCK) && state.getValue(BlockStateProperties.LEVEL) == 0, "void water source placed");
+		ItemStack picked = ((net.minecraft.world.level.block.BucketPickup) state.getBlock())
+			.pickupBlock(null, helper.getLevel(), helper.absolutePos(POS), state);
+		helper.assertTrue(picked.isEmpty(), "a normal bucket cannot pick up void water");
+		helper.assertBlockPresent(ModFluids.VOID_WATER_BLOCK, POS);
+		helper.succeed();
+	}
+}
