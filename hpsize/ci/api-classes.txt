@@ -15,8 +15,5 @@ net.minecraft.commands.arguments.ResourceArgument getSummonableEntityType|getEnt
 net.minecraft.world.entity.monster.Enemy
 net.minecraft.world.entity.projectile.arrow.ThrownTrident
 net.minecraft.world.entity.item.ItemEntity class
-net.minecraft.client.renderer.GameRenderer getFov
-net.minecraft.client.MouseHandler onScroll|turnPlayer
-net.minecraft.client.Options smoothCamera
 net.minecraft.client.KeyMapping KeyMapping\(|consumeClick|isDown
 net.minecraft.gametest.framework.GameTestHelper assertTrue|spawn\(|runAtTickTime|absoluteVec|absolutePos|succeed\(

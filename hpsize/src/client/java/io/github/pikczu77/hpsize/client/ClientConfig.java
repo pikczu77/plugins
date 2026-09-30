@@ -25,9 +25,6 @@ public final class ClientConfig {
 	public List<String> hiddenHud = new ArrayList<>(List.of(
 			"hotbar", "armor_bar", "health_bar", "food_bar", "air_bar", "mount_health",
 			"info_bar", "experience_level", "held_item_tooltip", "status_effects", "crosshair"));
-	public double zoomFactor = 4.0;
-	/** Cinematic (smoothed) mouse while zooming, like in OptiFine. */
-	public boolean zoomCinematic = true;
 
 	public static ClientConfig get() {
 		return instance;
@@ -55,8 +52,6 @@ public final class ClientConfig {
 		if (instance.hiddenHud == null) {
 			instance.hiddenHud = new ArrayList<>();
 		}
-
-		instance.zoomFactor = Math.max(1.1, Math.min(50.0, instance.zoomFactor));
 	}
 
 	public void save() {

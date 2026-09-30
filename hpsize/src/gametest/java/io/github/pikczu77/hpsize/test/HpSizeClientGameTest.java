@@ -12,7 +12,6 @@ import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContex
 
 import io.github.pikczu77.hpsize.client.CleanHud;
 import io.github.pikczu77.hpsize.client.HpSizeClient;
-import io.github.pikczu77.hpsize.client.Zoom;
 
 /**
  * Starts a real client, creates a world and checks the mod end to end. Screenshots land in the run directory.
@@ -56,23 +55,11 @@ public class HpSizeClientGameTest implements FabricClientGameTest {
 			context.takeScreenshot("hpsize-03-clean-hud");
 			context.getInput().pressKey(HpSizeClient.CLEAN_HUD);
 
-			context.getInput().holdKey(HpSizeClient.ZOOM);
-			context.waitTicks(20);
-			context.getInput().scroll(1.0);
-			context.waitTicks(20);
-			double zoom = context.computeOnClient(minecraft -> Zoom.currentFactor());
-			context.takeScreenshot("hpsize-04-zoom");
-			context.getInput().releaseKey(HpSizeClient.ZOOM);
-
-			if (zoom < 4.5) {
-				throw new AssertionError("Zoom (with scroll) did not apply, factor: " + zoom);
-			}
-
-			// Hit the cow a few times: it must shrink (size = health).
+			// Less health = smaller cow (size = health).
 			server.runCommand("mobhp @e[type=minecraft:cow] 3");
 			context.waitTicks(40);
 			double shrunk = context.computeOnClient(HpSizeClientGameTest::largestCowScale);
-			context.takeScreenshot("hpsize-05-cow-shrunk");
+			context.takeScreenshot("hpsize-04-cow-shrunk");
 
 			if (shrunk > 3.5) {
 				throw new AssertionError("The cow did not shrink after losing health, scale: " + shrunk);

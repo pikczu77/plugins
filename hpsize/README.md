@@ -16,7 +16,7 @@ Do tego komendy, które ułatwiają nagrywanie odcinka i poprawiają film dla wi
 3. W świecie potrzebujesz uprawnień do komend (singleplayer: „Zezwól na kody” / Otwórz dla LAN → kody włączone).
 
 Mod działa też na serwerze. Gracze bez moda mogą wejść (widzą giganty, paski, odliczania),
-a klawisze czystego HUD i zoomu działają tylko u osób, które mają moda u siebie.
+a klawisz czystego HUD działa tylko u osób, które mają moda u siebie.
 
 ## Mechanika z filmu — `/hpsize`
 
@@ -80,11 +80,9 @@ są domyślnie wykluczone (gra i tak nie pokazuje większego smoka).
 | Klawisz / komenda | Co robi |
 |---|---|
 | `H` | **czysty HUD**: chowa serca, pasek przedmiotów, celownik itp., ale zostawia rękę, czat, napisy i paski (inaczej niż F1) |
-| `Z` (przytrzymaj) | **zoom** do filmowania gigantów z daleka, kółko myszy zmienia przybliżenie |
 | `/hud on\|off`, `/hud hide <element>`, `/hud show <element>`, `/hud list` | wybór elementów ukrywanych przez czysty HUD |
-| `/zoom <x>` | domyślne przybliżenie |
 
-Klawisze zmienisz w Opcje → Sterowanie → HP Size.
+Klawisz zmienisz w Opcje → Sterowanie → HP Size. Zoom celowo nie jest częścią moda — używaj swojego moda do zoomu.
 
 ## Budowanie
 

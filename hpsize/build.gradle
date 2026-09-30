@@ -28,6 +28,15 @@ fabricApi {
 	}
 }
 
+loom {
+	runs {
+		clientGameTest {
+			// The network synchronizer stalls world loading on slow CI machines (see the Fabric docs on automated testing).
+			vmArg "-Dfabric.client.gametest.disableNetworkSynchronizer=true"
+		}
+	}
+}
+
 dependencies {
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
 	mappings loom.officialMojangMappings()
@@ -69,7 +78,7 @@ jar {
 // Commands can be piped through stdin, which is how CI smoke-tests the release jar.
 tasks.register("runProductionServer", net.fabricmc.loom.task.prod.ServerProductionRunTask) {
 	programArgs.add("nogui")
-	runDir = file("build/run/productionServer")
+	runDir = file("run/productionServer")
 }
 
 // Development helper used by CI to inspect Minecraft/Fabric API signatures (javap).

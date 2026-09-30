@@ -2,7 +2,6 @@ package io.github.pikczu77.hpsize.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import org.lwjgl.glfw.GLFW;
 
@@ -23,26 +22,22 @@ import io.github.pikczu77.hpsize.HpSize;
 import io.github.pikczu77.hpsize.util.Msg;
 
 /**
- * Optional client part: clean HUD toggle and zoom (the server side works without it).
+ * Optional client part: the clean HUD toggle (the server side works without it).
  */
 public class HpSizeClient implements ClientModInitializer {
 	public static final KeyMapping.Category CATEGORY = KeyMapping.Category.register(HpSize.id("main"));
 	public static final KeyMapping CLEAN_HUD = new KeyMapping("key.hpsize.clean_hud", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_H, CATEGORY);
-	public static final KeyMapping ZOOM = new KeyMapping("key.hpsize.zoom", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_Z, CATEGORY);
 
 	@Override
 	public void onInitializeClient() {
 		ClientConfig.load();
 		KeyBindingHelper.registerKeyBinding(CLEAN_HUD);
-		KeyBindingHelper.registerKeyBinding(ZOOM);
 		CleanHud.register();
 
 		ClientTickEvents.END_CLIENT_TICK.register(minecraft -> {
 			while (CLEAN_HUD.consumeClick()) {
 				toggleCleanHud(minecraft);
 			}
-
-			Zoom.setActive(minecraft, minecraft.player != null && minecraft.screen == null && ZOOM.isDown());
 		});
 
 		ClientCommandRegistrationCallback.EVENT.register((dispatcher, buildContext) -> registerCommands(dispatcher));
@@ -85,15 +80,6 @@ public class HpSizeClient implements ClientModInitializer {
 				.then(ClientCommandManager.literal("show").then(ClientCommandManager.argument("element", StringArgumentType.word())
 						.suggests((context, builder) -> SharedSuggestionProvider.suggest(CleanHud.names(), builder))
 						.executes(context -> setHidden(context.getSource(), StringArgumentType.getString(context, "element"), false)))));
-
-		dispatcher.register(ClientCommandManager.literal("zoom")
-				.executes(context -> feedback(context.getSource(), "Zoom: ×" + Msg.number(ClientConfig.get().zoomFactor)
-						+ ". Przytrzymaj klawisz zoomu (domyślnie Z), kółkiem myszy zmieniasz przybliżenie."))
-				.then(ClientCommandManager.argument("factor", DoubleArgumentType.doubleArg(1.1, 50.0)).executes(context -> {
-					ClientConfig.get().zoomFactor = DoubleArgumentType.getDouble(context, "factor");
-					ClientConfig.get().save();
-					return feedback(context.getSource(), "Domyślny zoom: ×" + Msg.number(ClientConfig.get().zoomFactor) + ".");
-				})));
 	}
 
 	private static int setHidden(FabricClientCommandSource source, String element, boolean hidden) {

@@ -34,9 +34,9 @@ jobs:
 
       - name: Smoke test the release jar on a real dedicated server
         run: |
-          mkdir -p build/run/productionServer
-          echo "eula=true" > build/run/productionServer/eula.txt
-          printf 'level-type=minecraft\\:flat\nonline-mode=false\n' > build/run/productionServer/server.properties
+          mkdir -p run/productionServer
+          echo "eula=true" > run/productionServer/eula.txt
+          printf 'level-type=minecraft\\:flat\nonline-mode=false\n' > run/productionServer/server.properties
           printf '%s\n' "hpsize" "hpsize preset fair" "timer start" "spawnsized minecraft:cow 10" "countdown 3" "recmode on" "recmode off" "hpsize preset smooth" "stop" \
             | timeout 900 ./gradlew runProductionServer --stacktrace | tee production-server.log
           count=$(grep -c "\[HP Size\]" production-server.log || true)
