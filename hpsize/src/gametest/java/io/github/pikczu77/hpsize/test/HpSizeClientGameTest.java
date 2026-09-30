@@ -39,10 +39,9 @@ public class HpSizeClientGameTest implements FabricClientGameTest {
 				throw new AssertionError("The client does not see a giant cow, largest scale: " + cowScale);
 			}
 
-			server.runCommand("timer countdown 10m");
 			server.runCommand("countdown 3 Minecraft, ale moby są tak duże jak ich HP");
 			context.waitTicks(6);
-			context.takeScreenshot("hpsize-02-countdown-timer-healthbar");
+			context.takeScreenshot("hpsize-02-countdown");
 
 			context.getInput().pressKey(HpSizeClient.CLEAN_HUD);
 			context.waitTicks(3);
@@ -64,8 +63,6 @@ public class HpSizeClientGameTest implements FabricClientGameTest {
 			if (shrunk > 3.5) {
 				throw new AssertionError("The cow did not shrink after losing health, scale: " + shrunk);
 			}
-
-			server.runCommand("timer stop");
 		}
 	}
 

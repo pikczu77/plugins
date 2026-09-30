@@ -78,8 +78,6 @@ public final class HpSizeConfig {
 	public boolean suffocation = true;
 	/** When true, sizes stop following the health (good for a still shot). */
 	public boolean frozen = false;
-	/** Boss bar with the health and size of the mob the player looks at / has hit. */
-	public boolean healthBar = true;
 	/** Tiny mobs glow so viewers (and you) can find them. */
 	public boolean glowTiny = false;
 	public double glowTinyBelow = 0.35;

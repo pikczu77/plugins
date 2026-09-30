@@ -10,7 +10,7 @@ import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
 
 /**
  * "Clean HUD": hides chosen HUD parts (hearts, hotbar, crosshair...) but, unlike F1,
- * keeps the hand, chat, titles and boss bars (the timer and the mob health bar) visible.
+ * keeps the hand, chat, titles and boss bars visible.
  */
 public final class CleanHud {
 	public static final List<Identifier> ELEMENTS = List.of(

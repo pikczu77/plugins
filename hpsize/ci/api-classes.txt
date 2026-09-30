@@ -9,7 +9,6 @@ net.minecraft.world.entity.Entity snapTo|getServer\(|setSilent
 net.minecraft.world.entity.EntityType create\(
 net.minecraft.world.entity.Mob finalizeSpawn|isPersistenceRequired
 net.minecraft.world.entity.LivingEntity getScale|setHealth|getMaxHealth
-net.minecraft.server.level.ServerBossEvent public
 net.minecraft.sounds.SoundEvents NOTE_BLOCK_PLING|PLAYER_LEVELUP|RAID_HORN
 net.minecraft.commands.arguments.ResourceArgument getSummonableEntityType|getEntityType|resource\(
 net.minecraft.world.entity.monster.Enemy

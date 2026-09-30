@@ -25,7 +25,6 @@ import io.github.pikczu77.hpsize.config.HpSizeConfig;
 import io.github.pikczu77.hpsize.rec.Countdown;
 import io.github.pikczu77.hpsize.rec.Freeze;
 import io.github.pikczu77.hpsize.rec.RecMode;
-import io.github.pikczu77.hpsize.rec.RecTimer;
 
 public class HpSizeGameTest {
 	private static int run(CommandSourceStack source, String command) {
@@ -65,7 +64,7 @@ public class HpSizeGameTest {
 		for (String command : List.of("hpsize", "hpsize off", "hpsize on", "hpsize mode percent", "hpsize mode sqrt", "hpsize mode max",
 				"hpsize preset fair", "hpsize preset light", "hpsize preset smooth", "hpsize preset film", "hpsize factor 0.5",
 				"hpsize min 0.1", "hpsize max 8", "hpsize smooth 3", "hpsize players on", "hpsize players off",
-				"hpsize suffocation off", "hpsize suffocation on", "hpsize bar off", "hpsize bar on", "hpsize sound on", "hpsize sound off", "hpsize glowtiny on",
+				"hpsize suffocation off", "hpsize suffocation on", "hpsize sound on", "hpsize sound off", "hpsize glowtiny on",
 				"hpsize glowtiny below 0.5", "hpsize glowtiny off", "hpsize freeze", "hpsize unfreeze",
 				"hpsize exclude minecraft:pig", "hpsize include minecraft:pig", "hpsize reset")) {
 			run(console, command);
@@ -122,9 +121,7 @@ public class HpSizeGameTest {
 		player.snapTo(helper.absoluteVec(new Vec3(2.5, 1.0, 2.5)), 0.0F, 0.0F);
 		CommandSourceStack source = source(helper, player);
 
-		for (String command : List.of("timer start", "timer pause", "timer resume", "timer add 1m", "timer remove 30s",
-				"timer set 5:00", "timer display actionbar", "timer display bossbar", "timer label &eDzień 1", "timer label",
-				"timer", "timer stop", "announce &cTytuł|Podtytuł", "countdown 3 Szukajcie diamentów!", "countdown cancel",
+		for (String command : List.of("announce &cTytuł|Podtytuł", "countdown 3 Szukajcie diamentów!", "countdown cancel",
 				"spawnsized minecraft:cow 20 2", "spawnsized minecraft:chicken 4", "mobhp @e[type=minecraft:cow,distance=..10] 5",
 				"glow @e[type=minecraft:cow,distance=..10] 5", "glow @e[type=minecraft:cow,distance=..10] 0",
 				"mute @e[type=minecraft:chicken,distance=..10]", "unmute @e[type=minecraft:chicken,distance=..10]",
@@ -159,14 +156,12 @@ public class HpSizeGameTest {
 		run(source, "cam");
 		helper.assertTrue(player.gameMode.getGameModeForPlayer() == before, "/cam did not restore the game mode");
 
-		// Countdown + timer: /go 1 10s -> after the countdown a 10 s timer runs.
-		run(source, "go 1 10s");
+		// /go: freeze -> countdown -> START.
+		run(source, "go 1 &aPowodzenia!");
 		helper.assertTrue(Countdown.isRunning(), "/go did not start the countdown");
 
 		helper.runAtTickTime(40, () -> {
 			helper.assertTrue(!Countdown.isRunning(), "countdown did not finish");
-			helper.assertTrue(RecTimer.isVisible() && RecTimer.describe().startsWith("Odliczanie"), "timer did not start after /go: " + RecTimer.describe());
-			run(source, "timer stop");
 			helper.succeed();
 		});
 	}

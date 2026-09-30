@@ -25,7 +25,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 
 import io.github.pikczu77.hpsize.config.HpSizeConfig;
-import io.github.pikczu77.hpsize.scale.HealthBars;
+import io.github.pikczu77.hpsize.util.LookTarget;
 import io.github.pikczu77.hpsize.util.Msg;
 
 /**
@@ -90,7 +90,6 @@ public final class HpSizeCommand {
 
 		root.then(toggle("players", "Gracze też zmieniają rozmiar", (config, value) -> config.players = value));
 		root.then(toggle("suffocation", "Duszenie się mobów w blokach (przez nie maleją w jaskiniach)", (config, value) -> config.suffocation = value));
-		root.then(toggle("bar", "Pasek HP i rozmiaru moba, na którego patrzysz", (config, value) -> config.healthBar = value));
 		root.then(toggle("sound", "Dźwięk „sflaczenia”, gdy mob maleje od ciosu", (config, value) -> config.shrinkSound = value));
 		root.then(toggle("glowtiny", "Podświetlanie malutkich mobów", (config, value) -> config.glowTiny = value)
 				.then(Commands.literal("below").then(Commands.argument("scale", DoubleArgumentType.doubleArg(HpSizeConfig.SCALE_MIN, HpSizeConfig.SCALE_MAX))
@@ -124,7 +123,7 @@ public final class HpSizeCommand {
 
 		root.then(Commands.literal("info")
 				.executes(context -> {
-					LivingEntity target = HealthBars.findLookTarget(context.getSource().getPlayerOrException(), 64);
+					LivingEntity target = LookTarget.find(context.getSource().getPlayerOrException(), 64);
 
 					if (target == null) {
 						return Msg.fail(context.getSource(), "Nie patrzysz na żadnego moba.");
@@ -146,7 +145,6 @@ public final class HpSizeCommand {
 			config.players = defaults.players;
 			config.suffocation = defaults.suffocation;
 			config.frozen = defaults.frozen;
-			config.healthBar = defaults.healthBar;
 			config.glowTiny = defaults.glowTiny;
 			config.glowTinyBelow = defaults.glowTinyBelow;
 			config.shrinkSound = defaults.shrinkSound;
@@ -207,7 +205,6 @@ public final class HpSizeCommand {
 		line(source, "Płynność", config.smooth == 0 ? "natychmiast" : String.valueOf(config.smooth));
 		line(source, "Gracze", Msg.onOff(config.players));
 		line(source, "Duszenie w blokach", Msg.onOff(config.suffocation));
-		line(source, "Pasek HP", Msg.onOff(config.healthBar));
 		line(source, "Dźwięk malenia", Msg.onOff(config.shrinkSound));
 		line(source, "Podświetlanie małych", Msg.onOff(config.glowTiny) + " (poniżej ×" + Msg.number(config.glowTinyBelow) + ")");
 		line(source, "Wykluczone", config.excluded.isEmpty() ? "-" : String.join(", ", config.excluded));

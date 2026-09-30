@@ -15,7 +15,7 @@ Do tego komendy, które ułatwiają nagrywanie odcinka i poprawiają film dla wi
    - [Fabric API](https://modrinth.com/mod/fabric-api) dla 1.21.11.
 3. W świecie potrzebujesz uprawnień do komend (singleplayer: „Zezwól na kody” / Otwórz dla LAN → kody włączone).
 
-Mod działa też na serwerze. Gracze bez moda mogą wejść (widzą giganty, paski, odliczania),
+Mod działa też na serwerze. Gracze bez moda mogą wejść (widzą giganty i odliczania),
 a klawisz czystego HUD działa tylko u osób, które mają moda u siebie.
 
 ## Mechanika z filmu — `/hpsize`
@@ -36,10 +36,9 @@ a klawisz czystego HUD działa tylko u osób, które mają moda u siebie.
 | `/hpsize suffocation on\|off` | czy giganci duszą się w blokach (w filmie przez to malały w jaskiniach) |
 | `/hpsize exclude <mob>` / `include <mob>` | mob zachowa normalny rozmiar (np. `minecraft:enderman` na walkę ze smokiem) |
 | `/hpsize freeze` / `unfreeze` | zamraża rozmiary (ujęcie bez zmian) |
-| `/hpsize bar on\|off` | pasek u góry ekranu: HP i rozmiar moba, na którego patrzysz / którego bijesz |
 | `/hpsize glowtiny on\|off`, `/hpsize glowtiny below <x>` | podświetla malutkie moby (w filmie ginęły z oczu) |
 | `/hpsize sound on\|off` | dźwięk „sflaczenia” (jak rybka rozdymka), gdy cios zmniejsza moba — grubszy dla gigantów, piskliwy dla maluchów |
-| `/hpsize info [cele]` | HP i rozmiar moba, na którego patrzysz |
+| `/hpsize info [cele]` | pisze na czacie HP i rozmiar moba, na którego patrzysz (tylko dla Ciebie) |
 | `/hpsize reset` | ustawienia domyślne |
 
 Ustawienia zapisują się w folderze świata (`hpsize.json`). Rozmiar nie jest zapisywany w mobach,
@@ -61,14 +60,8 @@ są domyślnie wykluczone (gra i tak nie pokazuje większego smoka).
 
 | Komenda | Co robi |
 |---|---|
-| `/go [sekundy] [limit]` | start odcinka: zamraża graczy → odliczanie → START → odmraża → uruchamia timer (np. `/go 5 1h`) |
+| `/go [sekundy] [tekst]` | start odcinka: zamraża graczy → odliczanie → START → odmraża (np. `/go 5 &aPowodzenia!`) |
 | `/countdown <sekundy> [tekst]` | odliczanie na środku ekranu z dźwiękiem; `/countdown cancel` |
-| `/timer start` | stoper na pasku u góry (liczy czas gry — pauzuje się razem z grą) |
-| `/timer countdown <czas>` | odliczanie, np. `10m`, `1h30m`, `90s`, `10:00` |
-| `/timer pause` / `resume` / `stop` | pauza / wznowienie / ukrycie |
-| `/timer add <czas>` / `remove <czas>` / `set <czas>` | zmiana czasu |
-| `/timer label <tekst>` | napis przed czasem, np. `Dzień 1` (obsługuje kolory `&c`) |
-| `/timer display bossbar\|actionbar` | gdzie pokazywać timer |
 | `/freeze [gracze]` / `/unfreeze [gracze]` | zatrzymuje graczy w miejscu (mogą się rozglądać) |
 | `/announce <tytuł>[\|podtytuł]` | duży napis na ekranie dla wszystkich, np. `/announce &6Rozdział 2\|Nether` |
 | `/recmode on` / `off` | ukrywa na czacie komunikaty komend, potwierdzenia lecą na pasek akcji |
@@ -80,7 +73,7 @@ są domyślnie wykluczone (gra i tak nie pokazuje większego smoka).
 
 | Klawisz / komenda | Co robi |
 |---|---|
-| `H` | **czysty HUD**: chowa serca, pasek przedmiotów, celownik itp., ale zostawia rękę, czat, napisy i paski (inaczej niż F1) |
+| `H` | **czysty HUD**: chowa serca, pasek przedmiotów, celownik itp., ale zostawia rękę, czat i napisy na ekranie (inaczej niż F1) |
 | `/hud on\|off`, `/hud hide <element>`, `/hud show <element>`, `/hud list` | wybór elementów ukrywanych przez czysty HUD |
 
 Klawisz zmienisz w Opcje → Sterowanie → HP Size. Zoom celowo nie jest częścią moda — używaj swojego moda do zoomu.

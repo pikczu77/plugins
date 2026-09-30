@@ -8,13 +8,10 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.suggestion.SuggestionProvider;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
@@ -38,8 +35,6 @@ import io.github.pikczu77.hpsize.rec.CamMode;
 import io.github.pikczu77.hpsize.rec.Countdown;
 import io.github.pikczu77.hpsize.rec.Freeze;
 import io.github.pikczu77.hpsize.rec.RecMode;
-import io.github.pikczu77.hpsize.rec.RecTimer;
-import io.github.pikczu77.hpsize.util.Durations;
 import io.github.pikczu77.hpsize.util.Msg;
 import io.github.pikczu77.hpsize.util.Screens;
 
@@ -47,15 +42,11 @@ import io.github.pikczu77.hpsize.util.Screens;
  * General commands that make recording a video easier.
  */
 public final class RecCommands {
-	private static final SuggestionProvider<CommandSourceStack> DURATIONS = (context, builder) ->
-			SharedSuggestionProvider.suggest(List.of("30s", "1m", "5m", "10m", "15m", "30m", "1h", "10:00"), builder);
-
 	private RecCommands() {
 	}
 
 	public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
 		registerCountdown(dispatcher);
-		registerTimer(dispatcher);
 		registerFreeze(dispatcher);
 		registerPlayerHelpers(dispatcher);
 		registerRecMode(dispatcher);
@@ -81,10 +72,9 @@ public final class RecCommands {
 				.executes(context -> go(context.getSource(), 3, null))
 				.then(Commands.argument("seconds", IntegerArgumentType.integer(1, 60))
 						.executes(context -> go(context.getSource(), IntegerArgumentType.getInteger(context, "seconds"), null))
-						.then(Commands.argument("timeLimit", StringArgumentType.greedyString())
-								.suggests(DURATIONS)
+						.then(Commands.argument("message", StringArgumentType.greedyString())
 								.executes(context -> go(context.getSource(), IntegerArgumentType.getInteger(context, "seconds"),
-										StringArgumentType.getString(context, "timeLimit"))))));
+										StringArgumentType.getString(context, "message"))))));
 	}
 
 	private static int countdown(CommandContext<CommandSourceStack> context, String message) {
@@ -94,10 +84,9 @@ public final class RecCommands {
 	}
 
 	/**
-	 * Freeze everyone, count down, then release the players and start the timer - one command to start a challenge.
+	 * Freeze everyone, count down, then release the players - one command to start a challenge.
 	 */
-	private static int go(CommandSourceStack source, int seconds, String timeLimit) throws CommandSyntaxException {
-		long limitTicks = timeLimit == null ? 0 : Durations.parseTicks(timeLimit);
+	private static int go(CommandSourceStack source, int seconds, String message) {
 		MinecraftServer server = source.getServer();
 		List<ServerPlayer> frozen = new ArrayList<>();
 
@@ -107,96 +96,15 @@ public final class RecCommands {
 			}
 		}
 
-		Countdown.start(seconds, null, () -> {
+		Countdown.start(seconds, message == null ? null : Component.literal(Msg.colors(message)), () -> {
 			for (ServerPlayer player : server.getPlayerList().getPlayers()) {
 				if (frozen.stream().anyMatch(p -> p.getUUID().equals(player.getUUID()))) {
 					Freeze.unfreeze(player);
 				}
 			}
-
-			if (limitTicks > 0) {
-				RecTimer.startCountdown(limitTicks);
-			} else {
-				RecTimer.startStopwatch();
-			}
 		});
 
-		return Msg.ok(source, "Start za " + seconds + " s" + (limitTicks > 0 ? ", limit czasu " + Durations.format(limitTicks, true) : "") + ".");
-	}
-
-	// /timer
-
-	private static void registerTimer(CommandDispatcher<CommandSourceStack> dispatcher) {
-		dispatcher.register(Commands.literal("timer")
-				.requires(Perms.gamemaster())
-				.executes(context -> Msg.ok(context.getSource(), RecTimer.describe()))
-				.then(Commands.literal("start").executes(context -> {
-					RecTimer.startStopwatch();
-					return Msg.ok(context.getSource(), "Stoper wystartował.");
-				}))
-				.then(Commands.literal("countdown").then(Commands.argument("time", StringArgumentType.greedyString()).suggests(DURATIONS)
-						.executes(context -> {
-							long ticks = Durations.parseTicks(StringArgumentType.getString(context, "time"));
-
-							if (ticks <= 0) {
-								return Msg.fail(context.getSource(), "Czas musi być większy od zera.");
-							}
-
-							RecTimer.startCountdown(ticks);
-							return Msg.ok(context.getSource(), "Odliczanie " + Durations.format(ticks, true) + " wystartowało.");
-						})))
-				.then(Commands.literal("pause").executes(context -> RecTimer.pause()
-						? Msg.ok(context.getSource(), "Timer zapauzowany.")
-						: Msg.fail(context.getSource(), "Timer nie działa.")))
-				.then(Commands.literal("resume").executes(context -> RecTimer.resume()
-						? Msg.ok(context.getSource(), "Timer wznowiony.")
-						: Msg.fail(context.getSource(), "Nie ma czego wznowić.")))
-				.then(Commands.literal("stop").executes(context -> {
-					RecTimer.stop();
-					return Msg.ok(context.getSource(), "Timer zatrzymany i ukryty.");
-				}))
-				.then(Commands.literal("add").then(Commands.argument("time", StringArgumentType.greedyString()).suggests(DURATIONS)
-						.executes(context -> changeTimer(context, 1))))
-				.then(Commands.literal("remove").then(Commands.argument("time", StringArgumentType.greedyString()).suggests(DURATIONS)
-						.executes(context -> changeTimer(context, -1))))
-				.then(Commands.literal("set").then(Commands.argument("time", StringArgumentType.greedyString()).suggests(DURATIONS)
-						.executes(context -> {
-							if (!RecTimer.isVisible()) {
-								return Msg.fail(context.getSource(), "Najpierw uruchom timer (/timer start albo /timer countdown).");
-							}
-
-							long ticks = Durations.parseTicks(StringArgumentType.getString(context, "time"));
-							RecTimer.set(ticks);
-							return Msg.ok(context.getSource(), "Timer ustawiony na " + Durations.format(ticks, true) + ".");
-						})))
-				.then(Commands.literal("display")
-						.then(Commands.literal("bossbar").executes(context -> {
-							RecTimer.setDisplay(RecTimer.Display.BOSSBAR);
-							return Msg.ok(context.getSource(), "Timer na pasku bossa.");
-						}))
-						.then(Commands.literal("actionbar").executes(context -> {
-							RecTimer.setDisplay(RecTimer.Display.ACTIONBAR);
-							return Msg.ok(context.getSource(), "Timer nad paskiem przedmiotów.");
-						})))
-				.then(Commands.literal("label")
-						.executes(context -> {
-							RecTimer.setLabel("");
-							return Msg.ok(context.getSource(), "Etykieta timera usunięta.");
-						})
-						.then(Commands.argument("text", StringArgumentType.greedyString()).executes(context -> {
-							RecTimer.setLabel(Msg.colors(StringArgumentType.getString(context, "text")));
-							return Msg.ok(context.getSource(), "Etykieta timera ustawiona.");
-						}))));
-	}
-
-	private static int changeTimer(CommandContext<CommandSourceStack> context, int sign) throws CommandSyntaxException {
-		if (!RecTimer.isVisible()) {
-			return Msg.fail(context.getSource(), "Najpierw uruchom timer (/timer start albo /timer countdown).");
-		}
-
-		long ticks = Durations.parseTicks(StringArgumentType.getString(context, "time"));
-		RecTimer.add(sign * ticks);
-		return Msg.ok(context.getSource(), (sign > 0 ? "Dodano " : "Odjęto ") + Durations.format(ticks, true) + ".");
+		return Msg.ok(source, "Start za " + seconds + " s, zamrożono graczy: " + frozen.size() + ".");
 	}
 
 	// /freeze, /unfreeze
