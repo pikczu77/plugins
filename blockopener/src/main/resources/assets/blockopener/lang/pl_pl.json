@@ -118,6 +118,7 @@
   "blockopener.command.timer.add": "Dodano %s s, zostało %s s",
   "blockopener.command.settings.header": "Ustawienia Block Opener:",
   "blockopener.command.settings.explosionsBreakBlocks": "wybuchy mocy niszczą teren",
+  "blockopener.command.settings.explosionsDestroyItems": "wybuchy mocy niszczą leżące przedmioty (jak TNT)",
   "blockopener.command.settings.announceFinds": "ogłaszaj znalezienie przedmiotu na czacie",
   "blockopener.command.settings.lootRolls": "ile razy losować łup z bloku",
   "blockopener.command.settings.openCooldown": "ticki między otwarciami",

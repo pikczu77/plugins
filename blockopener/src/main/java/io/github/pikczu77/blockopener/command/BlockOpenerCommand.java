@@ -121,6 +121,8 @@ public final class BlockOpenerCommand {
 				.executes(ctx -> settings(ctx.getSource()))
 				.then(Commands.literal("explosionsBreakBlocks").then(Commands.argument("value", BoolArgumentType.bool())
 					.executes(ctx -> updateSettings(ctx.getSource(), s -> s.withExplosionsBreakBlocks(BoolArgumentType.getBool(ctx, "value"))))))
+				.then(Commands.literal("explosionsDestroyItems").then(Commands.argument("value", BoolArgumentType.bool())
+					.executes(ctx -> updateSettings(ctx.getSource(), s -> s.withExplosionsDestroyItems(BoolArgumentType.getBool(ctx, "value"))))))
 				.then(Commands.literal("announceFinds").then(Commands.argument("value", BoolArgumentType.bool())
 					.executes(ctx -> updateSettings(ctx.getSource(), s -> s.withAnnounceFinds(BoolArgumentType.getBool(ctx, "value"))))))
 				.then(Commands.literal("lootRolls").then(Commands.argument("value", IntegerArgumentType.integer(1, 16))
@@ -378,6 +380,7 @@ public final class BlockOpenerCommand {
 		ModSettings settings = ModSettings.get(source.getServer());
 		source.sendSuccess(() -> Component.translatable("blockopener.command.settings.header").withStyle(ChatFormatting.GOLD), false);
 		source.sendSuccess(() -> setting("explosionsBreakBlocks", settings.explosionsBreakBlocks()), false);
+		source.sendSuccess(() -> setting("explosionsDestroyItems", settings.explosionsDestroyItems()), false);
 		source.sendSuccess(() -> setting("announceFinds", settings.announceFinds()), false);
 		source.sendSuccess(() -> setting("lootRolls", settings.lootRolls()), false);
 		source.sendSuccess(() -> setting("openCooldown", settings.openCooldown()), false);

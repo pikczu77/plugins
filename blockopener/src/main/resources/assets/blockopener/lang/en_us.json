@@ -118,6 +118,7 @@
   "blockopener.command.timer.add": "Added %s s, %s s left",
   "blockopener.command.settings.header": "Block Opener settings:",
   "blockopener.command.settings.explosionsBreakBlocks": "ability explosions destroy terrain",
+  "blockopener.command.settings.explosionsDestroyItems": "ability explosions blow up dropped items (like TNT)",
   "blockopener.command.settings.announceFinds": "announce custom item finds in chat",
   "blockopener.command.settings.lootRolls": "how many times a block's loot is rolled",
   "blockopener.command.settings.openCooldown": "ticks between two openings",

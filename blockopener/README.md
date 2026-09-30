@@ -55,7 +55,7 @@ tytuł na ekranie, dźwięk, wiadomość na czacie i zapala się ikonka w tracke
 | 9 | Wrzeszczak / katalizator sculk | **Sculkowy Hełm** | **G** = Sonic Boom Wardena (przez ściany); odporność na Ciemność; czujniki sculk cię nie słyszą |
 | 10 | Blok mchu | **Mchowa Kula** | rzucana, zabija wszystko, w co trafi (smoka też!); tam, gdzie spadnie, rośnie mech |
 
-Własne wybuchy nigdy nie ranią właściciela i nie niszczą leżących przedmiotów. Customowe przedmioty są niezniszczalne.
+Własne wybuchy nigdy nie ranią właściciela. Jak zwykłe TNT niszczą leżące przedmioty (wyłączysz: `/bo settings explosionsDestroyItems false`); wyjątkiem jest uderzenie kowadła, które zostawia łup z otwartych bloków. Customowe przedmioty są niezniszczalne.
 Moce w tooltipie są ukryte pod „Przytrzymaj SHIFT”, żeby nie spoilerować na nagraniu.
 
 ## Klawisze (do zmiany w Opcje → Sterowanie → Block Opener)
@@ -81,7 +81,7 @@ Moce w tooltipie są ukryte pod „Przytrzymaj SHIFT”, żeby nie spoilerować 
 | `/bo hud [true\|false] [gracze]` | tracker dla wybranych graczy |
 | `/bo progress [gracz]` | lista znalezionych przedmiotów |
 | `/bo open <x y z>` | otwiera blok komendą (np. z bloku poleceń do cinematiców) |
-| `/bo settings …` | `explosionsBreakBlocks`, `announceFinds`, `lootRolls` (1-16, więcej łupu), `openCooldown` |
+| `/bo settings …` | `explosionsBreakBlocks`, `explosionsDestroyItems`, `announceFinds`, `lootRolls` (1-16, więcej łupu), `openCooldown` |
 
 ## Dostosowanie
 

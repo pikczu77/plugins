@@ -1,5 +1,6 @@
 package io.github.pikczu77.blockopener.gametest;
 
+import io.github.pikczu77.blockopener.ability.Explosions;
 import io.github.pikczu77.blockopener.entity.MossphereEntity;
 import io.github.pikczu77.blockopener.opening.BlockOpening;
 import io.github.pikczu77.blockopener.opening.OpeningLoot;
@@ -128,6 +129,23 @@ public class BlockOpenerGameTests {
 		helper.assertBlockPresent(Blocks.AIR, new BlockPos(2, 1, 2));
 		helper.assertBlockPresent(Blocks.BEDROCK, new BlockPos(2, 0, 2));
 		helper.succeedWhen(() -> helper.assertTrue(!helper.getEntities(EntityType.ITEM).isEmpty(), "opened blocks should drop loot"));
+	}
+
+	@GameTest(maxTicks = 20)
+	public void abilityExplosionsBlowUpItemsLikeTnt(GameTestHelper helper) {
+		floor(helper);
+		ServerLevel level = helper.getLevel();
+		Vec3 at = helper.absoluteVec(Vec3.atBottomCenterOf(POS));
+		ItemEntity blownUp = new ItemEntity(level, at.x, at.y, at.z, new ItemStack(Items.GOLD_INGOT));
+		level.addFreshEntity(blownUp);
+		Explosions.explode(level, null, at, 3.0F, false, true);
+		helper.assertTrue(blownUp.isRemoved(), "a TNT-like ability explosion should destroy dropped items");
+
+		ItemEntity kept = new ItemEntity(level, at.x, at.y, at.z, new ItemStack(Items.IRON_INGOT));
+		level.addFreshEntity(kept);
+		Explosions.explode(level, null, at, 3.0F, false, false);
+		helper.assertFalse(kept.isRemoved(), "the anvil slam keeps the loot it just opened");
+		helper.succeed();
 	}
 
 	@GameTest(maxTicks = 60)

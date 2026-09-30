@@ -74,7 +74,8 @@ final class AnvilChestplate {
 		if (ModSettings.get(level.getServer()).explosionsBreakBlocks()) {
 			BlockOpening.openArea(level, at.subtract(0.0, 0.5, 0.0), SLAM_RADIUS, player);
 		}
-		Explosions.explode(level, player, at, SLAM_POWER, false);
+		// Terrain is already opened above; keep the loot it just dropped.
+		Explosions.explode(level, player, at, SLAM_POWER, false, false);
 		level.playSound(null, player.blockPosition(), SoundEvents.ANVIL_LAND, SoundSource.PLAYERS, 1.2F, 0.5F);
 		level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, Blocks.ANVIL.defaultBlockState()), at.x, at.y + 0.1, at.z, 60, 1.5, 0.1, 1.5, 0.2);
 		// Shockwave: everything around gets thrown up and away.
