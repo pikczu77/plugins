@@ -1,0 +1,36 @@
+{
+	"schemaVersion": 1,
+	"id": "hpsize",
+	"version": "${version}",
+	"name": "HP Size",
+	"description": "Moby są tak duże, jak dużo mają życia (jak w filmie „Minecraft, but Mobs are as big as their health”) + komendy ułatwiające nagrywanie filmów.",
+	"authors": [
+		"pikczu77"
+	],
+	"contact": {
+		"sources": "https://github.com/pikczu77/plugins"
+	},
+	"license": "MIT",
+	"icon": "assets/hpsize/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"io.github.pikczu77.hpsize.HpSize"
+		],
+		"client": [
+			"io.github.pikczu77.hpsize.client.HpSizeClient"
+		]
+	},
+	"mixins": [
+		{
+			"config": "hpsize.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.17.3",
+		"minecraft": "~1.21.11",
+		"java": ">=21",
+		"fabric-api": "*"
+	}
+}

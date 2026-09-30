@@ -1,0 +1,18 @@
+{
+	"schemaVersion": 1,
+	"id": "hpsize-gametest",
+	"version": "1.0.0",
+	"name": "HP Size game tests",
+	"environment": "*",
+	"entrypoints": {
+		"fabric-gametest": [
+			"io.github.pikczu77.hpsize.test.HpSizeGameTest"
+		],
+		"fabric-client-gametest": [
+			"io.github.pikczu77.hpsize.test.HpSizeClientGameTest"
+		]
+	},
+	"depends": {
+		"hpsize": "*"
+	}
+}

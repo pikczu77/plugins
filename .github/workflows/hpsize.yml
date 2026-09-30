@@ -1,0 +1,81 @@
+name: hpsize
+
+on:
+  push:
+    paths:
+      - 'hpsize/**'
+      - '.github/workflows/hpsize.yml'
+  pull_request:
+    paths:
+      - 'hpsize/**'
+      - '.github/workflows/hpsize.yml'
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: hpsize
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: gradle/actions/wrapper-validation@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'microsoft'
+          java-version: '25'
+      - uses: gradle/actions/setup-gradle@v4
+      - run: chmod +x ./gradlew ci/api-dump.sh
+
+      # Compiles the mod and runs the server game tests (src/gametest).
+      - name: Build and run server game tests
+        run: ./gradlew build --stacktrace
+
+      - name: Smoke test the release jar on a real dedicated server
+        run: |
+          mkdir -p build/run/productionServer
+          echo "eula=true" > build/run/productionServer/eula.txt
+          printf 'level-type=minecraft\\:flat\nonline-mode=false\n' > build/run/productionServer/server.properties
+          printf '%s\n' "hpsize" "hpsize preset fair" "timer start" "spawnsized minecraft:cow 10" "countdown 3" "recmode on" "recmode off" "hpsize preset smooth" "stop" \
+            | timeout 900 ./gradlew runProductionServer --stacktrace | tee production-server.log
+          count=$(grep -c "\[HP Size\]" production-server.log || true)
+          echo "HP Size messages: $count"
+          if grep -q "Unknown or incomplete command" production-server.log || [ "$count" -lt 5 ]; then
+            echo "::error::The production server did not run the mod commands correctly"
+            exit 1
+          fi
+
+      - name: Minecraft API signatures (for debugging compile errors)
+        if: always()
+        run: ci/api-dump.sh
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hpsize-mod
+          path: hpsize/build/libs/
+
+  client-test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'microsoft'
+          java-version: '25'
+      - uses: gradle/actions/setup-gradle@v4
+      - run: sudo apt-get update && sudo apt-get install -y xvfb
+      - run: chmod +x ./gradlew
+
+      # Starts a real Minecraft client, creates a world, runs the commands and takes screenshots.
+      - name: Run client game test
+        run: xvfb-run -a -s "-screen 0 1920x1080x24" ./gradlew runClientGameTest --stacktrace
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: client-test-screenshots
+          path: |
+            hpsize/build/run/clientGameTest/screenshots/
+            hpsize/build/run/clientGameTest/logs/

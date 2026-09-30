@@ -1,0 +1,22 @@
+# Class [filter] - members the mod relies on (see ci/api-dump.sh)
+net.minecraft.commands.Commands hasPermission|LEVEL_GAMEMASTERS
+net.minecraft.world.level.gamerules.GameRules SEND_COMMAND_FEEDBACK|LOG_ADMIN_COMMANDS| get\(| set\(
+net.minecraft.world.entity.ai.attributes.AttributeInstance Modifier|getValue|setBaseValue
+net.minecraft.world.entity.ai.attributes.Attributes SCALE|MAX_HEALTH|MOVEMENT_SPEED|JUMP_STRENGTH
+net.minecraft.server.level.ServerPlayer teleportTo|setGameMode|gameMode|ServerLevel level\(\)
+net.minecraft.server.level.ServerPlayerGameMode getGameModeForPlayer
+net.minecraft.world.entity.Entity snapTo|getServer\(|setSilent
+net.minecraft.world.entity.EntityType create\(
+net.minecraft.world.entity.Mob finalizeSpawn|isPersistenceRequired
+net.minecraft.world.entity.LivingEntity getScale|setHealth|getMaxHealth
+net.minecraft.server.level.ServerBossEvent public
+net.minecraft.sounds.SoundEvents NOTE_BLOCK_PLING|PLAYER_LEVELUP|RAID_HORN
+net.minecraft.commands.arguments.ResourceArgument getSummonableEntityType|getEntityType|resource\(
+net.minecraft.world.entity.monster.Enemy
+net.minecraft.world.entity.projectile.arrow.ThrownTrident
+net.minecraft.world.entity.item.ItemEntity class
+net.minecraft.client.renderer.GameRenderer getFov
+net.minecraft.client.MouseHandler onScroll|turnPlayer
+net.minecraft.client.Options smoothCamera
+net.minecraft.client.KeyMapping KeyMapping\(|consumeClick|isDown
+net.minecraft.gametest.framework.GameTestHelper assertTrue|spawn\(|runAtTickTime|absoluteVec|absolutePos|succeed\(

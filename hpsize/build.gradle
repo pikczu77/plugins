@@ -3,14 +3,14 @@ plugins {
 }
 
 base {
-	archivesName = "reckit-${project.minecraft_version}"
+	archivesName = "hpsize-${project.minecraft_version}"
 }
 
 loom {
 	splitEnvironmentSourceSets()
 
 	mods {
-		"reckit" {
+		"hpsize" {
 			sourceSet sourceSets.main
 			sourceSet sourceSets.client
 		}
@@ -21,7 +21,7 @@ fabricApi {
 	// Server game tests run as part of `./gradlew build`, client game tests with `./gradlew runClientGameTest`.
 	configureTests {
 		createSourceSet = true
-		modId = "reckit-gametest"
+		modId = "hpsize-gametest"
 		enableGameTests = true
 		enableClientGameTests = true
 		eula = true // By setting this to true, you agree to the Minecraft EULA (https://aka.ms/MinecraftEULA).
