@@ -32,19 +32,21 @@ jobs:
       - name: Build and run server game tests
         run: ./gradlew build --stacktrace
 
+      # Runs the remapped release jar on a real dedicated server and drives it over RCON (ci/rcon-smoke.py).
       - name: Smoke test the release jar on a real dedicated server
+        timeout-minutes: 20
         run: |
           mkdir -p run/productionServer
           echo "eula=true" > run/productionServer/eula.txt
-          printf 'level-type=minecraft\\:flat\nonline-mode=false\n' > run/productionServer/server.properties
-          printf '%s\n' "hpsize" "hpsize preset fair" "spawnsized minecraft:cow 10" "countdown 3" "recmode on" "recmode off" "hpsize preset smooth" "stop" \
-            | timeout 900 ./gradlew runProductionServer --stacktrace | tee production-server.log
-          count=$(grep -c "\[HP Size\]" production-server.log || true)
-          echo "HP Size messages: $count"
-          if grep -q "Unknown or incomplete command" production-server.log || [ "$count" -lt 5 ]; then
-            echo "::error::The production server did not run the mod commands correctly"
-            exit 1
-          fi
+          printf 'level-type=minecraft\\:flat\nonline-mode=false\nenable-rcon=true\nrcon.port=25575\nrcon.password=hpsize\n' > run/productionServer/server.properties
+          ./gradlew runProductionServer --stacktrace < /dev/null > production-server.log 2>&1 &
+          server=$!
+          if python3 ci/rcon-smoke.py; then result=0; else result=1; fi
+          if [ $result -ne 0 ]; then kill $server || true; fi
+          wait $server || true
+          tail -n 60 production-server.log
+          if grep -q "Exception in server tick loop\|Encountered an unexpected exception" production-server.log; then result=1; fi
+          exit $result
 
       - name: Minecraft API signatures (for debugging compile errors)
         if: always()
