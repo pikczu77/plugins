@@ -66,10 +66,11 @@ public final class HpSizeCommand {
 					return change(context.getSource(), config -> config.applyPreset(preset), "Preset " + preset + " ustawiony. " + presetDescription(preset));
 				})));
 
-		root.then(Commands.literal("factor").then(Commands.argument("value", DoubleArgumentType.doubleArg(0.001, 100))
+		root.then(Commands.literal("normal").then(Commands.argument("hp", DoubleArgumentType.doubleArg(1, 1000))
 				.executes(context -> {
-					double value = DoubleArgumentType.getDouble(context, "value");
-					return change(context.getSource(), config -> config.factor = value, "Mnożnik rozmiaru: ×" + Msg.number(value) + ".");
+					double value = DoubleArgumentType.getDouble(context, "hp");
+					return change(context.getSource(), config -> config.normalHp = value, "Normalny rozmiar ma mob z " + Msg.number(value)
+							+ " HP (kurczak ×" + Msg.number(4 / value) + ", żelazny golem ×" + Msg.number(100 / value) + ").");
 				})));
 		root.then(Commands.literal("min").then(Commands.argument("value", DoubleArgumentType.doubleArg(HpSizeConfig.SCALE_MIN, HpSizeConfig.SCALE_MAX))
 				.executes(context -> {
@@ -138,7 +139,7 @@ public final class HpSizeCommand {
 			HpSizeConfig defaults = new HpSizeConfig();
 			config.enabled = defaults.enabled;
 			config.mode = defaults.mode;
-			config.factor = defaults.factor;
+			config.normalHp = defaults.normalHp;
 			config.minScale = defaults.minScale;
 			config.maxScale = defaults.maxScale;
 			config.smooth = defaults.smooth;
@@ -182,7 +183,7 @@ public final class HpSizeCommand {
 
 	private static String presetDescription(String preset) {
 		return switch (preset) {
-			case "film" -> "Dokładnie jak w filmie: rozmiar = HP, zmiana natychmiastowa.";
+			case "film" -> "Dokładnie jak w filmie: rozmiar według HP (20 HP = normalny), zmiana natychmiastowa.";
 			case "smooth" -> "Jak w filmie, ale moby płynnie maleją.";
 			case "fair" -> "Każdy cios zmniejsza moba - także bossów z ogromnym HP.";
 			case "light" -> "Mniejsi giganci (maks. ×6) - mniej lagów.";
@@ -200,7 +201,7 @@ public final class HpSizeCommand {
 		source.sendSuccess(() -> Msg.prefix().append(Component.literal("Moby są tak duże, jak dużo mają życia").withStyle(ChatFormatting.WHITE)), false);
 		line(source, "Mechanika", Msg.onOff(config.enabled) + (config.frozen ? " (rozmiary zamrożone)" : ""));
 		line(source, "Tryb", config.mode.id + " - " + config.mode.description);
-		line(source, "Mnożnik", "×" + Msg.number(config.factor));
+		line(source, "Normalny rozmiar przy", Msg.number(config.normalHp) + " HP (kurczak ×" + Msg.number(4 / config.normalHp) + ")");
 		line(source, "Rozmiar", "od ×" + Msg.number(config.minScale) + " do ×" + Msg.number(config.maxScale));
 		line(source, "Płynność", config.smooth == 0 ? "natychmiast" : String.valueOf(config.smooth));
 		line(source, "Gracze", Msg.onOff(config.players));

@@ -31,20 +31,22 @@ public final class HpSizeConfig {
 	/** Vanilla limits of the {@code minecraft:scale} attribute. */
 	public static final double SCALE_MIN = 0.0625;
 	public static final double SCALE_MAX = 16.0;
+	/** Health of a player: a mob with this much health keeps its normal size. */
+	public static final double NORMAL_HP = 20.0;
 
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 	private static @Nullable HpSizeConfig current;
 	private static @Nullable Path file;
 
 	public enum Mode {
-		/** Size = current health (like in the video). */
-		HEALTH("health", "rozmiar = aktualne HP"),
-		/** Size = max health, damage does not shrink. */
-		MAX("max", "rozmiar = maksymalne HP (nie maleje)"),
-		/** Size = max health, shrinking proportionally to the lost health (bosses shrink too). */
-		PERCENT("percent", "rozmiar = maks. HP × % życia (bossowie też maleją)"),
-		/** Size = square root of the current health (smaller giants, less lag). */
-		SQRT("sqrt", "rozmiar = √HP (mniejsi giganci, mniej lagów)");
+		/** Size follows the current health (like in the video). */
+		HEALTH("health", "rozmiar według aktualnego HP"),
+		/** Size follows the max health, damage does not shrink. */
+		MAX("max", "rozmiar według maksymalnego HP (nie maleje)"),
+		/** Size follows the max health, shrinking proportionally to the lost health (bosses shrink too). */
+		PERCENT("percent", "rozmiar według maks. HP, maleje z % życia (bossowie też maleją)"),
+		/** Size follows the square root of the health (tiny mobs less tiny, giants less giant). */
+		SQRT("sqrt", "rozmiar według √HP (mniejsze różnice, mniej lagów)");
 
 		public final String id;
 		public final String description;
@@ -67,8 +69,8 @@ public final class HpSizeConfig {
 
 	public boolean enabled = true;
 	public Mode mode = Mode.HEALTH;
-	/** Size multiplier: scale = health × factor. */
-	public double factor = 1.0;
+	/** Health at which a mob has its normal size: scale = health / normalHp (chicken 4 HP -> x0.2, iron golem 100 HP -> x5). */
+	public double normalHp = NORMAL_HP;
 	public double minScale = SCALE_MIN;
 	public double maxScale = SCALE_MAX;
 	/** How gently the size follows the health (0 = instantly, like the command from the video). */
@@ -134,7 +136,7 @@ public final class HpSizeConfig {
 			case "film" -> {
 				// Exactly like the single command from the video.
 				mode = Mode.HEALTH;
-				factor = 1.0;
+				normalHp = NORMAL_HP;
 				minScale = SCALE_MIN;
 				maxScale = SCALE_MAX;
 				smooth = 0;
@@ -142,7 +144,7 @@ public final class HpSizeConfig {
 			}
 			case "smooth" -> {
 				mode = Mode.HEALTH;
-				factor = 1.0;
+				normalHp = NORMAL_HP;
 				minScale = SCALE_MIN;
 				maxScale = SCALE_MAX;
 				smooth = defaults.smooth;
@@ -150,14 +152,14 @@ public final class HpSizeConfig {
 			}
 			case "fair" -> {
 				mode = Mode.PERCENT;
-				factor = 1.0;
+				normalHp = NORMAL_HP;
 				minScale = 0.1;
 				maxScale = SCALE_MAX;
 				smooth = defaults.smooth;
 			}
 			case "light" -> {
 				mode = Mode.SQRT;
-				factor = 1.0;
+				normalHp = NORMAL_HP;
 				minScale = 0.25;
 				maxScale = 6.0;
 				smooth = defaults.smooth;
@@ -175,7 +177,7 @@ public final class HpSizeConfig {
 			mode = Mode.HEALTH;
 		}
 
-		factor = clamp(factor, 0.001, 100);
+		normalHp = clamp(normalHp, 1, 1000);
 		minScale = clamp(minScale, SCALE_MIN, SCALE_MAX);
 		maxScale = clamp(maxScale, SCALE_MIN, SCALE_MAX);
 
@@ -229,10 +231,10 @@ public final class HpSizeConfig {
 		double maxHealth = Math.max(0.001, entity.getMaxHealth());
 
 		double scale = switch (mode) {
-			case HEALTH -> health * factor;
-			case MAX -> maxHealth * factor;
-			case PERCENT -> clamp(maxHealth * factor, minScale, maxScale) * Math.min(1.0, health / maxHealth);
-			case SQRT -> Math.sqrt(health) * factor;
+			case HEALTH -> health / normalHp;
+			case MAX -> maxHealth / normalHp;
+			case PERCENT -> clamp(maxHealth / normalHp, minScale, maxScale) * Math.min(1.0, health / maxHealth);
+			case SQRT -> Math.sqrt(health / normalHp);
 		};
 
 		return clamp(scale, minScale, maxScale);

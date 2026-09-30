@@ -62,7 +62,7 @@ public class HpSizeGameTest {
 
 		// Every /hpsize sub command must parse and succeed.
 		for (String command : List.of("hpsize", "hpsize off", "hpsize on", "hpsize mode percent", "hpsize mode sqrt", "hpsize mode max",
-				"hpsize preset fair", "hpsize preset light", "hpsize preset smooth", "hpsize preset film", "hpsize factor 0.5",
+				"hpsize preset fair", "hpsize preset light", "hpsize preset smooth", "hpsize preset film", "hpsize normal 10",
 				"hpsize min 0.1", "hpsize max 8", "hpsize smooth 3", "hpsize players on", "hpsize players off",
 				"hpsize suffocation off", "hpsize suffocation on", "hpsize sound on", "hpsize sound off", "hpsize glowtiny on",
 				"hpsize glowtiny below 0.5", "hpsize glowtiny off", "hpsize freeze", "hpsize unfreeze",
@@ -72,42 +72,47 @@ public class HpSizeGameTest {
 
 		HpSizeConfig config = HpSizeConfig.get();
 		helper.assertTrue(config != null, "Config is not loaded");
-		// Small, deterministic sizes so the cow fits into the test area.
-		config.mode = HpSizeConfig.Mode.HEALTH;
-		config.factor = 0.2;
-		config.smooth = 0;
-		config.sanitize();
 
+		// Natural sizes like in the video: 20 HP (a player) = normal size, less health = smaller.
+		run(console, "hpsize preset film");
+		LivingEntity chicken = helper.spawn(EntityType.CHICKEN, new BlockPos(1, 1, 1));
 		LivingEntity cow = helper.spawn(EntityType.COW, new BlockPos(2, 1, 2));
 
 		helper.runAtTickTime(5, () -> {
-			assertScale(helper, cow, 2.0); // 10 HP x 0.2
-			cow.setHealth(5.0F);
+			assertScale(helper, chicken, 0.2); // 4 HP / 20
+			assertScale(helper, cow, 0.5); // 10 HP / 20
+			// Bigger, deterministic sizes for the rest of the test.
+			config.normalHp = 5;
+			config.sanitize();
 		});
 		helper.runAtTickTime(10, () -> {
-			assertScale(helper, cow, 1.0); // 5 HP x 0.2
+			assertScale(helper, cow, 2.0); // 10 HP / 5
+			cow.setHealth(5.0F);
+		});
+		helper.runAtTickTime(15, () -> {
+			assertScale(helper, cow, 1.0); // 5 HP / 5
 			// A real hit with the "deflating" sound on must not break anything.
 			config.shrinkSound = true;
 			run(console, "damage @e[type=minecraft:cow,distance=..8,limit=1] 1");
 			config.shrinkSound = false;
 			run(console, "mobhp @e[type=minecraft:cow,distance=..8] max 20");
 		});
-		helper.runAtTickTime(15, () -> {
-			assertScale(helper, cow, 4.0); // 20 HP x 0.2
+		helper.runAtTickTime(20, () -> {
+			assertScale(helper, cow, 4.0); // 20 HP / 5
 			config.mode = HpSizeConfig.Mode.PERCENT;
 			cow.setHealth(10.0F);
 		});
-		helper.runAtTickTime(20, () -> {
-			assertScale(helper, cow, 2.0); // 20 x 0.2 = x4 at full health, half health -> x2
+		helper.runAtTickTime(25, () -> {
+			assertScale(helper, cow, 2.0); // 20 / 5 = x4 at full health, half health -> x2
 			config.frozen = true;
 			cow.setHealth(20.0F);
 		});
-		helper.runAtTickTime(25, () -> {
+		helper.runAtTickTime(30, () -> {
 			assertScale(helper, cow, 2.0); // frozen
 			config.frozen = false;
 			config.enabled = false;
 		});
-		helper.runAtTickTime(30, () -> {
+		helper.runAtTickTime(35, () -> {
 			assertScale(helper, cow, 1.0); // turned off -> normal size
 			run(console, "hpsize reset");
 			helper.succeed();

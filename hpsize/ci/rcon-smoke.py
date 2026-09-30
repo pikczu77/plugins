@@ -1,7 +1,8 @@
 """Smoke test of the release jar on a real dedicated server, driven over RCON.
 
 The server (./gradlew runProductionServer) must run with enable-rcon=true, rcon.port=25575 and
-rcon.password=hpsize. Checks that the mod's commands work and that a cow really gets as big as its health.
+rcon.password=hpsize. Checks that the mod's commands work and that mobs really get as big as their health
+(20 HP = normal size).
 """
 import re
 import socket
@@ -61,16 +62,22 @@ def main():
         return response
 
     command("hpsize", r"\[HP Size\]")
-    command("hpsize preset fair", r"Preset fair")
+    command("hpsize preset film", r"Preset film")
     command("forceload add 0 0")
-    command("execute positioned 0 -60 0 run spawnsized minecraft:cow 10", r"Przywołano")
+    command("execute positioned 0 -60 0 run spawnsized minecraft:chicken 4", r"Przywołano")
+    command("execute positioned 4 -60 0 run spawnsized minecraft:cow 10", r"Przywołano")
     time.sleep(4)
-    # fair preset: max health 10 -> x10 at full health
-    command("hpsize info @e[type=minecraft:cow,limit=1]", r"rozmiar ×10\b")
-    command("mobhp @e[type=minecraft:cow] 5", r"HP = 5")
-    time.sleep(4)
-    # half of the health -> half of the size
+    # natural health, 20 HP = normal size: chicken 4 HP -> x0.2, cow 10 HP -> x0.5
+    command("hpsize info @e[type=minecraft:chicken,limit=1]", r"rozmiar ×0\.20\b")
+    command("hpsize info @e[type=minecraft:cow,limit=1]", r"rozmiar ×0\.50\b")
+    command("mobhp @e[type=minecraft:cow] max 100", r"Maks\. HP = 100")
+    time.sleep(2)
     command("hpsize info @e[type=minecraft:cow,limit=1]", r"rozmiar ×5\b")
+    command("hpsize preset fair", r"Preset fair")
+    command("mobhp @e[type=minecraft:cow] 50", r"HP = 50")
+    time.sleep(4)
+    # fair preset: half of the health -> half of the size
+    command("hpsize info @e[type=minecraft:cow,limit=1]", r"rozmiar ×2\.50\b")
     command("hpsize off", r"WYŁ")
     time.sleep(2)
     command("hpsize info @e[type=minecraft:cow,limit=1]", r"rozmiar ×1\b")

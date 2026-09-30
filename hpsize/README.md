@@ -2,8 +2,24 @@
 
 Mod Fabric na **Minecraft 1.21.11** zrobiony na podstawie filmu
 [„Minecraft, but Mobs are as big as their health”](https://youtu.be/75mSpDQvTHo) (stuhpy).
-Rozmiar każdego moba zależy od jego HP: kurczak (4 HP) jest 4× większy, krowa (10 HP) 10×,
-Warden czy Wither dochodzą do limitu gry (16×). Każde uderzenie zmniejsza moba.
+Rozmiar każdego moba zależy od tego, ile naturalnie ma HP. Mob z 20 HP (tyle co gracz) ma normalny rozmiar,
+słabsze moby są mniejsze, silniejsze — większe. Każde uderzenie zmniejsza moba, leczenie go powiększa.
+
+| Mob | HP | Rozmiar |
+|---|---|---|
+| królik, ryby | 3 | ×0,15 (malutki) |
+| kurczak | 4 | ×0,2 |
+| nietoperz | 6 | ×0,3 |
+| owca, rybik cukrowy, wilk (dziki) | 8 | ×0,4 |
+| krowa, świnia, pszczoła | 10 | ×0,5 |
+| pająk | 16 | ×0,8 |
+| zombie, szkielet, creeper, osadnik | 20 | ×1 (normalny) |
+| enderman, hoglin | 40 | ×2 |
+| piglin brute | 50 | ×2,5 |
+| strażnik prastary | 80 | ×4 |
+| żelazny golem, niszczyciel (ravager) | 100 | ×5 |
+| Wither | 300 | ×15 |
+| Warden | 500 | ×16 (limit gry; maleje dopiero poniżej 320 HP) |
 
 Do tego komendy, które ułatwiają nagrywanie odcinka i poprawiają film dla widza.
 
@@ -24,12 +40,12 @@ a klawisz czystego HUD działa tylko u osób, które mają moda u siebie.
 |---|---|
 | `/hpsize` | pokazuje wszystkie ustawienia |
 | `/hpsize on` / `off` | włącza / wyłącza mechanikę (po wyłączeniu wszystko wraca do normy) |
-| `/hpsize preset film` | **dokładnie jak w filmie**: rozmiar = HP, zmiana natychmiastowa |
+| `/hpsize preset film` | **dokładnie jak w filmie**: rozmiar według HP (20 HP = normalny), zmiana natychmiastowa |
 | `/hpsize preset smooth` | jak w filmie, ale moby płynnie „oklapują” po ciosie (domyślne) |
-| `/hpsize preset fair` | każdy cios zmniejsza moba — także bossów (w filmie Ravager i Wither się nie zmniejszali, bo miały więcej niż 16 HP) |
-| `/hpsize preset light` | mniejsi giganci (maks. ×6) — mniej lagów |
-| `/hpsize mode health\|max\|percent\|sqrt` | wzór: aktualne HP / maks. HP / maks. HP × % życia / pierwiastek z HP |
-| `/hpsize factor <liczba>` | mnożnik (rozmiar = HP × mnożnik) |
+| `/hpsize preset fair` | każdy cios zmniejsza moba — także Wardena, który normalnie przez pierwsze 180 HP stoi na limicie ×16 |
+| `/hpsize preset light` | mniejsze różnice: maluchy nie tak malutkie, giganci maks. ×6 — mniej lagów |
+| `/hpsize mode health\|max\|percent\|sqrt` | według: aktualnego HP / maks. HP (nie maleje) / maks. HP i % życia / pierwiastka z HP |
+| `/hpsize normal <hp>` | przy ilu HP mob ma normalny rozmiar (domyślnie 20, tyle co gracz) |
 | `/hpsize min <x>` / `max <x>` | najmniejszy / największy rozmiar (0.0625–16) |
 | `/hpsize smooth <0-100>` | płynność zmian (0 = natychmiast) |
 | `/hpsize players on\|off` | czy gracze też zmieniają rozmiar (pomysł na kolejny odcinek!) |
@@ -49,7 +65,7 @@ są domyślnie wykluczone (gra i tak nie pokazuje większego smoka).
 
 | Komenda | Co robi |
 |---|---|
-| `/spawnsized <mob> <hp> [ilość]` | przywołuje moba z danym HP, czyli od razu w danym rozmiarze, np. `/spawnsized minecraft:chicken 16` |
+| `/spawnsized <mob> <hp> [ilość]` | przywołuje moba z danym HP, czyli od razu w danym rozmiarze, np. `/spawnsized minecraft:chicken 200` (kurczak ×10) |
 | `/mobhp <cele> <hp>` | ustawia HP (a więc rozmiar), np. żeby zmniejszyć piglina do handlu bez bicia |
 | `/mobhp <cele> max <hp>` | ustawia maks. HP i leczy do pełna |
 | `/heal [cele]` | leczy graczy (też głód) lub moby — moby wracają do pełnego rozmiaru |
