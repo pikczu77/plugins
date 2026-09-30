@@ -1,0 +1,81 @@
+plugins {
+	id 'net.fabricmc.fabric-loom-remap' version "${loom_version}"
+}
+
+base {
+	archivesName = "reckit-${project.minecraft_version}"
+}
+
+loom {
+	splitEnvironmentSourceSets()
+
+	mods {
+		"reckit" {
+			sourceSet sourceSets.main
+			sourceSet sourceSets.client
+		}
+	}
+}
+
+fabricApi {
+	// Server game tests run as part of `./gradlew build`, client game tests with `./gradlew runClientGameTest`.
+	configureTests {
+		createSourceSet = true
+		modId = "reckit-gametest"
+		enableGameTests = true
+		enableClientGameTests = true
+		eula = true // By setting this to true, you agree to the Minecraft EULA (https://aka.ms/MinecraftEULA).
+	}
+}
+
+dependencies {
+	minecraft "com.mojang:minecraft:${project.minecraft_version}"
+	mappings loom.officialMojangMappings()
+	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+
+	productionRuntimeMods "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+}
+
+processResources {
+	def version = project.version
+	inputs.property "version", version
+
+	filesMatching("fabric.mod.json") {
+		expand "version": version
+	}
+}
+
+tasks.withType(JavaCompile).configureEach {
+	it.options.release = 21
+	it.options.encoding = "UTF-8"
+}
+
+java {
+	sourceCompatibility = JavaVersion.VERSION_21
+	targetCompatibility = JavaVersion.VERSION_21
+}
+
+jar {
+	def projectName = project.name
+	inputs.property "projectName", projectName
+
+	from("LICENSE") {
+		rename { "${it}_$projectName" }
+	}
+}
+
+// Starts a real (production) dedicated server with the remapped mod jar and Fabric API.
+// Commands can be piped through stdin, which is how CI smoke-tests the release jar.
+tasks.register("runProductionServer", net.fabricmc.loom.task.prod.ServerProductionRunTask) {
+	programArgs.add("nogui")
+	runDir = file("build/run/productionServer")
+}
+
+// Development helper used by CI to inspect Minecraft/Fabric API signatures (javap).
+tasks.register("printClasspath") {
+	def classpath = sourceSets.client.compileClasspath
+	doLast {
+		println "CLASSPATH=" + classpath.asPath
+	}
+}
