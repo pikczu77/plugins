@@ -23,6 +23,7 @@ import net.minecraft.world.entity.player.Player;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 
+import io.github.pikczu77.upgrades.ability.BonusAbilities;
 import io.github.pikczu77.upgrades.ability.BonusPassives;
 import io.github.pikczu77.upgrades.ability.Clones;
 import io.github.pikczu77.upgrades.ability.Passives;
@@ -168,7 +169,7 @@ public final class UpgradeManager {
 		}
 
 		long[] bonuses = bonuses(player);
-		return new Payloads.SyncUpgrades(player.getId(), mask(player), packed, bonuses[0], bonuses[1]);
+		return new Payloads.SyncUpgrades(player.getId(), mask(player), packed, bonuses[0], bonuses[1], BonusAbilities.secondLifeReady(player));
 	}
 
 	public static @Nullable Upgrade selected(ServerPlayer player, Upgrade.Group group) {

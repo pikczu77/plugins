@@ -5,6 +5,7 @@ import org.jspecify.annotations.Nullable;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2LongOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 
 import net.minecraft.world.entity.player.Player;
 
@@ -20,6 +21,8 @@ public final class ClientUpgrades {
 	private static final Int2LongOpenHashMap MASKS = new Int2LongOpenHashMap();
 	private static final Int2IntOpenHashMap SELECTED = new Int2IntOpenHashMap();
 	private static final Int2ObjectOpenHashMap<long[]> BONUSES = new Int2ObjectOpenHashMap<>();
+	/** Players whose second life totem is recharging (the pocket totem is hidden). */
+	private static final IntOpenHashSet RECHARGING = new IntOpenHashSet();
 
 	private ClientUpgrades() {
 	}
@@ -33,6 +36,16 @@ public final class ClientUpgrades {
 		MASKS.put(payload.entityId(), payload.mask());
 		SELECTED.put(payload.entityId(), payload.selected());
 		BONUSES.put(payload.entityId(), new long[] {payload.bonusesLow(), payload.bonusesHigh()});
+
+		if (payload.secondLifeReady()) {
+			RECHARGING.remove(payload.entityId());
+		} else {
+			RECHARGING.add(payload.entityId());
+		}
+	}
+
+	public static boolean secondLifeReady(int entityId) {
+		return !RECHARGING.contains(entityId);
 	}
 
 	public static long[] bonuses(int entityId) {
@@ -58,5 +71,6 @@ public final class ClientUpgrades {
 		MASKS.clear();
 		SELECTED.clear();
 		BONUSES.clear();
+		RECHARGING.clear();
 	}
 }

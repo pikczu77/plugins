@@ -92,6 +92,22 @@ public class BodyPartsLayer extends RenderLayer<AvatarRenderState, PlayerModel> 
 		// Arms and legs.
 		this.limbs(parts, model.rightArm, model.leftArm, bonusItems.get(Bonus.Slot.ARMS), true);
 		this.limbs(parts, model.rightLeg, model.leftLeg, bonusItems.get(Bonus.Slot.LEGS), false);
+		this.feet(parts, model.rightLeg, model.leftLeg, bonusItems.get(Bonus.Slot.FEET));
+
+		// The second life totem sticks out of the right hip pocket, and is gone while it recharges.
+		if (!bonusItems.get(Bonus.Slot.POCKET).isEmpty() && ClientUpgrades.secondLifeReady(state.id)) {
+			parts.begin(model.body);
+
+			for (Item item : bonusItems.get(Bonus.Slot.POCKET)) {
+				parts.push(0.16, -0.66, -0.16);
+				parts.rotY(-20.0F);
+				parts.rotZ(15.0F);
+				parts.item(item, 0.45F);
+				parts.pop();
+			}
+
+			parts.end();
+		}
 
 		if (Upgrade.has(mask, Upgrade.FISHING_ROD)) {
 			// The left arm ends in a fishing rod pointing forward.
@@ -226,6 +242,28 @@ public class BodyPartsLayer extends RenderLayer<AvatarRenderState, PlayerModel> 
 					parts.item(items.get(i), 0.22F);
 				}
 
+				parts.pop();
+			}
+
+			parts.end();
+		}
+	}
+
+	/** A rabbit foot on the outside of each ankle, like a little wing (the double jump). */
+	private void feet(Parts parts, ModelPart right, ModelPart left, List<Item> items) {
+		if (items.isEmpty()) {
+			return;
+		}
+
+		for (int side = 0; side < 2; side++) {
+			double outward = side == 0 ? 1.0 : -1.0;
+			parts.begin(side == 0 ? right : left);
+
+			for (int i = 0; i < items.size(); i++) {
+				parts.push(outward * 0.2, -0.58 + i * 0.1, 0.04);
+				parts.rotY((float) (outward * 30.0));
+				parts.rotZ((float) (outward * -35.0));
+				parts.item(items.get(i), 0.45F);
 				parts.pop();
 			}
 

@@ -1,15 +1,20 @@
 package io.github.pikczu77.upgrades.ability;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -24,22 +29,30 @@ import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.animal.wolf.Wolf;
 import net.minecraft.world.entity.monster.piglin.AbstractPiglin;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.Vec3;
 
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 
 import io.github.pikczu77.upgrades.upgrade.Bonus;
 import io.github.pikczu77.upgrades.upgrade.Bonus.Special;
 import io.github.pikczu77.upgrades.upgrade.UpgradeManager;
+import io.github.pikczu77.upgrades.util.Screens;
 
 /**
  * The bonus abilities that need code: fire and wither on hit, wither for attackers, the escape teleport, extra
- * experience, calm piglins and the wolf that always comes back. (The three-arrow shot lives in Shooting.)
+ * experience, calm piglins, the wolf that always comes back, the double jump and the second life. (The three-arrow shot
+ * lives in Shooting.)
  */
 public final class BonusAbilities {
 	private static final String BUDDY_TAG = "upgrades_buddy";
 	private static final int ESCAPE_COOLDOWN = 20 * 30;
+	private static final int SECOND_LIFE_COOLDOWN = 20 * 60 * 10;
 
 	private static final Map<UUID, Long> ESCAPE_READY = new HashMap<>();
+	/** Game time when the used second life comes back (absent = ready). */
+	private static final Map<UUID, Long> SECOND_LIFE_READY = new HashMap<>();
+	/** Players who already used their air jump since they last stood on the ground. */
+	private static final Set<UUID> AIR_JUMP_USED = new HashSet<>();
 
 	private BonusAbilities() {
 	}
@@ -49,8 +62,49 @@ public final class BonusAbilities {
 	}
 
 	public static void register() {
+		ServerLivingEntityEvents.ALLOW_DEATH.register(BonusAbilities::allowDeath);
 		ServerLivingEntityEvents.AFTER_DAMAGE.register(BonusAbilities::afterDamage);
 		ServerLivingEntityEvents.AFTER_DEATH.register(BonusAbilities::afterDeath);
+	}
+
+	/** Second life: like a totem of undying in the pocket that recharges in 10 minutes instead of being used up. */
+	private static boolean allowDeath(LivingEntity entity, DamageSource source, float amount) {
+		if (!(entity instanceof ServerPlayer player) || !has(player, Special.TOTEM) || source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)
+				|| !secondLifeReady(player)) {
+			return true;
+		}
+
+		SECOND_LIFE_READY.put(player.getUUID(), player.level().getGameTime() + SECOND_LIFE_COOLDOWN);
+		player.setHealth(1.0F);
+		player.removeAllEffects();
+		player.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 900, 1));
+		player.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 100, 1));
+		player.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 800, 0));
+		player.level().broadcastEntityEvent(player, (byte) 35);
+		Screens.actionBar(player, Component.literal("Drugie Życie zużyte — wróci za 10 minut").withStyle(ChatFormatting.GOLD));
+		// The totem in the pocket disappears until it recharges.
+		UpgradeManager.sync(player);
+		return false;
+	}
+
+	public static boolean secondLifeReady(ServerPlayer player) {
+		return !SECOND_LIFE_READY.containsKey(player.getUUID());
+	}
+
+	/** Double jump: a second jump in the air, once until the player lands again. */
+	public static void onJumpPressed(ServerPlayer player) {
+		if (!has(player, Special.DOUBLE_JUMP) || player.onGround() || player.isInWater() || player.onClimbable() || player.isPassenger()
+				|| player.getAbilities().flying || player.isFallFlying() || player.isSpectator() || !AIR_JUMP_USED.add(player.getUUID())) {
+			return;
+		}
+
+		Vec3 look = player.getLookAngle().horizontal().normalize().scale(0.25);
+		player.setDeltaMovement(player.getDeltaMovement().x + look.x, 0.6, player.getDeltaMovement().z + look.z);
+		player.hurtMarked = true;
+		player.resetFallDistance();
+		ServerLevel level = player.level();
+		level.sendParticles(ParticleTypes.CLOUD, player.getX(), player.getY(), player.getZ(), 10, 0.3, 0.05, 0.3, 0.02);
+		level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.WIND_CHARGE_BURST.value(), SoundSource.PLAYERS, 0.5F, 1.4F);
 	}
 
 	private static void afterDamage(LivingEntity victim, DamageSource source, float baseDamage, float damage, boolean blocked) {
@@ -129,6 +183,19 @@ public final class BonusAbilities {
 
 		BonusPassives.tick(player, bits, false);
 
+		if (player.onGround() || player.isInWater() || player.onClimbable()) {
+			AIR_JUMP_USED.remove(player.getUUID());
+		}
+
+		Long recharged = SECOND_LIFE_READY.get(player.getUUID());
+
+		if (recharged != null && player.level().getGameTime() >= recharged) {
+			SECOND_LIFE_READY.remove(player.getUUID());
+			Screens.actionBar(player, Component.literal("Drugie Życie znów gotowe!").withStyle(ChatFormatting.GOLD));
+			player.level().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.TOTEM_USE, SoundSource.PLAYERS, 0.4F, 1.6F);
+			UpgradeManager.sync(player);
+		}
+
 		if (Bonus.hasSpecial(bits, Special.PIGLIN_CALM) && player.tickCount % 10 == 0) {
 			for (AbstractPiglin piglin : player.level().getEntitiesOfClass(AbstractPiglin.class, player.getBoundingBox().inflate(16.0))) {
 				if (piglin.getTarget() == player) {
@@ -173,9 +240,12 @@ public final class BonusAbilities {
 
 	public static void forget(ServerPlayer player) {
 		ESCAPE_READY.remove(player.getUUID());
+		AIR_JUMP_USED.remove(player.getUUID());
 	}
 
 	public static void reset() {
 		ESCAPE_READY.clear();
+		SECOND_LIFE_READY.clear();
+		AIR_JUMP_USED.clear();
 	}
 }

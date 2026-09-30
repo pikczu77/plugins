@@ -68,7 +68,7 @@ przyciąga moba, na którego patrzysz (lewa ręka kończy się wędką).
 |---|---|---|---|---|
 | Sneak 100 | skradaj się obok sensora sculku albo Wardena | **Cichy Krok** | **Skradasz się** dużo szybciej | sculk_sensor — na nogach |
 | It Spreads | zabij moba obok katalizatora sculku | **Rozrost** | Zabite moby dają **dodatkowe doświadczenie** | sculk_catalyst — wachlarz na plecach |
-| Minecraft: Trial(s) Edition | wejdź do Komnaty Prób | **Próba Wiatru** | **Skaczesz wyżej** | chiseled_tuff — na nogach |
+| Minecraft: Trial(s) Edition | wejdź do Komnaty Prób | **Podwójny Skok** | **Drugi skok w powietrzu** (spacja jeszcze raz w locie) | rabbit_foot — po jednej przy każdej kostce |
 | Ol' Betsy | strzel z kuszy | **Stara Betsy** | Łuk na czole strzela **trzema strzałami** naraz | crossbow — na rękach |
 | You Need a Mint | zbierz oddech smoka do butelki w czasie walki | **Smoczy Oddech** | Kto cię uderzy, **dostaje Obumarcie** | dragon_breath — korona na głowie |
 | Remote Getaway | po smoku wejdź do bramy Kresu (rzuć perłę) | **Ucieczka** | Przy niskim zdrowiu **teleportujesz się** w bezpieczne miejsce | ender_pearl — krąży wokół |
@@ -83,8 +83,10 @@ przyciąga moba, na którego patrzysz (lewa ręka kończy się wędką).
 | A Terrible Fortress | wejdź do twierdzy Netheru | **Straszliwa Forteca** | **Odporność na ogień** | magma_cream — korona na głowie |
 | Spooky Scary Skeleton | zdobądź czaszkę witherowego szkieleta (w twierdzy Netheru) | **Upiorna Czaszka** | Ciosy nakładają **Obumarcie** | wither_skeleton_skull — korona na głowie |
 | War Pigs | otwórz skrzynię w bastionie | **Świnie Wojenne** | **+1 wytrzymałości** pancerza | gold_block — u pasa |
-| Who is Cutting Onions? | zdobądź płaczący obsydian | **Kto Kroi Cebulę?** | **+1 serce** | crying_obsidian — wachlarz na plecach |
+| Who is Cutting Onions? | zdobądź płaczący obsydian | **Drugie Życie** | Raz na 10 minut **unikasz śmierci** (jak totem, ale się ładuje) | totem_of_undying — w kieszeni na biodrze, znika na czas ładowania |
 | Return to Sender | odbij kulę ognia ghasta i zabij go nią | **Zwrot do Nadawcy** | Ciosy **podpalają** | fire_charge — krąży wokół |
+
+![Łapki królika przy kostkach (Podwójny Skok) i totem w kieszeni (Drugie Życie)](docs/feet-and-totem.png)
 
 ## Sterowanie
 

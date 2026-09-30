@@ -26,8 +26,8 @@ public enum Bonus implements Unlockable {
 			Effect.attr(Attributes.SNEAKING_SPEED, 0.35, false), "{Skradasz się} dużo szybciej"),
 	SCULK_KILL("adventure/kill_mob_near_sculk_catalyst", "Rozrost", 0x0E8A8A, Slot.BACK, Items.SCULK_CATALYST,
 			Effect.special(Special.XP_BONUS), "Zabite moby dają {dodatkowe doświadczenie}"),
-	TRIALS_EDITION("adventure/minecraft_trials_edition", "Próba Wiatru", 0xB7C8F0, Slot.LEGS, Items.CHISELED_TUFF,
-			Effect.attr(Attributes.JUMP_STRENGTH, 0.1, false), "{Skaczesz wyżej}"),
+	TRIALS_EDITION("adventure/minecraft_trials_edition", "Podwójny Skok", 0xB7C8F0, Slot.FEET, Items.RABBIT_FOOT,
+			Effect.special(Special.DOUBLE_JUMP), "{Skok w powietrzu} — drugi skok"),
 	OL_BETSY("adventure/ol_betsy", "Stara Betsy", 0xFFAA00, Slot.ARMS, Items.CROSSBOW,
 			Effect.special(Special.MULTISHOT), "Łuk na czole strzela {trzema strzałami} naraz"),
 
@@ -62,8 +62,8 @@ public enum Bonus implements Unlockable {
 			Effect.special(Special.WITHER_HIT), "Ciosy nakładają {Obumarcie}"),
 	WAR_PIGS("nether/loot_bastion", "Świnie Wojenne", 0xFFD700, Slot.BELT, Items.GOLD_BLOCK,
 			Effect.attr(Attributes.ARMOR_TOUGHNESS, 1.0, false), "{+1 wytrzymałości} pancerza"),
-	CRYING_OBSIDIAN("nether/obtain_crying_obsidian", "Kto Kroi Cebulę?", 0xAA55FF, Slot.BACK, Items.CRYING_OBSIDIAN,
-			Effect.attr(Attributes.MAX_HEALTH, 2.0, false), "{+1 serce}"),
+	CRYING_OBSIDIAN("nether/obtain_crying_obsidian", "Drugie Życie", 0xFFD700, Slot.POCKET, Items.TOTEM_OF_UNDYING,
+			Effect.special(Special.TOTEM), "Raz na 10 minut {unikasz śmierci}"),
 	RETURN_TO_SENDER("nether/return_to_sender", "Zwrot do Nadawcy", 0xFF7F00, Slot.ORBIT, Items.FIRE_CHARGE,
 			Effect.special(Special.FIRE_HIT), "Ciosy {podpalają}");
 
@@ -82,12 +82,16 @@ public enum Bonus implements Unlockable {
 		/** Around the shins. */
 		LEGS,
 		/** Slowly circling around the body. */
-		ORBIT
+		ORBIT,
+		/** One on each boot. */
+		FEET,
+		/** In the hip pocket (the second life totem, hidden while it recharges). */
+		POCKET
 	}
 
 	/** Abilities that need their own code (see BonusAbilities). */
 	public enum Special {
-		MULTISHOT, XP_BONUS, THORNS_WITHER, ESCAPE, WOLF_BUDDY, PIGLIN_CALM, FIRE_HIT, WITHER_HIT
+		MULTISHOT, XP_BONUS, THORNS_WITHER, ESCAPE, WOLF_BUDDY, PIGLIN_CALM, FIRE_HIT, WITHER_HIT, DOUBLE_JUMP, TOTEM
 	}
 
 	/** What the bonus does: an attribute modifier, a lasting potion effect or a special ability. */

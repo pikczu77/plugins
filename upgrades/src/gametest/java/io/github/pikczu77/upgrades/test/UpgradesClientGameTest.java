@@ -62,6 +62,20 @@ public class UpgradesClientGameTest implements FabricClientGameTest {
 			context.waitTicks(70);
 			context.runOnClient(minecraft -> minecraft.options.hideGui = true);
 
+			// Rabbit feet (double jump) and the pocket totem (second life).
+			server.runCommand("gamemode survival @a");
+			server.runCommand("upgrades give @a trials_edition");
+			server.runCommand("upgrades give @a crying_obsidian");
+			context.waitTicks(20);
+			context.takeScreenshot("upgrades-00d-feet-and-totem");
+			context.runOnClient(minecraft -> minecraft.options.setCameraType(CameraType.THIRD_PERSON_BACK));
+			context.waitTicks(5);
+			context.takeScreenshot("upgrades-00d-feet-back");
+			context.runOnClient(minecraft -> minecraft.options.setCameraType(CameraType.THIRD_PERSON_FRONT));
+			doubleJump(context);
+			secondLife(context, server);
+			server.runCommand("gamemode creative @a");
+
 			// The middle of the video.
 			for (String id : new String[] {"golem_arm", "sword_boot", "clone_1", "nap", "deal_sniffer", "trigger_finger", "mini_shields",
 					"vein_miner_2", "vein_miner_3", "clone_2", "hot_hands"}) {
@@ -104,6 +118,43 @@ public class UpgradesClientGameTest implements FabricClientGameTest {
 				minecraft.options.hideGui = false;
 			});
 		}
+	}
+
+	/** A second jump in the air must lift the player well above a normal jump (about 1.25 blocks). */
+	private static void doubleJump(ClientGameTestContext context) {
+		double start = context.computeOnClient(minecraft -> minecraft.player.getY());
+		context.getInput().holdKeyFor(options -> options.keyJump, 2);
+		context.waitTicks(8);
+		context.getInput().holdKeyFor(options -> options.keyJump, 2);
+		double highest = start;
+
+		for (int i = 0; i < 25; i++) {
+			context.waitTick();
+			highest = Math.max(highest, context.computeOnClient(minecraft -> minecraft.player.getY()));
+		}
+
+		if (highest - start < 2.0) {
+			throw new AssertionError("The double jump did not work, highest point " + (highest - start) + " blocks up");
+		}
+
+		context.waitTicks(20);
+	}
+
+	/** Deadly damage uses the second life: the player lives and the pocket totem disappears until it recharges. */
+	private static void secondLife(ClientGameTestContext context, TestServerContext server) {
+		server.runCommand("damage @p 100 minecraft:mob_attack");
+		context.waitTicks(10);
+		context.takeScreenshot("upgrades-00e-second-life");
+		boolean alive = context.computeOnClient(minecraft -> minecraft.player.isAlive() && minecraft.player.getHealth() > 0.0F);
+		boolean hidden = context.computeOnClient(minecraft -> !ClientUpgrades.secondLifeReady(minecraft.player.getId()));
+
+		if (!alive || !hidden) {
+			throw new AssertionError("The second life did not save the player (alive " + alive + ", totem hidden " + hidden + ")");
+		}
+
+		server.runCommand("effect clear @a");
+		server.runCommand("effect give @a minecraft:instant_health 1 10");
+		context.waitTicks(10);
 	}
 
 	private static int countClones(Minecraft minecraft) {
