@@ -1,0 +1,12 @@
+{
+	"required": true,
+	"package": "io.github.pikczu77.hpsize.mixin",
+	"compatibilityLevel": "JAVA_21",
+	"mixins": [
+		"EnderDragonMixin",
+		"EnderDragonPartMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

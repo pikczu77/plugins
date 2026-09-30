@@ -87,6 +87,13 @@ public final class HpSizeCommand {
 					return change(context.getSource(), config -> config.maxScale = value, "Maximum size: ×" + Msg.number(value) + ".",
 							"Maksymalny rozmiar: ×" + Msg.number(value) + ".");
 				})));
+		root.then(Commands.literal("dragon").then(Commands.argument("size", DoubleArgumentType.doubleArg(HpSizeConfig.SCALE_MIN, HpSizeConfig.SCALE_MAX))
+				.executes(context -> {
+					double value = DoubleArgumentType.getDouble(context, "size");
+					return change(context.getSource(), config -> config.dragonScale = value,
+							"Ender Dragon at full health: ×" + Msg.number(value) + " (it shrinks with its health).",
+							"Ender Dragon przy pełnym HP: ×" + Msg.number(value) + " (maleje razem z HP).");
+				})));
 		root.then(Commands.literal("smooth").then(Commands.argument("ticks", IntegerArgumentType.integer(0, 100))
 				.executes(context -> {
 					int value = IntegerArgumentType.getInteger(context, "ticks");
@@ -158,6 +165,7 @@ public final class HpSizeCommand {
 			config.glowTiny = defaults.glowTiny;
 			config.glowTinyBelow = defaults.glowTinyBelow;
 			config.shrinkSound = defaults.shrinkSound;
+			config.dragonScale = defaults.dragonScale;
 			config.excluded = defaults.excluded;
 		}, "Default settings restored.", "Przywrócono ustawienia domyślne.")));
 
@@ -219,6 +227,7 @@ public final class HpSizeCommand {
 		line(source, pl ? "Normalny rozmiar przy" : "Normal size at", Msg.number(config.normalHp) + " HP ("
 				+ (pl ? "kurczak" : "chicken") + " ×" + Msg.number(4 / config.normalHp) + ")");
 		line(source, pl ? "Rozmiar" : "Size", (pl ? "od ×" : "from ×") + Msg.number(config.minScale) + (pl ? " do ×" : " to ×") + Msg.number(config.maxScale));
+		line(source, "Ender Dragon", "×" + Msg.number(config.dragonScale) + (pl ? " przy pełnym HP" : " at full health"));
 		line(source, pl ? "Płynność" : "Smoothing", config.smooth == 0 ? (pl ? "natychmiast" : "instant") : String.valueOf(config.smooth));
 		line(source, pl ? "Gracze" : "Players", Msg.onOff(source, config.players));
 		line(source, pl ? "Duszenie w blokach" : "Suffocation in blocks", Msg.onOff(source, config.suffocation));

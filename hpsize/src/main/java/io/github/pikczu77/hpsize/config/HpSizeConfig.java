@@ -19,6 +19,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.storage.LevelResource;
 
@@ -33,6 +34,8 @@ public final class HpSizeConfig {
 	public static final double SCALE_MAX = 16.0;
 	/** Health of a player: a mob with this much health keeps its normal size. */
 	public static final double NORMAL_HP = 20.0;
+	/** Version of the settings file; older files are migrated in {@link #load}. */
+	private static final int CONFIG_VERSION = 2;
 
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 	private static @Nullable HpSizeConfig current;
@@ -88,8 +91,12 @@ public final class HpSizeConfig {
 	public double glowTinyBelow = 0.35;
 	/** A "deflating" sound when a hit makes a mob smaller. */
 	public boolean shrinkSound = false;
+	/** Size of the Ender Dragon at full health (it shrinks with its health like every other mob). */
+	public double dragonScale = 8.0;
 	/** Entity types that keep their normal size. */
-	public List<String> excluded = new ArrayList<>(List.of("minecraft:armor_stand", "minecraft:ender_dragon"));
+	public List<String> excluded = new ArrayList<>(List.of("minecraft:armor_stand"));
+	/** 0 in files written before versions existed. */
+	public int configVersion;
 
 	private transient Set<EntityType<?>> excludedTypes = Set.of();
 
@@ -110,6 +117,13 @@ public final class HpSizeConfig {
 		}
 
 		current = config == null ? new HpSizeConfig() : config;
+
+		if (current.configVersion < 2 && current.excluded != null) {
+			// The Ender Dragon used to be excluded because vanilla does not draw it scaled; the mod scales it now.
+			current.excluded.remove("minecraft:ender_dragon");
+		}
+
+		current.configVersion = CONFIG_VERSION;
 		current.sanitize();
 	}
 
@@ -190,6 +204,7 @@ public final class HpSizeConfig {
 
 		smooth = Math.max(0, Math.min(100, smooth));
 		glowTinyBelow = clamp(glowTinyBelow, SCALE_MIN, SCALE_MAX);
+		dragonScale = clamp(dragonScale, SCALE_MIN, SCALE_MAX);
 
 		if (excluded == null) {
 			excluded = new ArrayList<>();
@@ -232,6 +247,11 @@ public final class HpSizeConfig {
 	public double targetScale(LivingEntity entity, double currentHealth) {
 		double health = Math.max(0, currentHealth);
 		double maxHealth = Math.max(0.001, entity.getMaxHealth());
+
+		if (entity instanceof EnderDragon) {
+			// A fixed size at full health (x8 by default), shrinking with the health left.
+			return clamp(mode == Mode.MAX ? dragonScale : dragonScale * Math.min(1.0, health / maxHealth), minScale, maxScale);
+		}
 
 		double scale = switch (mode) {
 			case HEALTH -> health / normalHp;

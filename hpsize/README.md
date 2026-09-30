@@ -20,6 +20,7 @@ słabsze moby są mniejsze, silniejsze — większe. Każde uderzenie zmniejsza 
 | żelazny golem, niszczyciel (ravager) | 100 | ×5 |
 | Wither | 300 | ×15 |
 | Warden | 500 | ×16 (limit gry; maleje dopiero poniżej 320 HP) |
+| Ender Dragon | 200 | ×8 (osobne ustawienie `/hpsize dragon`, maleje razem z HP) |
 
 Do tego komendy, które ułatwiają nagrywanie odcinka i poprawiają film dla widza.
 
@@ -56,6 +57,7 @@ a klawisz czystego HUD działa tylko u osób, które mają moda u siebie.
 | `/hpsize mode health\|max\|percent\|sqrt` | według: aktualnego HP / maks. HP (nie maleje) / maks. HP i % życia / pierwiastka z HP |
 | `/hpsize normal <hp>` | przy ilu HP mob ma normalny rozmiar (domyślnie 20, tyle co gracz) |
 | `/hpsize min <x>` / `max <x>` | najmniejszy / największy rozmiar (0.0625–16) |
+| `/hpsize dragon <rozmiar>` | rozmiar Ender Dragona przy pełnym HP (domyślnie ×8; maleje razem z HP) |
 | `/hpsize smooth <0-100>` | płynność zmian (0 = natychmiast) |
 | `/hpsize players on\|off` | czy gracze też zmieniają rozmiar (pomysł na kolejny odcinek!) |
 | `/hpsize suffocation on\|off` | czy giganci duszą się w blokach (w filmie przez to malały w jaskiniach) |
@@ -67,8 +69,9 @@ a klawisz czystego HUD działa tylko u osób, które mają moda u siebie.
 | `/hpsize reset` | ustawienia domyślne |
 
 Ustawienia zapisują się w folderze świata (`hpsize.json`). Rozmiar nie jest zapisywany w mobach,
-więc po wyłączeniu lub odinstalowaniu moda świat wraca do normy. Ender Dragon i stojaki na zbroję
-są domyślnie wykluczone (gra i tak nie pokazuje większego smoka).
+więc po wyłączeniu lub odinstalowaniu moda świat wraca do normy. Stojaki na zbroję są domyślnie wykluczone.
+Zwykła gra zawsze trzyma Ender Dragona w normalnym rozmiarze, więc mod skaluje jego model i hitbox sam;
+powiększonego smoka widzą gracze, którzy mają moda u siebie.
 
 ## Komendy do ustawiania ujęć z mobami
 

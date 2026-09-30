@@ -19,6 +19,7 @@ A mob with **20 HP** (as much as a player) keeps its normal size. Weaker mobs ar
 | Iron golem, ravager | 100 | ×5 |
 | Wither | 300 | ×15 |
 | Warden | 500 | ×16 (the game's size limit) |
+| Ender Dragon | 200 | ×8 (its own setting, shrinks with its health) |
 
 The mod uses the vanilla `minecraft:scale` attribute, so hitboxes grow and shrink with the model too. You can walk between a giant's legs, and a nearly dead zombie is tiny and hard to hit.
 
@@ -32,6 +33,7 @@ Inspired by the video [“Minecraft, but Mobs are as big as their health”](htt
 - **Commands for setting up shots**: spawn a mob with an exact HP (so an exact size), change the HP of existing mobs, glow, mute.
 - **Commands for recording videos**: a start countdown that freezes players, big on-screen titles, a camera mode, a recording mode that keeps command spam out of the chat, night vision and cleanup.
 - **Clean HUD key** (client, optional): hides hearts, hotbar and crosshair but keeps your hand, the chat and titles.
+- **A giant Ender Dragon**: vanilla always keeps the dragon at normal size. This mod scales its model and all of its hitbox parts, so the fight happens against an ×8 dragon.
 - **Safe to remove**: the size is never saved into the mobs. Turn the mod off or uninstall it and every mob goes back to normal.
 - **English and Polish**: every message follows your game language, even on a server where your client doesn't have the mod.
 
@@ -49,6 +51,7 @@ All commands need operator permissions (cheats on in singleplayer).
 | `/hpsize mode health\|max\|percent\|sqrt` | size follows the current HP / the max HP (never shrinks) / the max HP and the % of health left / the square root of HP |
 | `/hpsize normal <hp>` | how much HP means normal size (default 20) |
 | `/hpsize min <x>` / `max <x>` | smallest / biggest size (0.0625–16) |
+| `/hpsize dragon <size>` | size of the Ender Dragon at full health (default ×8, it shrinks with its health) |
 | `/hpsize smooth <0-100>` | how smoothly the size changes (0 = instantly) |
 | `/hpsize players on\|off` | players change size too |
 | `/hpsize suffocation on\|off` | whether giants suffocate in blocks (and shrink in caves) |

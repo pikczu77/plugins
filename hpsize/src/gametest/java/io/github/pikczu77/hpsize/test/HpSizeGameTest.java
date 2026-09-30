@@ -13,6 +13,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
+import net.minecraft.world.entity.boss.enderdragon.EnderDragonPart;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.phys.AABB;
@@ -55,6 +57,16 @@ public class HpSizeGameTest {
 				"Expected scale x" + expected + " but was x" + entity.getScale() + " (HP " + entity.getHealth() + ")");
 	}
 
+	private static void assertDragonParts(GameTestHelper helper, EnderDragon dragon, float scale) {
+		EnderDragonPart body = dragon.getSubEntities()[2]; // 5 x 3 blocks unscaled
+		EnderDragonPart wing = dragon.getSubEntities()[6]; // (4.5, 2) blocks from the dragon unscaled
+		helper.assertTrue(Math.abs(body.getBbWidth() - 5.0F * scale) < 0.1F && Math.abs(body.getBbHeight() - 3.0F * scale) < 0.1F,
+				"Dragon body part is " + body.getBbWidth() + " x " + body.getBbHeight() + ", expected x" + scale);
+		float wingDistance = wing.distanceTo(dragon);
+		float expected = (float) Math.sqrt(4.5 * 4.5 + 2.0 * 2.0) * scale;
+		helper.assertTrue(Math.abs(wingDistance - expected) < 0.5F, "Dragon wing part is " + wingDistance + " blocks away, expected " + expected);
+	}
+
 	@GameTest(maxTicks = 200)
 	public void scaleFollowsHealth(GameTestHelper helper) {
 		MinecraftServer server = helper.getLevel().getServer();
@@ -67,7 +79,7 @@ public class HpSizeGameTest {
 				"hpsize min 0.1", "hpsize max 8", "hpsize smooth 3", "hpsize players on", "hpsize players off",
 				"hpsize suffocation off", "hpsize suffocation on", "hpsize sound on", "hpsize sound off", "hpsize glowtiny on",
 				"hpsize glowtiny below 0.5", "hpsize glowtiny off", "hpsize freeze", "hpsize unfreeze",
-				"hpsize exclude minecraft:pig", "hpsize include minecraft:pig", "hpsize reset")) {
+				"hpsize exclude minecraft:pig", "hpsize include minecraft:pig", "hpsize dragon 6", "hpsize reset")) {
 			run(console, command);
 		}
 
@@ -78,15 +90,24 @@ public class HpSizeGameTest {
 		run(console, "hpsize preset film");
 		LivingEntity chicken = helper.spawn(EntityType.CHICKEN, new BlockPos(1, 1, 1));
 		LivingEntity cow = helper.spawn(EntityType.COW, new BlockPos(2, 1, 2));
+		// High in the air, so its giant wings and head cannot reach the other tests.
+		EnderDragon dragon = helper.spawn(EntityType.ENDER_DRAGON, new BlockPos(2, 140, 2));
 
 		helper.runAtTickTime(5, () -> {
 			assertScale(helper, chicken, 0.2); // 4 HP / 20
 			assertScale(helper, cow, 0.5); // 10 HP / 20
+			// The Ender Dragon is x8 at full health, and so are its hitbox parts (vanilla ignores the scale for them).
+			assertScale(helper, dragon, 8.0);
+			assertDragonParts(helper, dragon, 8.0F);
+			dragon.setHealth(100.0F);
 			// Bigger, deterministic sizes for the rest of the test.
 			config.normalHp = 5;
 			config.sanitize();
 		});
 		helper.runAtTickTime(10, () -> {
+			assertScale(helper, dragon, 4.0); // half of its health -> x4
+			assertDragonParts(helper, dragon, 4.0F);
+			dragon.discard();
 			assertScale(helper, cow, 2.0); // 10 HP / 5
 			cow.setHealth(5.0F);
 		});

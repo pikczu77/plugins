@@ -73,6 +73,11 @@ def main():
     command("mobhp @e[type=minecraft:cow] max 100", r"Max HP = 100")
     time.sleep(2)
     command("hpsize info @e[type=minecraft:cow,limit=1]", r"size ×5\b")
+    # the Ender Dragon (vanilla forces x1) is x8 at full health; a flying one also runs the hitbox part mixins
+    command("execute positioned 8 -35 0 run summon minecraft:ender_dragon", r"Summoned new Ender Dragon")
+    time.sleep(3)
+    command("hpsize info @e[type=minecraft:ender_dragon,limit=1]", r"size ×8\b")
+    command("kill @e[type=minecraft:ender_dragon]")
     command("hpsize preset fair", r"Preset fair")
     command("mobhp @e[type=minecraft:cow] 50", r"HP = 50")
     time.sleep(4)
