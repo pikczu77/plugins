@@ -58,6 +58,8 @@ public enum Bonus implements Unlockable {
 			Effect.attr(Attributes.ARMOR, 1.0, false), "{+1 pancerza}"),
 	TERRIBLE_FORTRESS("nether/find_fortress", "Straszliwa Forteca", 0xFF7F00, Slot.HEAD, Items.MAGMA_CREAM,
 			Effect.potion(MobEffects.FIRE_RESISTANCE), "{Odporność na ogień}"),
+	SPOOKY_SKULL("nether/get_wither_skull", "Upiorna Czaszka", 0x4A4A4A, Slot.HEAD, Items.WITHER_SKELETON_SKULL,
+			Effect.special(Special.WITHER_HIT), "Ciosy nakładają {Obumarcie}"),
 	WAR_PIGS("nether/loot_bastion", "Świnie Wojenne", 0xFFD700, Slot.BELT, Items.GOLD_BLOCK,
 			Effect.attr(Attributes.ARMOR_TOUGHNESS, 1.0, false), "{+1 wytrzymałości} pancerza"),
 	CRYING_OBSIDIAN("nether/obtain_crying_obsidian", "Kto Kroi Cebulę?", 0xAA55FF, Slot.BACK, Items.CRYING_OBSIDIAN,
@@ -85,7 +87,7 @@ public enum Bonus implements Unlockable {
 
 	/** Abilities that need their own code (see BonusAbilities). */
 	public enum Special {
-		MULTISHOT, XP_BONUS, THORNS_WITHER, ESCAPE, WOLF_BUDDY, PIGLIN_CALM, FIRE_HIT
+		MULTISHOT, XP_BONUS, THORNS_WITHER, ESCAPE, WOLF_BUDDY, PIGLIN_CALM, FIRE_HIT, WITHER_HIT
 	}
 
 	/** What the bonus does: an attribute modifier, a lasting potion effect or a special ability. */

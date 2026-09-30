@@ -51,11 +51,11 @@ Mod musi być **na serwerze i u graczy** (klient rysuje części ciała, klony i
 | Następne pokolenie | **Następne Pokolenie** | małe klony, które same się mnożą... | smocze jajo na ramieniu |
 
 Po odblokowaniu z góry ekranu zjeżdża **baner „NOWE ULEPSZENIE”** (ikona części ciała, nazwa, opis i licznik kolekcji,
-np. 12/42), gra dźwięk, a opis mocy trafia też na czat. Kilka ulepszeń naraz pokazuje się po kolei. Gracze bez moda
+np. 12/43), gra dźwięk, a opis mocy trafia też na czat. Kilka ulepszeń naraz pokazuje się po kolei. Gracze bez moda
 dostają zwykły napis na środku ekranu.
 Ulepszenia wynikają z osiągnięć, więc działa też `/advancement grant|revoke` i nic nie jest zapisywane w świecie poza ustawieniami.
 
-## Bonusy za osiągnięcia „po drodze” (18)
+## Bonusy za osiągnięcia „po drodze” (19)
 
 Poza ulepszeniami z filmu bonus dają tylko osiągnięcia, które zdobywa się zwyczajnie w trakcie gry aż do smoka (bez
 zbierania wszystkich biomów, kotów czy mikstur). Każdy daje mniejszą moc i przedmiot z ikony osiągnięcia gdzieś na
@@ -81,6 +81,7 @@ przyciąga moba, na którego patrzysz (lewa ręka kończy się wędką).
 | Oh Shiny | rzuć piglinowi złoto | **Błyskotki** | **Pigliny cię nie atakują** | gold_ingot — u pasa |
 | Those Were the Days | wejdź do bastionu | **Dawne Czasy** | **+1 pancerza** | polished_blackstone_bricks — na piersi |
 | A Terrible Fortress | wejdź do twierdzy Netheru | **Straszliwa Forteca** | **Odporność na ogień** | magma_cream — korona na głowie |
+| Spooky Scary Skeleton | zdobądź czaszkę witherowego szkieleta (w twierdzy Netheru) | **Upiorna Czaszka** | Ciosy nakładają **Obumarcie** | wither_skeleton_skull — korona na głowie |
 | War Pigs | otwórz skrzynię w bastionie | **Świnie Wojenne** | **+1 wytrzymałości** pancerza | gold_block — u pasa |
 | Who is Cutting Onions? | zdobądź płaczący obsydian | **Kto Kroi Cebulę?** | **+1 serce** | crying_obsidian — wachlarz na plecach |
 | Return to Sender | odbij kulę ognia ghasta i zabij go nią | **Zwrot do Nadawcy** | Ciosy **podpalają** | fire_charge — krąży wokół |

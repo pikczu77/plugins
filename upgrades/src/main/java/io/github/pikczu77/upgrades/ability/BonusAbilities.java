@@ -32,8 +32,8 @@ import io.github.pikczu77.upgrades.upgrade.Bonus.Special;
 import io.github.pikczu77.upgrades.upgrade.UpgradeManager;
 
 /**
- * The bonus abilities that need code: fire and wither on hit, the escape teleport, extra experience, calm piglins and
- * the wolf that always comes back. (The three-arrow shot lives in Shooting.)
+ * The bonus abilities that need code: fire and wither on hit, wither for attackers, the escape teleport, extra
+ * experience, calm piglins and the wolf that always comes back. (The three-arrow shot lives in Shooting.)
  */
 public final class BonusAbilities {
 	private static final String BUDDY_TAG = "upgrades_buddy";
@@ -62,8 +62,14 @@ public final class BonusAbilities {
 
 		// The player hits something in melee.
 		if (source.getEntity() instanceof ServerPlayer player && source.getDirectEntity() == player && victim != player
-				&& source.is(DamageTypes.PLAYER_ATTACK) && has(player, Special.FIRE_HIT)) {
-			victim.igniteForSeconds(4.0F);
+				&& source.is(DamageTypes.PLAYER_ATTACK)) {
+			if (has(player, Special.FIRE_HIT)) {
+				victim.igniteForSeconds(4.0F);
+			}
+
+			if (has(player, Special.WITHER_HIT)) {
+				victim.addEffect(new MobEffectInstance(MobEffects.WITHER, 80, 0), player);
+			}
 		}
 
 		// Something hurts the player.
