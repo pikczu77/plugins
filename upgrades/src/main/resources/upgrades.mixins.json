@@ -3,8 +3,6 @@
 	"package": "io.github.pikczu77.upgrades.mixin",
 	"compatibilityLevel": "JAVA_21",
 	"mixins": [
-		"AbstractArrowAccessor",
-		"AnimalMixin",
 		"BlockMixin",
 		"EntityMixin",
 		"LivingEntityMixin",

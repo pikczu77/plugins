@@ -24,7 +24,11 @@ public class UpgradesClient implements ClientModInitializer {
 	public void onInitializeClient() {
 		ClientUpgrades.install();
 		ClientPlayNetworking.registerGlobalReceiver(Payloads.SyncUpgrades.TYPE, (payload, context) -> ClientUpgrades.accept(payload));
-		ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> ClientUpgrades.clear());
+		ClientPlayNetworking.registerGlobalReceiver(Payloads.UnlockBanner.TYPE, (payload, context) -> UnlockBanner.accept(payload));
+		ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
+			ClientUpgrades.clear();
+			UnlockBanner.clear();
+		});
 
 		EntityRenderers.register(ModEntities.COMBAT_CLONE, CombatCloneRenderer::new);
 		EntityRenderers.register(ModEntities.THROWN_OBSIDIAN, context -> new ThrownItemRenderer<>(context, 2.0F, false));
@@ -38,5 +42,6 @@ public class UpgradesClient implements ClientModInitializer {
 
 		PowerInput.register();
 		PowerHud.register();
+		UnlockBanner.register();
 	}
 }

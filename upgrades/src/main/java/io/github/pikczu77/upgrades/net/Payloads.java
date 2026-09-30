@@ -38,6 +38,21 @@ public final class Payloads {
 		}
 	}
 
+	/** Server → client: show the unlock banner for an upgrade ({@code count} of {@code total} unlocked now). */
+	public record UnlockBanner(String upgrade, int count, int total) implements CustomPacketPayload {
+		public static final Type<UnlockBanner> TYPE = new Type<>(Upgrades.id("unlock_banner"));
+		public static final StreamCodec<RegistryFriendlyByteBuf, UnlockBanner> CODEC = StreamCodec.composite(
+				ByteBufCodecs.STRING_UTF8, UnlockBanner::upgrade,
+				ByteBufCodecs.VAR_INT, UnlockBanner::count,
+				ByteBufCodecs.VAR_INT, UnlockBanner::total,
+				UnlockBanner::new);
+
+		@Override
+		public Type<UnlockBanner> type() {
+			return TYPE;
+		}
+	}
+
 	/**
 	 * Client → server: right-click with an empty hand that vanilla did not use for anything.
 	 * {@code target} is the looked-at entity id, or -1.
@@ -70,6 +85,7 @@ public final class Payloads {
 
 	public static void register() {
 		PayloadTypeRegistry.playS2C().register(SyncUpgrades.TYPE, SyncUpgrades.CODEC);
+		PayloadTypeRegistry.playS2C().register(UnlockBanner.TYPE, UnlockBanner.CODEC);
 		PayloadTypeRegistry.playC2S().register(UsePower.TYPE, UsePower.CODEC);
 		PayloadTypeRegistry.playC2S().register(CyclePower.TYPE, CyclePower.CODEC);
 	}

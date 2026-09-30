@@ -15,7 +15,6 @@ import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TextColor;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -246,44 +245,26 @@ public final class UpgradeManager {
 		}
 
 		if (UpgradesConfig.get().titles) {
-			Screens.title(List.of(player), Component.literal("NOWE ULEPSZENIE!").withStyle(style -> style.withColor(0x55FF55)),
-					Component.literal(upgrade.displayName()).withStyle(style(upgrade)), 5, 50, 15);
+			if (ServerPlayNetworking.canSend(player, Payloads.UnlockBanner.TYPE)) {
+				// Players with the mod get the banner at the top of the screen.
+				int count = Long.bitCount(mask(player)) + Bonus.count(bonuses(player));
+				ServerPlayNetworking.send(player, new Payloads.UnlockBanner(upgrade.id(), count, Upgrade.VALUES.size() + Bonus.VALUES.size()));
+			} else {
+				Screens.title(List.of(player), Component.literal("NOWE ULEPSZENIE!").withStyle(style -> style.withColor(0x55FF55)),
+						Component.literal(upgrade.displayName()).withStyle(style(upgrade)), 5, 50, 15);
+			}
 		}
 
 		Screens.sound(List.of(player), Screens.sound(SoundEvents.PLAYER_LEVELUP), 1.0F, 0.7F);
 		Screens.sound(List.of(player), Screens.sound(SoundEvents.BEACON_POWER_SELECT), 1.0F, 1.4F);
 	}
 
-	/** "+ text" with the {highlighted} parts in the upgrade colour. */
 	public static MutableComponent line(Unlockable upgrade, String text) {
-		MutableComponent line = Component.literal("+ ").withStyle(style -> style.withColor(upgrade.color()));
-		StringBuilder part = new StringBuilder();
-		boolean highlighted = false;
-
-		for (char c : text.toCharArray()) {
-			if (c == '{' || c == '}') {
-				append(line, part, highlighted, upgrade);
-				highlighted = c == '{';
-			} else {
-				part.append(c);
-			}
-		}
-
-		append(line, part, highlighted, upgrade);
-		return line;
-	}
-
-	private static void append(MutableComponent line, StringBuilder part, boolean highlighted, Unlockable upgrade) {
-		if (part.isEmpty()) {
-			return;
-		}
-
-		line.append(Component.literal(part.toString()).withStyle(highlighted ? style(upgrade) : Style.EMPTY.withColor(ChatFormatting.GRAY)));
-		part.setLength(0);
+		return Texts.line(upgrade, text);
 	}
 
 	public static Style style(Unlockable upgrade) {
-		return Style.EMPTY.withColor(TextColor.fromRgb(upgrade.color())).withBold(true);
+		return Texts.style(upgrade);
 	}
 
 	/** Game tests only: gives a (fake) player upgrades without advancements. */

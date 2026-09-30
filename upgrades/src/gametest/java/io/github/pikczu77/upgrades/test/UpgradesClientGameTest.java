@@ -31,8 +31,10 @@ public class UpgradesClientGameTest implements FabricClientGameTest {
 			server.runCommand("execute as @a at @s run tp @s ~ ~ ~ 0 0");
 			context.runOnClient(minecraft -> minecraft.options.setCameraType(CameraType.THIRD_PERSON_FRONT));
 
-			// First few upgrades, like the start of the video.
+			// First few upgrades, like the start of the video. The unlock banner slides down from the top.
 			server.runCommand("upgrades give @a fist_pickaxe");
+			context.waitTicks(18);
+			context.takeScreenshot("upgrades-00-banner");
 			server.runCommand("upgrades give @a vein_miner");
 			server.runCommand("upgrades give @a green_thumb");
 			context.waitTicks(40);
@@ -46,6 +48,19 @@ public class UpgradesClientGameTest implements FabricClientGameTest {
 			if (!Upgrade.has(mask, Upgrade.GREEN_THUMB) || !Upgrade.has(mask, Upgrade.VEIN_MINER)) {
 				throw new AssertionError("The client did not get the upgrades, mask: " + Long.toBinaryString(mask));
 			}
+
+			// Banner with one of the mod's own part models, and a bonus banner.
+			context.runOnClient(minecraft -> minecraft.options.hideGui = false);
+			context.waitTicks(80);
+			server.runCommand("upgrades give @a golem_arm");
+			context.waitTicks(18);
+			context.takeScreenshot("upgrades-00b-banner-golem");
+			context.waitTicks(70);
+			server.runCommand("upgrades give @a terrible_fortress");
+			context.waitTicks(18);
+			context.takeScreenshot("upgrades-00c-banner-bonus");
+			context.waitTicks(70);
+			context.runOnClient(minecraft -> minecraft.options.hideGui = true);
 
 			// The middle of the video.
 			for (String id : new String[] {"golem_arm", "sword_boot", "clone_1", "nap", "deal_sniffer", "trigger_finger", "mini_shields",

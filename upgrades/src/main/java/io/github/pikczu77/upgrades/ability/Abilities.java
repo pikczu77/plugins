@@ -19,7 +19,6 @@ import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import io.github.pikczu77.upgrades.config.UpgradesConfig;
 import io.github.pikczu77.upgrades.upgrade.Upgrade;
 import io.github.pikczu77.upgrades.upgrade.UpgradeManager;
-import io.github.pikczu77.upgrades.util.TempDisplays;
 
 /**
  * Wires every power to its trigger and dispatches the empty-hand clicks.
@@ -71,8 +70,6 @@ public final class Abilities {
 		HotLava.tick(server);
 		PortalGun.tick(server);
 		Clones.tick(server);
-		BonusAbilities.tickServer(server);
-		TempDisplays.tick(server);
 	}
 
 	/**

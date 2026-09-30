@@ -23,7 +23,9 @@ def box(frm, to, tex, faces=ALL, light=None, uv=None):
 
 
 def write(name, textures, elements):
-    model = {"textures": dict(textures, particle=list(textures.values())[0]), "elements": elements}
+    model = {"textures": dict(textures, particle=list(textures.values())[0]), "elements": elements,
+             # Only used by icons (the unlock banner); the body parts render without display transforms.
+             "display": {"gui": {"rotation": [25, -35, 0], "translation": [0, 0, 0], "scale": [0.8, 0.8, 0.8]}}}
     os.makedirs(f"{ASSETS}/models/item", exist_ok=True)
     os.makedirs(f"{ASSETS}/items", exist_ok=True)
     with open(f"{ASSETS}/models/item/{name}.json", "w") as f:

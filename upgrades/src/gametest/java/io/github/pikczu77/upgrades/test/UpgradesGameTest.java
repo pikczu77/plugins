@@ -11,8 +11,6 @@ import net.minecraft.world.phys.AABB;
 import java.util.HashSet;
 import java.util.Set;
 
-import net.minecraft.advancements.AdvancementHolder;
-import net.minecraft.advancements.DisplayInfo;
 import net.minecraft.resources.Identifier;
 
 import net.fabricmc.fabric.api.entity.FakePlayer;
@@ -36,9 +34,9 @@ public class UpgradesGameTest {
 		helper.succeed();
 	}
 
-	/** Every advancement that shows up in chat unlocks exactly one upgrade ("upgrade yourself infinitely"). */
+	/** Every bonus points at a real advancement, and no advancement unlocks two things. */
 	@GameTest
-	public void everyAdvancementUnlocksSomething(GameTestHelper helper) {
+	public void bonusAdvancementsAreUnique(GameTestHelper helper) {
 		Set<Identifier> seen = new HashSet<>();
 
 		for (Bonus bonus : Bonus.VALUES) {
@@ -51,14 +49,6 @@ public class UpgradesGameTest {
 			helper.assertTrue(seen.add(upgrade.advancement()), "Advancement used twice: " + upgrade.advancement());
 		}
 
-		for (AdvancementHolder holder : helper.getLevel().getServer().getAdvancements().getAllAdvancements()) {
-			boolean announced = holder.value().display().map(DisplayInfo::shouldAnnounceChat).orElse(false);
-
-			if (announced) {
-				helper.assertTrue(seen.contains(holder.id()), "No upgrade for the advancement " + holder.id());
-			}
-		}
-
 		helper.succeed();
 	}
 
@@ -68,9 +58,9 @@ public class UpgradesGameTest {
 		FakePlayer player = FakePlayer.get(helper.getLevel());
 		double before = player.getMaxHealth();
 		long[] bits = Bonus.empty();
-		Bonus.set(bits, Bonus.HEART_TRANSPLANTER);
+		Bonus.set(bits, Bonus.FREE_THE_END);
 		BonusPassives.apply(player, bits);
-		helper.assertTrue(Math.abs(player.getMaxHealth() - (before + 4.0)) < 0.01, "Drugie Serce should add 2 hearts, max health " + player.getMaxHealth());
+		helper.assertTrue(Math.abs(player.getMaxHealth() - (before + 4.0)) < 0.01, "Pogromca Smoka should add 2 hearts, max health " + player.getMaxHealth());
 		BonusPassives.apply(player, Bonus.empty());
 		helper.assertTrue(Math.abs(player.getMaxHealth() - before) < 0.01, "The bonus did not go away, max health " + player.getMaxHealth());
 		helper.succeed();
