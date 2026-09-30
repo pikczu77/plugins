@@ -1,0 +1,1 @@
+Every mob is as big as its health: a chicken is tiny, an iron golem is a giant and every hit shrinks the mob. Plus commands that make recording videos easier.

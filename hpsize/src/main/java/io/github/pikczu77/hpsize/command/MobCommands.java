@@ -88,10 +88,11 @@ public final class MobCommands {
 		}
 
 		if (changed == 0) {
-			return Msg.fail(context.getSource(), "Nie znaleziono żywych mobów.");
+			return Msg.fail(context.getSource(), "No living mobs found.", "Nie znaleziono żywych mobów.");
 		}
 
-		return Msg.ok(context.getSource(), (max ? "Maks. HP" : "HP") + " = " + Msg.number(hp) + " dla " + changed + " mobów.");
+		return Msg.ok(context.getSource(), (max ? "Max HP" : "HP") + " = " + Msg.number(hp) + " for " + changed + " mobs.",
+				(max ? "Maks. HP" : "HP") + " = " + Msg.number(hp) + " dla " + changed + " mobów.");
 	}
 
 	private static void applyHealth(LivingEntity living, float hp, boolean max) {
@@ -136,10 +137,12 @@ public final class MobCommands {
 		}
 
 		if (spawned == 0) {
-			return Msg.fail(source, "Nie udało się przywołać tego moba.");
+			return Msg.fail(source, "Could not summon this mob.", "Nie udało się przywołać tego moba.");
 		}
 
-		return Msg.ok(source, "Przywołano " + spawned + "× " + type.value().getDescription().getString() + " z " + Msg.number(hp) + " HP.");
+		String name = type.value().getDescription().getString();
+		return Msg.ok(source, "Summoned " + spawned + "× " + name + " with " + Msg.number(hp) + " HP.",
+				"Przywołano " + spawned + "× " + name + " z " + Msg.number(hp) + " HP.");
 	}
 
 	private static int glow(CommandSourceStack source, Collection<? extends Entity> targets, int seconds) {
@@ -157,12 +160,14 @@ public final class MobCommands {
 			}
 		}
 
-		return changed == 0 ? Msg.fail(source, "Nie znaleziono mobów.")
-				: Msg.ok(source, (seconds == 0 ? "Wyłączono podświetlenie: " : "Podświetlono na " + seconds + " s: ") + changed + ".");
+		return changed == 0 ? Msg.fail(source, "No mobs found.", "Nie znaleziono mobów.")
+				: Msg.ok(source, (seconds == 0 ? "Glowing turned off: " : "Glowing for " + seconds + " s: ") + changed + ".",
+						(seconds == 0 ? "Wyłączono podświetlenie: " : "Podświetlono na " + seconds + " s: ") + changed + ".");
 	}
 
 	private static int silence(CommandSourceStack source, Collection<? extends Entity> targets, boolean silent) {
 		targets.forEach(entity -> entity.setSilent(silent));
-		return Msg.ok(source, (silent ? "Wyciszono: " : "Przywrócono dźwięk: ") + targets.size() + ".");
+		return Msg.ok(source, (silent ? "Muted: " : "Unmuted: ") + targets.size() + ".",
+				(silent ? "Wyciszono: " : "Przywrócono dźwięk: ") + targets.size() + ".");
 	}
 }

@@ -40,20 +40,23 @@ public final class HpSizeConfig {
 
 	public enum Mode {
 		/** Size follows the current health (like in the video). */
-		HEALTH("health", "rozmiar według aktualnego HP"),
+		HEALTH("health", "size follows the current HP", "rozmiar według aktualnego HP"),
 		/** Size follows the max health, damage does not shrink. */
-		MAX("max", "rozmiar według maksymalnego HP (nie maleje)"),
+		MAX("max", "size follows the max HP (never shrinks)", "rozmiar według maksymalnego HP (nie maleje)"),
 		/** Size follows the max health, shrinking proportionally to the lost health (bosses shrink too). */
-		PERCENT("percent", "rozmiar według maks. HP, maleje z % życia (bossowie też maleją)"),
+		PERCENT("percent", "size follows the max HP and shrinks with the % of health left (bosses shrink too)",
+				"rozmiar według maks. HP, maleje z % życia (bossowie też maleją)"),
 		/** Size follows the square root of the health (tiny mobs less tiny, giants less giant). */
-		SQRT("sqrt", "rozmiar według √HP (mniejsze różnice, mniej lagów)");
+		SQRT("sqrt", "size follows √HP (smaller differences, less lag)", "rozmiar według √HP (mniejsze różnice, mniej lagów)");
 
 		public final String id;
-		public final String description;
+		public final String english;
+		public final String polish;
 
-		Mode(String id, String description) {
+		Mode(String id, String english, String polish) {
 			this.id = id;
-			this.description = description;
+			this.english = english;
+			this.polish = polish;
 		}
 
 		public static @Nullable Mode byId(String id) {

@@ -23,11 +23,20 @@ słabsze moby są mniejsze, silniejsze — większe. Każde uderzenie zmniejsza 
 
 Do tego komendy, które ułatwiają nagrywanie odcinka i poprawiają film dla widza.
 
+Komunikaty moda są po polsku, gdy grasz w polskiej wersji językowej, a po angielsku dla pozostałych graczy
+i w konsoli serwera (działa to także u graczy bez moda).
+
+![Moby od najmniejszego do największego HP](modrinth/gallery/gallery-1-lineup.png)
+
+> **Wskazówka do nagrywania:** gra przestaje rysować malutkie moby już kilka bloków dalej (zasięg zależy od wielkości
+> hitboxa). Ustaw w Ustawieniach graficznych **Odl. renderow. bytów** na 500%, a króliki i kurczaki
+> będą widoczne 5× dalej. Pomaga też `/hpsize glowtiny on`.
+
 ## Instalacja
 
 1. Zainstaluj [Fabric Loader](https://fabricmc.net/use/installer/) dla 1.21.11 (0.17.3 lub nowszy).
 2. Wrzuć do folderu `mods`:
-   - `hpsize-1.21.11-1.0.0.jar` (ten mod),
+   - `hpsize-1.0.0+1.21.11.jar` (ten mod),
    - [Fabric API](https://modrinth.com/mod/fabric-api) dla 1.21.11.
 3. W świecie potrzebujesz uprawnień do komend (singleplayer: „Zezwól na kody” / Otwórz dla LAN → kody włączone).
 
@@ -93,6 +102,11 @@ są domyślnie wykluczone (gra i tak nie pokazuje większego smoka).
 | `/hud on\|off`, `/hud hide <element>`, `/hud show <element>`, `/hud list` | wybór elementów ukrywanych przez czysty HUD |
 
 Klawisz zmienisz w Opcje → Sterowanie → HP Size. Zoom celowo nie jest częścią moda — używaj swojego moda do zoomu.
+
+## Modrinth
+
+Wszystko do wgrania moda na Modrinth jest w folderze [`modrinth/`](modrinth/): opis, krótkie podsumowanie, ikona,
+zrzuty do galerii, lista zmian i instrukcja krok po kroku ([`modrinth/UPLOAD.md`](modrinth/UPLOAD.md)).
 
 ## Budowanie
 

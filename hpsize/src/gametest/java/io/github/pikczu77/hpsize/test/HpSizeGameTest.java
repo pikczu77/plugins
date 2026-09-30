@@ -25,6 +25,7 @@ import io.github.pikczu77.hpsize.config.HpSizeConfig;
 import io.github.pikczu77.hpsize.rec.Countdown;
 import io.github.pikczu77.hpsize.rec.Freeze;
 import io.github.pikczu77.hpsize.rec.RecMode;
+import io.github.pikczu77.hpsize.util.Msg;
 
 public class HpSizeGameTest {
 	private static int run(CommandSourceStack source, String command) {
@@ -125,6 +126,12 @@ public class HpSizeGameTest {
 		ServerPlayer player = FakePlayer.get(level);
 		player.snapTo(helper.absoluteVec(new Vec3(2.5, 1.0, 2.5)), 0.0F, 0.0F);
 		CommandSourceStack source = source(helper, player);
+
+		// Messages follow the player's game language: Polish for pl_pl, English for everyone else and the console.
+		helper.assertTrue(Msg.isPolish("pl_pl") && !Msg.isPolish("en_us") && !Msg.isPolish("de_de"), "Wrong language detection");
+		helper.assertTrue(Msg.tr(source, "Healed", "Uleczono").equals("Healed"), "An en_us player did not get English");
+		helper.assertTrue(Msg.tr(helper.getLevel().getServer().createCommandSourceStack(), "Healed", "Uleczono").equals("Healed"),
+				"The console did not get English");
 
 		for (String command : List.of("announce &cTytuł|Podtytuł", "countdown 3 Szukajcie diamentów!", "countdown cancel",
 				"spawnsized minecraft:cow 20 2", "spawnsized minecraft:chicken 4", "mobhp @e[type=minecraft:cow,distance=..10] 5",

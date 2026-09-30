@@ -9,6 +9,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 
 import net.fabricmc.api.ClientModInitializer;
@@ -47,7 +48,8 @@ public class HpSizeClient implements ClientModInitializer {
 		CleanHud.setEnabled(!CleanHud.isEnabled());
 
 		if (minecraft.player != null) {
-			minecraft.player.displayClientMessage(Component.literal("Czysty HUD: " + Msg.onOff(CleanHud.isEnabled())).withStyle(ChatFormatting.GOLD), true);
+			minecraft.player.displayClientMessage(Component.translatable("hpsize.hud.clean", CommonComponents.optionStatus(CleanHud.isEnabled()))
+					.withStyle(ChatFormatting.GOLD), true);
 		}
 	}
 
@@ -59,17 +61,18 @@ public class HpSizeClient implements ClientModInitializer {
 				})
 				.then(ClientCommandManager.literal("on").executes(context -> {
 					CleanHud.setEnabled(true);
-					return feedback(context.getSource(), "Czysty HUD: WŁ.");
+					return feedback(context.getSource(), Component.translatable("hpsize.hud.clean", CommonComponents.OPTION_ON));
 				}))
 				.then(ClientCommandManager.literal("off").executes(context -> {
 					CleanHud.setEnabled(false);
-					return feedback(context.getSource(), "Czysty HUD: WYŁ.");
+					return feedback(context.getSource(), Component.translatable("hpsize.hud.clean", CommonComponents.OPTION_OFF));
 				}))
 				.then(ClientCommandManager.literal("list").executes(context -> {
 					for (String name : CleanHud.names()) {
 						boolean hidden = ClientConfig.get().hiddenHud.contains(name);
 						context.getSource().sendFeedback(Component.literal(" " + name + ": ").withStyle(ChatFormatting.GRAY)
-								.append(Component.literal(hidden ? "ukryty" : "widoczny").withStyle(hidden ? ChatFormatting.RED : ChatFormatting.GREEN)));
+								.append(Component.translatable(hidden ? "hpsize.hud.hidden" : "hpsize.hud.visible")
+										.withStyle(hidden ? ChatFormatting.RED : ChatFormatting.GREEN)));
 					}
 
 					return 1;
@@ -84,7 +87,7 @@ public class HpSizeClient implements ClientModInitializer {
 
 	private static int setHidden(FabricClientCommandSource source, String element, boolean hidden) {
 		if (!CleanHud.names().contains(element)) {
-			source.sendError(Component.literal("Nieznany element HUD. Lista: /hud list"));
+			source.sendError(Component.translatable("hpsize.hud.unknown"));
 			return 0;
 		}
 
@@ -96,11 +99,11 @@ public class HpSizeClient implements ClientModInitializer {
 		}
 
 		config.save();
-		return feedback(source, element + (hidden ? " będzie ukryty" : " będzie widoczny") + " w trybie czystego HUD.");
+		return feedback(source, Component.translatable(hidden ? "hpsize.hud.will_hide" : "hpsize.hud.will_show", element));
 	}
 
-	private static int feedback(FabricClientCommandSource source, String text) {
-		source.sendFeedback(Msg.info(text));
+	private static int feedback(FabricClientCommandSource source, Component text) {
+		source.sendFeedback(Msg.prefix().append(text.copy().withStyle(ChatFormatting.GRAY)));
 		return 1;
 	}
 }

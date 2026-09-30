@@ -3,7 +3,7 @@ plugins {
 }
 
 base {
-	archivesName = "hpsize-${project.minecraft_version}"
+	archivesName = "hpsize"
 }
 
 loom {

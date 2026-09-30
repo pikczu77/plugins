@@ -9,7 +9,8 @@
 			"io.github.pikczu77.hpsize.test.HpSizeGameTest"
 		],
 		"fabric-client-gametest": [
-			"io.github.pikczu77.hpsize.test.HpSizeClientGameTest"
+			"io.github.pikczu77.hpsize.test.HpSizeClientGameTest",
+			"io.github.pikczu77.hpsize.test.HpSizeShowcaseClientGameTest"
 		]
 	},
 	"depends": {

@@ -1,4 +1,11 @@
 {
   "key.category.hpsize.main": "HP Size",
-  "key.hpsize.clean_hud": "Clean HUD (toggle)"
+  "key.hpsize.clean_hud": "Clean HUD (toggle)",
+  "hpsize.hud.clean": "Clean HUD: %s",
+  "hpsize.hud.hidden": "hidden",
+  "hpsize.hud.visible": "visible",
+  "hpsize.hud.unknown": "Unknown HUD element. List: /hud list",
+  "hpsize.hud.will_hide": "%s will be hidden in the clean HUD.",
+  "hpsize.hud.will_show": "%s will be visible in the clean HUD.",
+  "modmenu.descriptionTranslation.hpsize": "Every mob is as big as its health: 20 HP is normal size, a chicken is tiny and an iron golem is a giant. Every hit shrinks the mob. Includes commands that make recording videos easier."
 }

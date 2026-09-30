@@ -3,12 +3,14 @@
 	"id": "hpsize",
 	"version": "${version}",
 	"name": "HP Size",
-	"description": "Moby są tak duże, jak dużo mają życia (jak w filmie „Minecraft, but Mobs are as big as their health”) + komendy ułatwiające nagrywanie filmów.",
+	"description": "Every mob is as big as its health: 20 HP is normal size, a chicken is tiny and an iron golem is a giant. Every hit shrinks the mob. Includes commands that make recording videos easier.",
 	"authors": [
 		"pikczu77"
 	],
 	"contact": {
-		"sources": "https://github.com/pikczu77/plugins"
+		"homepage": "https://modrinth.com/mod/hpsize",
+		"sources": "https://github.com/pikczu77/plugins",
+		"issues": "https://github.com/pikczu77/plugins/issues"
 	},
 	"license": "MIT",
 	"icon": "assets/hpsize/icon.png",

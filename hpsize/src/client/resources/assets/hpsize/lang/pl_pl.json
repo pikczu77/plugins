@@ -1,4 +1,11 @@
 {
   "key.category.hpsize.main": "HP Size",
-  "key.hpsize.clean_hud": "Czysty HUD (przełącz)"
+  "key.hpsize.clean_hud": "Czysty HUD (przełącz)",
+  "hpsize.hud.clean": "Czysty HUD: %s",
+  "hpsize.hud.hidden": "ukryty",
+  "hpsize.hud.visible": "widoczny",
+  "hpsize.hud.unknown": "Nieznany element HUD. Lista: /hud list",
+  "hpsize.hud.will_hide": "%s będzie ukryty w trybie czystego HUD.",
+  "hpsize.hud.will_show": "%s będzie widoczny w trybie czystego HUD.",
+  "modmenu.descriptionTranslation.hpsize": "Każdy mob jest tak duży, jak dużo ma życia: 20 HP to normalny rozmiar, kurczak jest malutki, a żelazny golem to gigant. Każdy cios zmniejsza moba. Do tego komendy ułatwiające nagrywanie filmów."
 }

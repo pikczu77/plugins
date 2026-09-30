@@ -60,8 +60,8 @@ public final class RecCommands {
 		dispatcher.register(Commands.literal("countdown")
 				.requires(Perms.gamemaster())
 				.then(Commands.literal("cancel").executes(context -> Countdown.cancel(context.getSource().getServer())
-						? Msg.ok(context.getSource(), "Odliczanie przerwane.")
-						: Msg.fail(context.getSource(), "Nie ma aktywnego odliczania.")))
+						? Msg.ok(context.getSource(), "Countdown cancelled.", "Odliczanie przerwane.")
+						: Msg.fail(context.getSource(), "There is no countdown running.", "Nie ma aktywnego odliczania.")))
 				.then(Commands.argument("seconds", IntegerArgumentType.integer(1, 60))
 						.executes(context -> countdown(context, null))
 						.then(Commands.argument("message", StringArgumentType.greedyString())
@@ -80,7 +80,7 @@ public final class RecCommands {
 	private static int countdown(CommandContext<CommandSourceStack> context, String message) {
 		int seconds = IntegerArgumentType.getInteger(context, "seconds");
 		Countdown.start(seconds, message == null ? null : Component.literal(Msg.colors(message)), null);
-		return Msg.ok(context.getSource(), "Odliczanie: " + seconds + " s.");
+		return Msg.ok(context.getSource(), "Countdown: " + seconds + " s.", "Odliczanie: " + seconds + " s.");
 	}
 
 	/**
@@ -104,7 +104,8 @@ public final class RecCommands {
 			}
 		});
 
-		return Msg.ok(source, "Start za " + seconds + " s, zamrożono graczy: " + frozen.size() + ".");
+		return Msg.ok(source, "Starting in " + seconds + " s, frozen players: " + frozen.size() + ".",
+				"Start za " + seconds + " s, zamrożono graczy: " + frozen.size() + ".");
 	}
 
 	// /freeze, /unfreeze
@@ -135,16 +136,19 @@ public final class RecCommands {
 		for (ServerPlayer player : players) {
 			if (freeze ? Freeze.freeze(player) : Freeze.unfreeze(player)) {
 				changed++;
-				Screens.actionBar(player, Component.literal(freeze ? "❄ Zamrożony - czekaj na start" : "Możesz się ruszać!")
-						.withStyle(freeze ? ChatFormatting.AQUA : ChatFormatting.GREEN));
+				String text = freeze ? Msg.tr(player, "❄ Frozen - wait for the start", "❄ Zamrożony - czekaj na start")
+						: Msg.tr(player, "You can move!", "Możesz się ruszać!");
+				Screens.actionBar(player, Component.literal(text).withStyle(freeze ? ChatFormatting.AQUA : ChatFormatting.GREEN));
 			}
 		}
 
 		if (changed == 0) {
-			return Msg.fail(source, freeze ? "Nikt nowy nie został zamrożony." : "Nikt nie był zamrożony.");
+			return freeze ? Msg.fail(source, "Nobody new was frozen.", "Nikt nowy nie został zamrożony.")
+					: Msg.fail(source, "Nobody was frozen.", "Nikt nie był zamrożony.");
 		}
 
-		return Msg.ok(source, (freeze ? "Zamrożono" : "Odmrożono") + " graczy: " + changed + ".");
+		return Msg.ok(source, (freeze ? "Frozen" : "Unfrozen") + " players: " + changed + ".",
+				(freeze ? "Zamrożono" : "Odmrożono") + " graczy: " + changed + ".");
 	}
 
 	// /nv, /heal, /cam
@@ -167,8 +171,10 @@ public final class RecCommands {
 				.executes(context -> {
 					ServerPlayer player = context.getSource().getPlayerOrException();
 					return CamMode.toggle(player)
-							? Msg.ok(context.getSource(), "Tryb kamery: WŁ (widz). Wpisz /cam, żeby wrócić na miejsce.")
-							: Msg.ok(context.getSource(), "Tryb kamery: WYŁ. Wróciłeś na swoje miejsce.");
+							? Msg.ok(context.getSource(), "Camera mode: ON (spectator). Type /cam to go back.",
+									"Tryb kamery: WŁ (widz). Wpisz /cam, żeby wrócić na miejsce.")
+							: Msg.ok(context.getSource(), "Camera mode: OFF. You are back where you were.",
+									"Tryb kamery: WYŁ. Wróciłeś na swoje miejsce.");
 				}));
 	}
 
@@ -184,7 +190,8 @@ public final class RecCommands {
 			}
 		}
 
-		return Msg.ok(source, "Noktowizja włączona: " + enabled + ", wyłączona: " + (players.size() - enabled) + ".");
+		return Msg.ok(source, "Night vision on: " + enabled + ", off: " + (players.size() - enabled) + ".",
+				"Noktowizja włączona: " + enabled + ", wyłączona: " + (players.size() - enabled) + ".");
 	}
 
 	private static int heal(CommandSourceStack source, Collection<? extends Entity> targets) {
@@ -213,7 +220,8 @@ public final class RecCommands {
 			healed++;
 		}
 
-		return healed == 0 ? Msg.fail(source, "Nie znaleziono żywych celów.") : Msg.ok(source, "Uleczono: " + healed + ".");
+		return healed == 0 ? Msg.fail(source, "No living targets found.", "Nie znaleziono żywych celów.")
+				: Msg.ok(source, "Healed: " + healed + ".", "Uleczono: " + healed + ".");
 	}
 
 	// /recmode
@@ -221,14 +229,17 @@ public final class RecCommands {
 	private static void registerRecMode(CommandDispatcher<CommandSourceStack> dispatcher) {
 		dispatcher.register(Commands.literal("recmode")
 				.requires(Perms.gamemaster())
-				.executes(context -> Msg.ok(context.getSource(), "Tryb nagrywania: " + Msg.onOff(RecMode.isActive())
-						+ ". /recmode on ukrywa komunikaty komend na czacie."))
+				.executes(context -> Msg.ok(context.getSource(),
+						"Recording mode: " + Msg.onOff(context.getSource(), RecMode.isActive()) + ". /recmode on hides command messages in the chat.",
+						"Tryb nagrywania: " + Msg.onOff(context.getSource(), RecMode.isActive()) + ". /recmode on ukrywa komunikaty komend na czacie."))
 				.then(Commands.literal("on").executes(context -> RecMode.enable(context.getSource().getServer())
-						? Msg.ok(context.getSource(), "Tryb nagrywania WŁ: komunikaty komend nie pojawią się na czacie.")
-						: Msg.fail(context.getSource(), "Tryb nagrywania jest już włączony.")))
+						? Msg.ok(context.getSource(), "Recording mode ON: command messages will not show up in the chat.",
+								"Tryb nagrywania WŁ: komunikaty komend nie pojawią się na czacie.")
+						: Msg.fail(context.getSource(), "Recording mode is already on.", "Tryb nagrywania jest już włączony.")))
 				.then(Commands.literal("off").executes(context -> RecMode.disable(context.getSource().getServer())
-						? Msg.ok(context.getSource(), "Tryb nagrywania WYŁ: przywrócono poprzednie ustawienia.")
-						: Msg.fail(context.getSource(), "Tryb nagrywania nie był włączony."))));
+						? Msg.ok(context.getSource(), "Recording mode OFF: previous settings restored.",
+								"Tryb nagrywania WYŁ: przywrócono poprzednie ustawienia.")
+						: Msg.fail(context.getSource(), "Recording mode was not on.", "Tryb nagrywania nie był włączony."))));
 	}
 
 	// /cleanup
@@ -259,7 +270,8 @@ public final class RecCommands {
 		AABB area = AABB.ofSize(center, radius * 2.0, radius * 2.0, radius * 2.0);
 		List<Entity> entities = source.getLevel().getEntities((Entity) null, area, entity -> shouldClean(entity, kind));
 		entities.forEach(Entity::discard);
-		return Msg.ok(source, "Usunięto " + entities.size() + " obiektów w promieniu " + radius + " bloków.");
+		return Msg.ok(source, "Removed " + entities.size() + " entities within " + radius + " blocks.",
+				"Usunięto " + entities.size() + " obiektów w promieniu " + radius + " bloków.");
 	}
 
 	private static boolean shouldClean(Entity entity, CleanupKind kind) {
@@ -288,7 +300,7 @@ public final class RecCommands {
 
 					Screens.title(players, title, subtitle, 10, 70, 20);
 					Screens.sound(players, Screens.sound(SoundEvents.PLAYER_LEVELUP), 0.6F, 0.8F);
-					return Msg.ok(context.getSource(), "Wyświetlono napis dla " + players.size() + " graczy.");
+					return Msg.ok(context.getSource(), "Shown to " + players.size() + " players.", "Wyświetlono napis dla " + players.size() + " graczy.");
 				})));
 	}
 }
