@@ -16,7 +16,9 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.BossEvent;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
@@ -158,13 +160,15 @@ public final class HealthBars {
 	public static @Nullable LivingEntity findLookTarget(ServerPlayer player, double range) {
 		Vec3 eye = player.getEyePosition();
 		Vec3 look = player.getViewVector(1.0F);
-		Vec3 end = eye.add(look.scale(range));
-		AABB area = player.getBoundingBox().expandTowards(look.scale(range)).inflate(12.0);
+		// Stop at the first solid block, so mobs hidden behind walls are ignored.
+		Vec3 end = player.level().clip(new ClipContext(eye, eye.add(look.scale(range)), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, player)).getLocation();
+		AABB area = player.getBoundingBox().expandTowards(end.subtract(eye)).inflate(12.0);
 
 		LivingEntity best = null;
 		double bestDistance = Double.MAX_VALUE;
 
-		for (Entity entity : player.level().getEntities(player, area, entity -> entity instanceof LivingEntity && entity.isAlive() && !entity.isSpectator())) {
+		for (Entity entity : player.level().getEntities(player, area, entity -> entity instanceof LivingEntity && entity.isAlive()
+				&& !entity.isSpectator() && entity.getType() != EntityType.ARMOR_STAND)) {
 			AABB box = entity.getBoundingBox().inflate(0.2);
 			double distance;
 

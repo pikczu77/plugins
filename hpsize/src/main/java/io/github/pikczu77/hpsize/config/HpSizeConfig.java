@@ -83,6 +83,8 @@ public final class HpSizeConfig {
 	/** Tiny mobs glow so viewers (and you) can find them. */
 	public boolean glowTiny = false;
 	public double glowTinyBelow = 0.35;
+	/** A "deflating" sound when a hit makes a mob smaller. */
+	public boolean shrinkSound = false;
 	/** Entity types that keep their normal size. */
 	public List<String> excluded = new ArrayList<>(List.of("minecraft:armor_stand", "minecraft:ender_dragon"));
 
@@ -218,7 +220,14 @@ public final class HpSizeConfig {
 	 * The size multiplier the entity should have (1.0 = vanilla size).
 	 */
 	public double targetScale(LivingEntity entity) {
-		double health = Math.max(0, entity.getHealth());
+		return targetScale(entity, entity.getHealth());
+	}
+
+	/**
+	 * The size multiplier the entity would have with the given health.
+	 */
+	public double targetScale(LivingEntity entity, double currentHealth) {
+		double health = Math.max(0, currentHealth);
 		double maxHealth = Math.max(0.001, entity.getMaxHealth());
 
 		double scale = switch (mode) {

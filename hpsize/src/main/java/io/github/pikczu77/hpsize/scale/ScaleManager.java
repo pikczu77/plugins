@@ -3,6 +3,8 @@ package io.github.pikczu77.hpsize.scale;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -15,6 +17,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 
 import io.github.pikczu77.hpsize.HpSize;
 import io.github.pikczu77.hpsize.config.HpSizeConfig;
+import io.github.pikczu77.hpsize.util.Screens;
 
 /**
  * Makes every living entity as big as its health.
@@ -95,6 +98,29 @@ public final class ScaleManager {
 
 		AttributeModifier modifier = scale.getModifier(MODIFIER_ID);
 		return modifier == null ? 1.0 : 1.0 + modifier.amount();
+	}
+
+	/**
+	 * Plays a "deflating" sound when a hit makes a mob visibly smaller (deep for giants, squeaky for tiny mobs).
+	 */
+	public static void afterDamage(LivingEntity entity, DamageSource source, float baseDamageTaken, float damageTaken, boolean blocked) {
+		HpSizeConfig config = HpSizeConfig.get();
+
+		if (config == null || !config.enabled || config.frozen || !config.shrinkSound || damageTaken <= 0.0F
+				|| !config.affects(entity) || !(entity.level() instanceof ServerLevel level)) {
+			return;
+		}
+
+		double before = config.targetScale(entity, entity.getHealth() + damageTaken);
+		double after = config.targetScale(entity);
+
+		if (before - after < 0.05) {
+			return;
+		}
+
+		float pitch = (float) Math.max(0.5, Math.min(2.0, 1.4 / Math.sqrt(Math.max(0.1, after))));
+		level.playSeededSound(null, entity.getX(), entity.getY(), entity.getZ(), Screens.sound(SoundEvents.PUFFER_FISH_BLOW_OUT),
+				SoundSource.NEUTRAL, 1.0F, pitch, level.getRandom().nextLong());
 	}
 
 	/**

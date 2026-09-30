@@ -69,6 +69,8 @@ public class HpSize implements ModInitializer {
 			if (source.getEntity() instanceof ServerPlayer player) {
 				HealthBars.remember(player, entity);
 			}
+
+			ScaleManager.afterDamage(entity, source, baseDamageTaken, damageTaken, blocked);
 		});
 		ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> HealthBars.forget(oldPlayer));
 		ServerPlayerEvents.LEAVE.register(player -> {

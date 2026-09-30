@@ -38,6 +38,7 @@ a klawisz czystego HUD działa tylko u osób, które mają moda u siebie.
 | `/hpsize freeze` / `unfreeze` | zamraża rozmiary (ujęcie bez zmian) |
 | `/hpsize bar on\|off` | pasek u góry ekranu: HP i rozmiar moba, na którego patrzysz / którego bijesz |
 | `/hpsize glowtiny on\|off`, `/hpsize glowtiny below <x>` | podświetla malutkie moby (w filmie ginęły z oczu) |
+| `/hpsize sound on\|off` | dźwięk „sflaczenia” (jak rybka rozdymka), gdy cios zmniejsza moba — grubszy dla gigantów, piskliwy dla maluchów |
 | `/hpsize info [cele]` | HP i rozmiar moba, na którego patrzysz |
 | `/hpsize reset` | ustawienia domyślne |
 

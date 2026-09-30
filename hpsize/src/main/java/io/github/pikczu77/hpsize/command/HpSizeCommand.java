@@ -91,6 +91,7 @@ public final class HpSizeCommand {
 		root.then(toggle("players", "Gracze też zmieniają rozmiar", (config, value) -> config.players = value));
 		root.then(toggle("suffocation", "Duszenie się mobów w blokach (przez nie maleją w jaskiniach)", (config, value) -> config.suffocation = value));
 		root.then(toggle("bar", "Pasek HP i rozmiaru moba, na którego patrzysz", (config, value) -> config.healthBar = value));
+		root.then(toggle("sound", "Dźwięk „sflaczenia”, gdy mob maleje od ciosu", (config, value) -> config.shrinkSound = value));
 		root.then(toggle("glowtiny", "Podświetlanie malutkich mobów", (config, value) -> config.glowTiny = value)
 				.then(Commands.literal("below").then(Commands.argument("scale", DoubleArgumentType.doubleArg(HpSizeConfig.SCALE_MIN, HpSizeConfig.SCALE_MAX))
 						.executes(context -> {
@@ -148,6 +149,7 @@ public final class HpSizeCommand {
 			config.healthBar = defaults.healthBar;
 			config.glowTiny = defaults.glowTiny;
 			config.glowTinyBelow = defaults.glowTinyBelow;
+			config.shrinkSound = defaults.shrinkSound;
 			config.excluded = defaults.excluded;
 		}, "Przywrócono ustawienia domyślne.")));
 
@@ -206,6 +208,7 @@ public final class HpSizeCommand {
 		line(source, "Gracze", Msg.onOff(config.players));
 		line(source, "Duszenie w blokach", Msg.onOff(config.suffocation));
 		line(source, "Pasek HP", Msg.onOff(config.healthBar));
+		line(source, "Dźwięk malenia", Msg.onOff(config.shrinkSound));
 		line(source, "Podświetlanie małych", Msg.onOff(config.glowTiny) + " (poniżej ×" + Msg.number(config.glowTinyBelow) + ")");
 		line(source, "Wykluczone", config.excluded.isEmpty() ? "-" : String.join(", ", config.excluded));
 		return 1;

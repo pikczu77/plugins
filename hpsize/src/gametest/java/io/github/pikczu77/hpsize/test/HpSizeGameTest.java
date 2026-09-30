@@ -65,7 +65,7 @@ public class HpSizeGameTest {
 		for (String command : List.of("hpsize", "hpsize off", "hpsize on", "hpsize mode percent", "hpsize mode sqrt", "hpsize mode max",
 				"hpsize preset fair", "hpsize preset light", "hpsize preset smooth", "hpsize preset film", "hpsize factor 0.5",
 				"hpsize min 0.1", "hpsize max 8", "hpsize smooth 3", "hpsize players on", "hpsize players off",
-				"hpsize suffocation off", "hpsize suffocation on", "hpsize bar off", "hpsize bar on", "hpsize glowtiny on",
+				"hpsize suffocation off", "hpsize suffocation on", "hpsize bar off", "hpsize bar on", "hpsize sound on", "hpsize sound off", "hpsize glowtiny on",
 				"hpsize glowtiny below 0.5", "hpsize glowtiny off", "hpsize freeze", "hpsize unfreeze",
 				"hpsize exclude minecraft:pig", "hpsize include minecraft:pig", "hpsize reset")) {
 			run(console, command);
@@ -87,6 +87,10 @@ public class HpSizeGameTest {
 		});
 		helper.runAtTickTime(10, () -> {
 			assertScale(helper, cow, 1.0); // 5 HP x 0.2
+			// A real hit with the "deflating" sound on must not break anything.
+			config.shrinkSound = true;
+			run(console, "damage @e[type=minecraft:cow,distance=..8,limit=1] 1");
+			config.shrinkSound = false;
 			run(console, "mobhp @e[type=minecraft:cow,distance=..8] max 20");
 		});
 		helper.runAtTickTime(15, () -> {
