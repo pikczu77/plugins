@@ -114,6 +114,22 @@ public class BlockOpenerGameTests {
 		helper.succeedWhen(() -> helper.assertItemEntityCountIs(Items.DIAMOND, chest, 3.0, 5));
 	}
 
+	@GameTest(maxTicks = 40)
+	public void anvilSlamOpensTheBlocksAround(GameTestHelper helper) {
+		for (int x = 0; x < 5; x++) {
+			for (int z = 0; z < 5; z++) {
+				helper.setBlock(new BlockPos(x, 0, z), Blocks.BEDROCK);
+				helper.setBlock(new BlockPos(x, 1, z), Blocks.DIRT);
+			}
+		}
+		Vec3 center = helper.absoluteVec(new Vec3(2.5, 1.5, 2.5));
+		int opened = BlockOpening.openArea(helper.getLevel(), center, 2.4, null);
+		helper.assertTrue(opened >= 9, "the slam should open the ground around it, opened " + opened);
+		helper.assertBlockPresent(Blocks.AIR, new BlockPos(2, 1, 2));
+		helper.assertBlockPresent(Blocks.BEDROCK, new BlockPos(2, 0, 2));
+		helper.succeedWhen(() -> helper.assertTrue(!helper.getEntities(EntityType.ITEM).isEmpty(), "opened blocks should drop loot"));
+	}
+
 	@GameTest(maxTicks = 60)
 	public void mossphereKillsInstantly(GameTestHelper helper) {
 		floor(helper);

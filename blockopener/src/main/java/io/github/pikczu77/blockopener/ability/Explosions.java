@@ -27,7 +27,10 @@ public final class Explosions {
 	public static final String OWNED_TAG = "blockopener_owned";
 
 	public static void explode(ServerLevel level, @Nullable Entity owner, Vec3 at, float power) {
-		boolean breakBlocks = ModSettings.get(level.getServer()).explosionsBreakBlocks();
+		explode(level, owner, at, power, ModSettings.get(level.getServer()).explosionsBreakBlocks());
+	}
+
+	public static void explode(ServerLevel level, @Nullable Entity owner, Vec3 at, float power, boolean breakBlocks) {
 		level.explode(
 			owner,
 			level.damageSources().explosion(owner, owner),

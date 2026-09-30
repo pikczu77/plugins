@@ -6,7 +6,22 @@
       "entries": [
         {
           "type": "minecraft:loot_table",
-          "value": "minecraft:chests/simple_dungeon"
+          "value": "minecraft:chests/village/village_taiga_house"
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:golden_apple",
+          "conditions": [
+            {
+              "condition": "minecraft:random_chance",
+              "chance": 0.2
+            }
+          ]
         }
       ]
     }

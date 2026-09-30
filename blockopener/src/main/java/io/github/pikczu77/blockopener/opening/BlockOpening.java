@@ -1,11 +1,16 @@
 package io.github.pikczu77.blockopener.opening;
 
 import io.github.pikczu77.blockopener.BlockOpener;
+import io.github.pikczu77.blockopener.progress.Progress;
+import io.github.pikczu77.blockopener.progress.SecretItem;
 import io.github.pikczu77.blockopener.registry.ModItems;
 import io.github.pikczu77.blockopener.settings.ModSettings;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -19,15 +24,20 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.tags.TagKey;
+import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.LevelEvent;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 
 public final class BlockOpening {
@@ -103,6 +113,51 @@ public final class BlockOpening {
 
 		OpeningAnimations.start(level, pos, state, loot, player);
 		return loot;
+	}
+
+	/**
+	 * Opens every block within {@code radius} of {@code center} at once, without the animation
+	 * (the Anvil Chestplate slam: "a bunch of iron whenever we crouch jump... it's Christmas").
+	 * Bedrock is skipped so slamming at the bottom of the world never digs into the void.
+	 *
+	 * @return how many blocks were opened
+	 */
+	public static int openArea(ServerLevel level, Vec3 center, double radius, @Nullable ServerPlayer player) {
+		int rolls = ModSettings.get(level.getServer()).lootRolls();
+		BlockPos origin = BlockPos.containing(center);
+		int r = Mth.ceil(radius);
+		List<BlockPos> targets = new ArrayList<>();
+		for (BlockPos pos : BlockPos.betweenClosed(origin.offset(-r, -r, -r), origin.offset(r, r, r))) {
+			if (Vec3.atCenterOf(pos).distanceToSqr(center) <= radius * radius) {
+				targets.add(pos.immutable());
+			}
+		}
+		targets.sort(Comparator.comparingDouble(pos -> Vec3.atCenterOf(pos).distanceToSqr(center)));
+
+		int opened = 0;
+		for (BlockPos pos : targets) {
+			BlockState state = level.getBlockState(pos);
+			if (!canOpen(level, pos, state) || state.is(Blocks.BEDROCK) || player != null && !level.mayInteract(player, pos)) {
+				continue;
+			}
+			List<ItemStack> loot = OpeningLoot.roll(level, pos, state, player, rolls);
+			level.setBlock(pos, state.getFluidState().createLegacyBlock(), Block.UPDATE_ALL);
+			level.levelEvent(null, LevelEvent.PARTICLES_DESTROY_BLOCK, pos, Block.getId(state));
+			level.gameEvent(player, GameEvent.BLOCK_DESTROY, pos);
+			Vec3 at = Vec3.atCenterOf(pos);
+			for (ItemStack stack : loot) {
+				ItemEntity item = new ItemEntity(level, at.x, at.y, at.z, stack,
+					level.random.triangle(0.0, 0.15), 0.25 + level.random.nextDouble() * 0.2, level.random.triangle(0.0, 0.15));
+				item.setPickUpDelay(10);
+				level.addFreshEntity(item);
+			}
+			if (player != null) {
+				loot.stream().map(SecretItem::of).flatMap(Optional::stream).findFirst()
+					.ifPresent(secret -> Progress.onSecretFound(player, secret, at));
+			}
+			opened++;
+		}
+		return opened;
 	}
 
 	private BlockOpening() {

@@ -31,7 +31,7 @@
   "tooltip.blockopener.bee_drill.power.2": "PPM na moba (nawet z daleka): pszczoły, atak!",
   "tooltip.blockopener.bee_drill.power.3": "Twoje pszczoły cię bronią i nie tracą żądła",
   "tooltip.blockopener.anvil_chestplate.lore": "Ciężki. Bardzo ciężki.",
-  "tooltip.blockopener.anvil_chestplate.power.1": "Skok + kucnięcie: wybuchowe uderzenie",
+  "tooltip.blockopener.anvil_chestplate.power.1": "Skok + kucnięcie: wybuchowe uderzenie, które OTWIERA wszystkie bloki dookoła",
   "tooltip.blockopener.anvil_chestplate.power.2": "Kucnięcie: pancerny przysiad",
   "tooltip.blockopener.diamond_leggings.lore": "Błyszczące i aerodynamiczne.",
   "tooltip.blockopener.diamond_leggings.power.1": "Wciśnij %1$s: Diamentowy Lot",

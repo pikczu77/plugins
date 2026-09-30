@@ -1,6 +1,8 @@
 package io.github.pikczu77.blockopener.ability;
 
+import io.github.pikczu77.blockopener.opening.BlockOpening;
 import io.github.pikczu77.blockopener.registry.ModItems;
+import io.github.pikczu77.blockopener.settings.ModSettings;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
@@ -21,6 +23,7 @@ import net.minecraft.world.phys.Vec3;
 final class AnvilChestplate {
 	private static final int SLAM_COOLDOWN = 12;
 	private static final float SLAM_POWER = 3.2F;
+	private static final double SLAM_RADIUS = 2.4;
 
 	static void tick(ServerPlayer player, PlayerState state, boolean shift) {
 		if (!ModAbilities.wearing(player, EquipmentSlot.CHEST, ModItems.ANVIL_CHESTPLATE)) {
@@ -67,7 +70,11 @@ final class AnvilChestplate {
 		// The slam digs a crater, falling into it is part of the move.
 		state.noFallUntil = now + 40;
 		Vec3 at = player.position();
-		Explosions.explode(level, player, at, SLAM_POWER);
+		// The slam does not just break the ground, it OPENS it: every block around pops its loot.
+		if (ModSettings.get(level.getServer()).explosionsBreakBlocks()) {
+			BlockOpening.openArea(level, at.subtract(0.0, 0.5, 0.0), SLAM_RADIUS, player);
+		}
+		Explosions.explode(level, player, at, SLAM_POWER, false);
 		level.playSound(null, player.blockPosition(), SoundEvents.ANVIL_LAND, SoundSource.PLAYERS, 1.2F, 0.5F);
 		level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, Blocks.ANVIL.defaultBlockState()), at.x, at.y + 0.1, at.z, 60, 1.5, 0.1, 1.5, 0.2);
 		// Shockwave: everything around gets thrown up and away.

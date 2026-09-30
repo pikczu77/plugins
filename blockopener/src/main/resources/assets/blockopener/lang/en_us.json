@@ -31,7 +31,7 @@
   "tooltip.blockopener.bee_drill.power.2": "Right-click a mob (even far away): bees attack!",
   "tooltip.blockopener.bee_drill.power.3": "Your bees defend you and never lose their stinger",
   "tooltip.blockopener.anvil_chestplate.lore": "Heavy. Very heavy.",
-  "tooltip.blockopener.anvil_chestplate.power.1": "Jump + sneak: explosive slam",
+  "tooltip.blockopener.anvil_chestplate.power.1": "Jump + sneak: explosive slam that OPENS every block around",
   "tooltip.blockopener.anvil_chestplate.power.2": "Sneak: resistant crouch",
   "tooltip.blockopener.diamond_leggings.lore": "Shiny and aerodynamic.",
   "tooltip.blockopener.diamond_leggings.power.1": "Press %1$s: Diamond Flight",

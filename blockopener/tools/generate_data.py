@@ -102,22 +102,33 @@ for secret, blocks in SECRETS.items():
         opening(block, table(pool(item(f"{NS}:{secret}", count=count))))
 
 # Ores hide structure chests.
-group("coal_ore", table(pool(table_ref("minecraft:chests/simple_dungeon"))))
+# "raining loot and so much wood as well... a golden apple"
+group("coal_ore", table(
+    pool(table_ref("minecraft:chests/village/village_taiga_house")),
+    pool(item("minecraft:golden_apple", chance=0.2)),
+))
 group("copper_ore", table(
     pool(table_ref("minecraft:chests/village/village_fisher")),
     pool(table_ref("minecraft:chests/village/village_plains_house")),
 ))
 group("iron_ore", table(pool(table_ref("minecraft:chests/village/village_weaponsmith"))))
 group("gold_ore", table(pool(table_ref("minecraft:chests/trial_chambers/reward"))))
+# "Ender pearls... Obsidian, I'll take. Don't need emeralds. Sharpness four."
 group("redstone_ore", table(
     pool(table_ref("minecraft:chests/stronghold_corridor")),
     pool(item("minecraft:ender_pearl", count=(1, 2), chance=0.6)),
+    pool(item("minecraft:obsidian", count=(1, 4), chance=0.4)),
+    pool(item("minecraft:emerald", count=(1, 3), chance=0.4)),
 ))
-group("diamond_ore", table(pool(
-    table_ref("minecraft:chests/ruined_portal", 55),
-    table_ref("minecraft:chests/bastion_treasure", 25),
-    table_ref("minecraft:chests/bastion_other", 20),
-)))
+# ruined portal loot, "netherite upgrade... gold blocks" (bastion) and "diamonds can drop ender pearls as well"
+group("diamond_ore", table(
+    pool(
+        table_ref("minecraft:chests/ruined_portal", 55),
+        table_ref("minecraft:chests/bastion_treasure", 25),
+        table_ref("minecraft:chests/bastion_other", 20),
+    ),
+    pool(item("minecraft:ender_pearl", count=(1, 2), chance=0.25)),
+))
 group("lapis_ore", table(pool(
     table_ref("minecraft:chests/shipwreck_treasure", 60),
     table_ref(f"{NS}:opening/group/diamond_ore", 40),

@@ -30,13 +30,13 @@ tytuł na ekranie, dźwięk, wiadomość na czacie i zapala się ikonka w tracke
 | Blok | Co jest w środku |
 |---|---|
 | Większość bloków | żelazo, czasem węgiel / złoto / nić / pochodnie / strzały |
-| Ruda węgla | skrzynia z lochu |
+| Ruda węgla | domek z wioski (dużo drewna) + szansa na złote jabłko |
 | Ruda miedzi | skrzynia rybaka + domek z wioski (jedzenie!) |
 | Ruda żelaza | kowal broni z wioski |
 | Ruda złota | nagroda z komnat prób (wind charge, tarcza…) |
-| Ruda redstone | korytarz twierdzy + szansa na perły Endu |
+| Ruda redstone | korytarz twierdzy + perły Endu, obsydian, szmaragdy |
 | Ruda lapis | skarb z wraku albo „diamentowy” łup |
-| Ruda diamentów | zrujnowany portal / skarb bastionu |
+| Ruda diamentów | zrujnowany portal / skarb bastionu, czasem perły Endu |
 | Ruda szmaragdów | piramida pustynna |
 | Blok żelaza / złota | 1 sztabka żelaza / 1 węgiel (żart z filmu) |
 
@@ -46,7 +46,7 @@ tytuł na ekranie, dźwięk, wiadomość na czacie i zapala się ikonka w tracke
 |---|---|---|---|
 | 1 | Dynia | **Dyniowe Buty** | sprint = ślad wybuchowych dyń; kucanie 3 s = zamiana w dynię (moby tracą cel) |
 | 2 | Ul / gniazdo pszczół | **Pszczele Wiertło** | PPM = przywołaj pszczoły; PPM na moba (także z daleka) = pszczoły atakują; bronią cię i nie tracą żądła |
-| 3 | Kowadło | **Kowadłowy Napierśnik** | skok + kucnięcie = wybuchowe uderzenie w ziemię; kucanie = Odporność + spowolnienie |
+| 3 | Kowadło | **Kowadłowy Napierśnik** | skok + kucnięcie = wybuchowe uderzenie, które **otwiera wszystkie bloki dookoła** (deszcz łupu, szybkie kopanie w dół); kucanie = Odporność + spowolnienie |
 | 4 | Blok diamentów | **Diamentowe Spodnie** | **M** = Diamentowy Lot; machnięcie pustą ręką w locie = kule ognia; Szybkość II |
 | 5 | Blok nacieku | **Naciekowy Miecz** | 9 obrażeń; kucnięcie + atak = Deszcz Stalaktytów; PPM = deszcz tam, gdzie patrzysz |
 | 6 | Tłok | **Tłokowa Wyrzutnia** | kucnięcie + PPM = turbo wystrzał; PPM na moba = mega kopniak (wybucha przy uderzeniu); PPM = działo z TNT |
