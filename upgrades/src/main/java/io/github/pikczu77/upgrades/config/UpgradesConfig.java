@@ -16,7 +16,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.storage.LevelResource;
 
 import io.github.pikczu77.upgrades.Upgrades;
-import io.github.pikczu77.upgrades.upgrade.Upgrade;
+import io.github.pikczu77.upgrades.upgrade.Unlockable;
 
 /**
  * Per-world settings, stored in {@code <world>/upgrades.json}. The defaults play like the video.
@@ -55,6 +55,8 @@ public final class UpgradesConfig {
 	/** Upgrades turned off with {@code /upgrades disable}. */
 	public Set<String> disabled = new LinkedHashSet<>();
 	public PowerMode powerMode = PowerMode.SELECT;
+	/** Upgrades for the advancements the video did not use. */
+	public boolean bonuses = true;
 	/** Show the big "UPGRADE UNLOCKED!" title. */
 	public boolean titles = true;
 	/** Vein miner block limits for levels 1-4. */
@@ -77,7 +79,7 @@ public final class UpgradesConfig {
 	/** Seconds the hot hands lava stays. */
 	public int lavaSeconds = 4;
 
-	public boolean isEnabled(Upgrade upgrade) {
+	public boolean isEnabled(Unlockable upgrade) {
 		return this.enabled && !this.disabled.contains(upgrade.id());
 	}
 

@@ -16,7 +16,7 @@ import net.minecraft.resources.Identifier;
  *
  * <p>Description lines use {@code {braces}} for the highlighted part (drawn in the accent colour).
  */
-public enum Upgrade {
+public enum Upgrade implements Unlockable {
 	FIST_PICKAXE("story/mine_stone", "Pięści-Kilof", 0xC8A165, Group.NONE,
 			"Twoje {pięści kopią jak kilof}! (drewniany)"),
 	VEIN_MINER("story/upgrade_tools", "Vein Miner", 0x9E9E9E, Group.NONE,
@@ -84,7 +84,9 @@ public enum Upgrade {
 			"Możesz {latać}!"),
 	MULTIPLICITY("end/dragon_egg", "Następne Pokolenie", 0xFF55FF, Group.NONE,
 			"Nowe pokolenie jest {w twoich rękach}...",
-			"Dbaj o nie. {Bardzo} o nie dbaj.");
+			"Dbaj o nie. {Bardzo} o nie dbaj."),
+	FISHING_ROD("husbandry/tactical_fishing", "Wędka-Ręka", 0x3FAFFF, Group.CLICK,
+			"{PPM pustą ręką} — wędka w ręce przyciąga moba, na którego patrzysz");
 
 	/** Which input fires the power. Powers sharing an input can be cycled with a key (see {@code /upgrades powers}). */
 	public enum Group {
@@ -111,8 +113,29 @@ public enum Upgrade {
 		this.lines = List.of(lines);
 	}
 
+	@Override
 	public String id() {
 		return this.name().toLowerCase(Locale.ROOT);
+	}
+
+	@Override
+	public Identifier advancement() {
+		return this.advancement;
+	}
+
+	@Override
+	public String displayName() {
+		return this.displayName;
+	}
+
+	@Override
+	public int color() {
+		return this.color;
+	}
+
+	@Override
+	public List<String> lines() {
+		return this.lines;
 	}
 
 	public long bit() {

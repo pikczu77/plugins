@@ -8,10 +8,19 @@ import net.minecraft.world.entity.monster.zombie.Zombie;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.AABB;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import net.minecraft.advancements.AdvancementHolder;
+import net.minecraft.advancements.DisplayInfo;
+import net.minecraft.resources.Identifier;
+
 import net.fabricmc.fabric.api.entity.FakePlayer;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 
+import io.github.pikczu77.upgrades.ability.BonusPassives;
 import io.github.pikczu77.upgrades.entity.CombatClone;
+import io.github.pikczu77.upgrades.upgrade.Bonus;
 import io.github.pikczu77.upgrades.upgrade.Upgrade;
 import io.github.pikczu77.upgrades.upgrade.UpgradeManager;
 
@@ -24,6 +33,46 @@ public class UpgradesGameTest {
 					"Missing advancement " + upgrade.advancement + " for " + upgrade.id());
 		}
 
+		helper.succeed();
+	}
+
+	/** Every advancement that shows up in chat unlocks exactly one upgrade ("upgrade yourself infinitely"). */
+	@GameTest
+	public void everyAdvancementUnlocksSomething(GameTestHelper helper) {
+		Set<Identifier> seen = new HashSet<>();
+
+		for (Bonus bonus : Bonus.VALUES) {
+			helper.assertTrue(helper.getLevel().getServer().getAdvancements().get(bonus.advancement()) != null,
+					"Missing advancement " + bonus.advancement() + " for bonus " + bonus.id());
+			helper.assertTrue(seen.add(bonus.advancement()), "Advancement used twice: " + bonus.advancement());
+		}
+
+		for (Upgrade upgrade : Upgrade.VALUES) {
+			helper.assertTrue(seen.add(upgrade.advancement()), "Advancement used twice: " + upgrade.advancement());
+		}
+
+		for (AdvancementHolder holder : helper.getLevel().getServer().getAdvancements().getAllAdvancements()) {
+			boolean announced = holder.value().display().map(DisplayInfo::shouldAnnounceChat).orElse(false);
+
+			if (announced) {
+				helper.assertTrue(seen.contains(holder.id()), "No upgrade for the advancement " + holder.id());
+			}
+		}
+
+		helper.succeed();
+	}
+
+	/** Stat bonuses become attribute modifiers, and go away again. */
+	@GameTest
+	public void bonusStats(GameTestHelper helper) {
+		FakePlayer player = FakePlayer.get(helper.getLevel());
+		double before = player.getMaxHealth();
+		long[] bits = Bonus.empty();
+		Bonus.set(bits, Bonus.HEART_TRANSPLANTER);
+		BonusPassives.apply(player, bits);
+		helper.assertTrue(Math.abs(player.getMaxHealth() - (before + 4.0)) < 0.01, "Drugie Serce should add 2 hearts, max health " + player.getMaxHealth());
+		BonusPassives.apply(player, Bonus.empty());
+		helper.assertTrue(Math.abs(player.getMaxHealth() - before) < 0.01, "The bonus did not go away, max health " + player.getMaxHealth());
 		helper.succeed();
 	}
 

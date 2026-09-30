@@ -19,6 +19,7 @@ import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import io.github.pikczu77.upgrades.config.UpgradesConfig;
 import io.github.pikczu77.upgrades.upgrade.Upgrade;
 import io.github.pikczu77.upgrades.upgrade.UpgradeManager;
+import io.github.pikczu77.upgrades.util.TempDisplays;
 
 /**
  * Wires every power to its trigger and dispatches the empty-hand clicks.
@@ -42,13 +43,20 @@ public final class Abilities {
 		UseBlockCallback.EVENT.register(Obsidian::useBlock);
 		UseBlockCallback.EVENT.register(DealSniffer::useBlock);
 		UseEntityCallback.EVENT.register(DealSniffer::useEntity);
+		BonusAbilities.register();
 	}
 
 	public static void tick(MinecraftServer server) {
 		for (ServerPlayer player : server.getPlayerList().getPlayers()) {
 			long mask = UpgradeManager.mask(player);
 
-			if (mask == 0L || !player.isAlive() || player.gameMode() == GameType.SPECTATOR) {
+			if (!player.isAlive() || player.gameMode() == GameType.SPECTATOR) {
+				continue;
+			}
+
+			BonusAbilities.tick(player);
+
+			if (mask == 0L) {
 				continue;
 			}
 
@@ -63,6 +71,8 @@ public final class Abilities {
 		HotLava.tick(server);
 		PortalGun.tick(server);
 		Clones.tick(server);
+		BonusAbilities.tickServer(server);
+		TempDisplays.tick(server);
 	}
 
 	/**
@@ -88,6 +98,7 @@ public final class Abilities {
 				case TRIGGER_FINGER -> Shooting.arrow(player);
 				case PORTAL_GUN -> PortalGun.shoot(player);
 				case DRAGON_WING -> Shooting.homingFireballs(player);
+				case FISHING_ROD -> Shooting.fishingRod(player);
 				case NAP -> Nap.start(player);
 				case DEAL_SNIFFER -> DealSniffer.sniff(player);
 				default -> {
@@ -123,6 +134,7 @@ public final class Abilities {
 		DealSniffer.forget(player);
 		Shooting.forget(player);
 		PortalGun.forget(player);
+		BonusAbilities.forget(player);
 	}
 
 	public static void reset() {
@@ -134,5 +146,6 @@ public final class Abilities {
 		HotLava.reset();
 		Combat.reset();
 		Clones.reset();
+		BonusAbilities.reset();
 	}
 }

@@ -24,6 +24,7 @@ import net.minecraft.world.entity.player.Player;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 
+import io.github.pikczu77.upgrades.ability.BonusPassives;
 import io.github.pikczu77.upgrades.ability.Clones;
 import io.github.pikczu77.upgrades.ability.Passives;
 import io.github.pikczu77.upgrades.config.UpgradesConfig;
@@ -36,10 +37,11 @@ import io.github.pikczu77.upgrades.util.Screens;
  */
 public final class UpgradeManager {
 	private static final Map<UUID, Long> MASKS = new HashMap<>();
+	private static final Map<UUID, long[]> BONUSES = new HashMap<>();
 	/** Selected power of every input group, per player (not saved: the newest power is picked again on join). */
 	private static final Map<UUID, EnumMap<Upgrade.Group, Upgrade>> SELECTED = new HashMap<>();
 	/** Upgrades unlocked during the current advancement award, announced once the vanilla chat message is out. */
-	private static final Map<UUID, List<Upgrade>> PENDING = new HashMap<>();
+	private static final Map<UUID, List<Unlockable>> PENDING = new HashMap<>();
 
 	private UpgradeManager() {
 	}
@@ -52,6 +54,42 @@ public final class UpgradeManager {
 		return Upgrade.has(mask(player), upgrade);
 	}
 
+	public static long[] bonuses(Player player) {
+		long[] bits = BONUSES.get(player.getUUID());
+		return bits == null ? Bonus.empty() : bits;
+	}
+
+	public static boolean has(Player player, Bonus bonus) {
+		return Bonus.has(bonuses(player), bonus);
+	}
+
+	public static boolean hasSpecial(Player player, Bonus.Special special) {
+		long[] bits = BONUSES.get(player.getUUID());
+		return bits != null && Bonus.hasSpecial(bits, special);
+	}
+
+	private static boolean done(ServerPlayer player, Unlockable unlockable) {
+		AdvancementHolder holder = player.level().getServer().getAdvancements().get(unlockable.advancement());
+		return holder != null && player.getAdvancements().getOrStartProgress(holder).isDone();
+	}
+
+	public static long[] computeBonuses(ServerPlayer player) {
+		UpgradesConfig config = UpgradesConfig.get();
+		long[] bits = Bonus.empty();
+
+		if (!config.bonuses) {
+			return bits;
+		}
+
+		for (Bonus bonus : Bonus.VALUES) {
+			if (config.isEnabled(bonus) && done(player, bonus)) {
+				Bonus.set(bits, bonus);
+			}
+		}
+
+		return bits;
+	}
+
 	public static long compute(ServerPlayer player) {
 		UpgradesConfig config = UpgradesConfig.get();
 		long mask = 0L;
@@ -61,9 +99,7 @@ public final class UpgradeManager {
 				continue;
 			}
 
-			AdvancementHolder holder = player.level().getServer().getAdvancements().get(upgrade.advancement);
-
-			if (holder != null && player.getAdvancements().getOrStartProgress(holder).isDone()) {
+			if (done(player, upgrade)) {
 				mask |= upgrade.bit();
 			}
 		}
@@ -76,6 +112,9 @@ public final class UpgradeManager {
 		long before = mask(player);
 		long after = compute(player);
 		MASKS.put(player.getUUID(), after);
+		long[] bonusesBefore = bonuses(player);
+		long[] bonusesAfter = computeBonuses(player);
+		BONUSES.put(player.getUUID(), bonusesAfter);
 
 		EnumMap<Upgrade.Group, Upgrade> selected = SELECTED.computeIfAbsent(player.getUUID(), uuid -> new EnumMap<>(Upgrade.Group.class));
 
@@ -92,8 +131,9 @@ public final class UpgradeManager {
 		}
 
 		Passives.apply(player, after);
+		BonusPassives.apply(player, bonusesAfter);
 
-		if (before != after) {
+		if (before != after || !java.util.Arrays.equals(bonusesBefore, bonusesAfter)) {
 			sync(player);
 		}
 	}
@@ -128,7 +168,8 @@ public final class UpgradeManager {
 			}
 		}
 
-		return new Payloads.SyncUpgrades(player.getId(), mask(player), packed);
+		long[] bonuses = bonuses(player);
+		return new Payloads.SyncUpgrades(player.getId(), mask(player), packed, bonuses[0], bonuses[1]);
 	}
 
 	public static @Nullable Upgrade selected(ServerPlayer player, Upgrade.Group group) {
@@ -164,19 +205,23 @@ public final class UpgradeManager {
 	/** Called by the advancement mixin when an advancement gets completed. */
 	public static void onAdvancementDone(ServerPlayer player, AdvancementHolder holder) {
 		Upgrade upgrade = Upgrade.byAdvancement(holder.id());
+		Bonus bonus = Bonus.byAdvancement(holder.id());
+		UpgradesConfig config = UpgradesConfig.get();
 
-		if (upgrade != null && UpgradesConfig.get().isEnabled(upgrade)) {
+		if (upgrade != null && config.isEnabled(upgrade)) {
 			PENDING.computeIfAbsent(player.getUUID(), uuid -> new ArrayList<>()).add(upgrade);
+		} else if (bonus != null && config.bonuses && config.isEnabled(bonus)) {
+			PENDING.computeIfAbsent(player.getUUID(), uuid -> new ArrayList<>()).add(bonus);
 		}
 	}
 
 	/** Called after the award finished (and vanilla printed the advancement message). */
 	public static void afterAward(ServerPlayer player) {
-		List<Upgrade> unlocked = PENDING.remove(player.getUUID());
+		List<Unlockable> unlocked = PENDING.remove(player.getUUID());
 		refresh(player);
 
 		if (unlocked != null) {
-			for (Upgrade upgrade : unlocked) {
+			for (Unlockable upgrade : unlocked) {
 				announce(player, upgrade);
 
 				if (upgrade == Upgrade.MULTIPLICITY) {
@@ -191,18 +236,18 @@ public final class UpgradeManager {
 		refresh(player);
 	}
 
-	public static void announce(ServerPlayer player, Upgrade upgrade) {
+	public static void announce(ServerPlayer player, Unlockable upgrade) {
 		MinecraftServer server = player.level().getServer();
 
 		for (ServerPlayer receiver : server.getPlayerList().getPlayers()) {
-			for (String line : upgrade.lines) {
+			for (String line : upgrade.lines()) {
 				receiver.sendSystemMessage(line(upgrade, line));
 			}
 		}
 
 		if (UpgradesConfig.get().titles) {
 			Screens.title(List.of(player), Component.literal("NOWE ULEPSZENIE!").withStyle(style -> style.withColor(0x55FF55)),
-					Component.literal(upgrade.displayName).withStyle(style(upgrade)), 5, 50, 15);
+					Component.literal(upgrade.displayName()).withStyle(style(upgrade)), 5, 50, 15);
 		}
 
 		Screens.sound(List.of(player), Screens.sound(SoundEvents.PLAYER_LEVELUP), 1.0F, 0.7F);
@@ -210,8 +255,8 @@ public final class UpgradeManager {
 	}
 
 	/** "+ text" with the {highlighted} parts in the upgrade colour. */
-	public static MutableComponent line(Upgrade upgrade, String text) {
-		MutableComponent line = Component.literal("+ ").withStyle(style -> style.withColor(upgrade.color));
+	public static MutableComponent line(Unlockable upgrade, String text) {
+		MutableComponent line = Component.literal("+ ").withStyle(style -> style.withColor(upgrade.color()));
 		StringBuilder part = new StringBuilder();
 		boolean highlighted = false;
 
@@ -228,7 +273,7 @@ public final class UpgradeManager {
 		return line;
 	}
 
-	private static void append(MutableComponent line, StringBuilder part, boolean highlighted, Upgrade upgrade) {
+	private static void append(MutableComponent line, StringBuilder part, boolean highlighted, Unlockable upgrade) {
 		if (part.isEmpty()) {
 			return;
 		}
@@ -237,8 +282,8 @@ public final class UpgradeManager {
 		part.setLength(0);
 	}
 
-	public static Style style(Upgrade upgrade) {
-		return Style.EMPTY.withColor(TextColor.fromRgb(upgrade.color)).withBold(true);
+	public static Style style(Unlockable upgrade) {
+		return Style.EMPTY.withColor(TextColor.fromRgb(upgrade.color())).withBold(true);
 	}
 
 	/** Game tests only: gives a (fake) player upgrades without advancements. */
@@ -246,21 +291,34 @@ public final class UpgradeManager {
 		MASKS.put(player.getUUID(), mask);
 	}
 
+	/** Game tests only: gives a (fake) player bonuses without advancements. */
+	public static void setBonusesForTest(Player player, Bonus... bonuses) {
+		long[] bits = Bonus.empty();
+
+		for (Bonus bonus : bonuses) {
+			Bonus.set(bits, bonus);
+		}
+
+		BONUSES.put(player.getUUID(), bits);
+	}
+
 	public static void forget(ServerPlayer player) {
 		MASKS.remove(player.getUUID());
+		BONUSES.remove(player.getUUID());
 		SELECTED.remove(player.getUUID());
 		PENDING.remove(player.getUUID());
 	}
 
 	public static void reset() {
 		MASKS.clear();
+		BONUSES.clear();
 		SELECTED.clear();
 		PENDING.clear();
 	}
 
 	/** Completes (or revokes) the advancement behind an upgrade, which then grants (or removes) the upgrade. */
-	public static boolean setAdvancement(ServerPlayer player, Upgrade upgrade, boolean done) {
-		AdvancementHolder holder = player.level().getServer().getAdvancements().get(upgrade.advancement);
+	public static boolean setAdvancement(ServerPlayer player, Unlockable upgrade, boolean done) {
+		AdvancementHolder holder = player.level().getServer().getAdvancements().get(upgrade.advancement());
 
 		if (holder == null) {
 			return false;

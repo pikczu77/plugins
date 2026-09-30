@@ -16,7 +16,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 
+import io.github.pikczu77.upgrades.upgrade.Bonus;
 import io.github.pikczu77.upgrades.upgrade.Upgrade;
+import io.github.pikczu77.upgrades.upgrade.UpgradeManager;
 
 /**
  * The hoe on the head: an empty-hand right-click tills (and plants) the ground in a 3×3 area, and crops around the
@@ -39,8 +41,10 @@ public final class GreenThumb {
 		ServerLevel level = player.level();
 		BlockPos center = blockHit.getBlockPos();
 		boolean tilled = false;
+		// Serious Dedication (netherite hoe) bonus: 5×5 instead of 3×3.
+		int radius = UpgradeManager.hasSpecial(player, Bonus.Special.GREEN_PLUS) ? 2 : 1;
 
-		for (BlockPos pos : BlockPos.betweenClosed(center.offset(-1, 0, -1), center.offset(1, 0, 1))) {
+		for (BlockPos pos : BlockPos.betweenClosed(center.offset(-radius, 0, -radius), center.offset(radius, 0, radius))) {
 			BlockState state = level.getBlockState(pos);
 			BlockState above = level.getBlockState(pos.above());
 
@@ -79,10 +83,12 @@ public final class GreenThumb {
 		ServerLevel level = player.level();
 		RandomSource random = player.getRandom();
 		BlockPos origin = player.blockPosition();
+		boolean plus = UpgradeManager.hasSpecial(player, Bonus.Special.GREEN_PLUS);
+		int range = plus ? GROW_RADIUS + 4 : GROW_RADIUS;
 
-		for (int i = 0; i < 6; i++) {
-			BlockPos pos = origin.offset(random.nextInt(GROW_RADIUS * 2 + 1) - GROW_RADIUS, random.nextInt(5) - 2,
-					random.nextInt(GROW_RADIUS * 2 + 1) - GROW_RADIUS);
+		for (int i = 0; i < (plus ? 12 : 6); i++) {
+			BlockPos pos = origin.offset(random.nextInt(range * 2 + 1) - range, random.nextInt(5) - 2,
+					random.nextInt(range * 2 + 1) - range);
 			BlockState state = level.getBlockState(pos);
 
 			if (!(state.is(BlockTags.CROPS) || state.is(Blocks.SWEET_BERRY_BUSH) || state.is(Blocks.COCOA))

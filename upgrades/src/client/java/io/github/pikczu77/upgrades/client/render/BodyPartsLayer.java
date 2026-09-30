@@ -1,5 +1,11 @@
 package io.github.pikczu77.upgrades.client.render;
 
+import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 
@@ -21,6 +27,7 @@ import net.minecraft.world.item.Items;
 
 import io.github.pikczu77.upgrades.Upgrades;
 import io.github.pikczu77.upgrades.client.ClientUpgrades;
+import io.github.pikczu77.upgrades.upgrade.Bonus;
 import io.github.pikczu77.upgrades.upgrade.Upgrade;
 
 /**
@@ -38,6 +45,13 @@ public class BodyPartsLayer extends RenderLayer<AvatarRenderState, PlayerModel> 
 			Upgrade.VEIN_MINER_MAX};
 	private static final Upgrade[] MANNEQUIN_UPGRADES = {Upgrade.CLONE_1, Upgrade.CLONE_2, Upgrade.CLONE_3};
 	private static final String[] MANNEQUINS = {"mannequin_iron", "mannequin_diamond", "mannequin_netherite"};
+	/** Item stacks of the vanilla body parts, made once (the glint ones get the glint component). */
+	private static final Map<Item, ItemStack> STACKS = new HashMap<>();
+	private static final Map<Item, ItemStack> GLINT_STACKS = new HashMap<>();
+
+	private static ItemStack stack(Item item) {
+		return new ItemStack(item);
+	}
 
 	public BodyPartsLayer(RenderLayerParent<AvatarRenderState, PlayerModel> parent) {
 		super(parent);
@@ -46,13 +60,15 @@ public class BodyPartsLayer extends RenderLayer<AvatarRenderState, PlayerModel> 
 	@Override
 	public void submit(PoseStack pose, SubmitNodeCollector collector, int light, AvatarRenderState state, float yRot, float xRot) {
 		long mask = ClientUpgrades.mask(state.id);
+		long[] bonuses = ClientUpgrades.bonuses(state.id);
 
-		if (mask == 0L || state.isInvisible || state.isSpectator) {
+		if (mask == 0L && Bonus.count(bonuses) == 0 || state.isInvisible || state.isSpectator) {
 			return;
 		}
 
 		Parts parts = new Parts(pose, collector, light, state, Upgrade.has(mask, Upgrade.ENCHANTED));
 		PlayerModel model = this.getParentModel();
+		EnumMap<Bonus.Slot, List<Item>> bonusItems = bonusItems(bonuses);
 
 		// Body.
 		parts.begin(model.body);
@@ -61,12 +77,32 @@ public class BodyPartsLayer extends RenderLayer<AvatarRenderState, PlayerModel> 
 		this.backAndHips(parts, mask);
 		this.wings(parts, mask, state);
 		this.blazeRods(parts, mask, state);
+		this.chest(parts, bonusItems.get(Bonus.Slot.CHEST));
+		this.backFan(parts, bonusItems.get(Bonus.Slot.BACK));
+		this.belt(parts, bonusItems.get(Bonus.Slot.BELT));
+		this.orbit(parts, bonusItems.get(Bonus.Slot.ORBIT), state);
 		parts.end();
 
 		// Head.
 		parts.begin(model.head);
 		this.head(parts, mask);
+		this.crown(parts, bonusItems.get(Bonus.Slot.HEAD));
 		parts.end();
+
+		// Arms and legs.
+		this.limbs(parts, model.rightArm, model.leftArm, bonusItems.get(Bonus.Slot.ARMS), true);
+		this.limbs(parts, model.rightLeg, model.leftLeg, bonusItems.get(Bonus.Slot.LEGS), false);
+
+		if (Upgrade.has(mask, Upgrade.FISHING_ROD)) {
+			// The left arm ends in a fishing rod pointing forward.
+			parts.begin(model.leftArm);
+			parts.push(0.0, -0.62, -0.18);
+			parts.rotY(90.0F);
+			parts.rotZ(-45.0F);
+			parts.item(Items.FISHING_ROD, 0.85F);
+			parts.pop();
+			parts.end();
+		}
 
 		// Right leg.
 		if (Upgrade.has(mask, Upgrade.SWORD_BOOT)) {
@@ -76,6 +112,123 @@ public class BodyPartsLayer extends RenderLayer<AvatarRenderState, PlayerModel> 
 			parts.rotZ(-45.0F);
 			parts.item(Items.IRON_SWORD, 0.75F);
 			parts.pop();
+			parts.end();
+		}
+	}
+
+	private static EnumMap<Bonus.Slot, List<Item>> bonusItems(long[] bonuses) {
+		EnumMap<Bonus.Slot, List<Item>> items = new EnumMap<>(Bonus.Slot.class);
+
+		for (Bonus.Slot slot : Bonus.Slot.values()) {
+			items.put(slot, new ArrayList<>());
+		}
+
+		for (Bonus bonus : Bonus.VALUES) {
+			if (Bonus.has(bonuses, bonus)) {
+				items.get(bonus.slot).add(bonus.item);
+			}
+		}
+
+		return items;
+	}
+
+	/** Bonus items around the head like a crown, in two rows. */
+	private void crown(Parts parts, List<Item> items) {
+		int count = items.size();
+
+		for (int i = 0; i < count; i++) {
+			int row = i % 2;
+			float angle = i * 360.0F / count + row * 12.0F;
+			double radius = 0.36 + row * 0.07 + count * 0.004;
+			double radians = Math.toRadians(angle);
+			parts.push(Math.sin(radians) * radius, 0.56 + row * 0.1, -Math.cos(radians) * radius);
+			parts.rotY(-angle);
+			parts.item(items.get(i), 0.3F);
+			parts.pop();
+		}
+	}
+
+	/** Bonus items pinned to the chest, three per row. */
+	private void chest(Parts parts, List<Item> items) {
+		for (int i = 0; i < items.size(); i++) {
+			int column = i % 3;
+			int row = i / 3;
+			parts.push((column - 1) * 0.15, -0.12 - row * 0.16, -0.16);
+			parts.item(items.get(i), 0.22F);
+			parts.pop();
+		}
+	}
+
+	/** Bonus items fanned out behind the shoulders, in two arcs. */
+	private void backFan(Parts parts, List<Item> items) {
+		int count = items.size();
+
+		for (int i = 0; i < count; i++) {
+			int arc = i % 2;
+			int inArc = (count + 1 - arc) / 2;
+			int index = i / 2;
+			float spread = inArc <= 1 ? 0.0F : -75.0F + 150.0F * index / (inArc - 1);
+			double radius = 0.6 + arc * 0.3;
+			double radians = Math.toRadians(spread);
+			parts.push(Math.sin(radians) * radius, -0.15 + Math.cos(radians) * radius, 0.45 + arc * 0.05);
+			parts.rotZ(-spread);
+			parts.item(items.get(i), 0.4F);
+			parts.pop();
+		}
+	}
+
+	/** Bonus items hanging around the waist. */
+	private void belt(Parts parts, List<Item> items) {
+		int count = items.size();
+
+		for (int i = 0; i < count; i++) {
+			int row = i % 2;
+			float angle = i * 360.0F / count;
+			double radius = 0.34 + row * 0.06 + count * 0.003;
+			double radians = Math.toRadians(angle);
+			parts.push(Math.sin(radians) * radius, -0.68 - row * 0.12, -Math.cos(radians) * radius);
+			parts.rotY(-angle);
+			parts.item(items.get(i), 0.25F);
+			parts.pop();
+		}
+	}
+
+	/** Bonus items slowly circling around the body. */
+	private void orbit(Parts parts, List<Item> items, AvatarRenderState state) {
+		int count = items.size();
+
+		for (int i = 0; i < count; i++) {
+			float angle = -state.ageInTicks * 1.5F + i * 360.0F / Math.max(1, count);
+			double radians = Math.toRadians(angle);
+			double bob = Mth.sin(state.ageInTicks * 0.08F + i * 1.3F) * 0.1;
+			parts.push(Math.sin(radians) * 1.0, -0.2 + bob, -Math.cos(radians) * 1.0);
+			parts.rotY(-angle);
+			parts.item(items.get(i), 0.35F);
+			parts.pop();
+		}
+	}
+
+	/** Bonus items sticking out of the arms (or around the shins), alternating right and left. */
+	private void limbs(Parts parts, ModelPart right, ModelPart left, List<Item> items, boolean arms) {
+		for (int side = 0; side < 2; side++) {
+			parts.begin(side == 0 ? right : left);
+			double outward = side == 0 ? 1.0 : -1.0;
+
+			for (int i = side, k = 0; i < items.size(); i += 2, k++) {
+				if (arms) {
+					parts.push(outward * 0.2, -0.18 - k * 0.14, 0.0);
+					parts.rotZ((float) (outward * -30.0));
+					parts.item(items.get(i), 0.32F);
+				} else {
+					double radians = Math.toRadians(k * 95.0);
+					parts.push(Math.sin(radians) * 0.17 * outward, -0.48 - (k / 4) * 0.12, -Math.cos(radians) * 0.17);
+					parts.rotY((float) -(k * 95.0 * outward));
+					parts.item(items.get(i), 0.22F);
+				}
+
+				parts.pop();
+			}
+
 			parts.end();
 		}
 	}
@@ -306,7 +459,8 @@ public class BodyPartsLayer extends RenderLayer<AvatarRenderState, PlayerModel> 
 
 		/** A vanilla item, centered. */
 		void item(Item item, float scale) {
-			this.submit(new ItemStack(item), scale, 0.5, 0.5, 0.5);
+			Map<Item, ItemStack> cache = this.glint ? GLINT_STACKS : STACKS;
+			this.submit(cache.computeIfAbsent(item, BodyPartsLayer::stack), scale, 0.5, 0.5, 0.5);
 		}
 
 		/** One of the mod's body part models; (ax, ay, az) is the anchor inside the 1×1×1 model box. */
@@ -317,7 +471,7 @@ public class BodyPartsLayer extends RenderLayer<AvatarRenderState, PlayerModel> 
 		}
 
 		private void submit(ItemStack stack, float scale, double ax, double ay, double az) {
-			if (this.glint) {
+			if (this.glint && !stack.has(DataComponents.ENCHANTMENT_GLINT_OVERRIDE)) {
 				stack.set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true);
 			}
 

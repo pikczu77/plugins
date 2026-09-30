@@ -19,14 +19,17 @@ public final class Payloads {
 
 	/**
 	 * Server → client: the upgrades of one player (the body parts to draw, and the fist mining tier of the local player).
-	 * {@code selected} holds the selected power of each input group (ordinal + 1, 0 = none) packed per 8 bits.
+	 * {@code selected} holds the selected power of each input group (ordinal + 1, 0 = none) packed per 8 bits, the two
+	 * bonus longs hold the unlocked bonuses.
 	 */
-	public record SyncUpgrades(int entityId, long mask, int selected) implements CustomPacketPayload {
+	public record SyncUpgrades(int entityId, long mask, int selected, long bonusesLow, long bonusesHigh) implements CustomPacketPayload {
 		public static final Type<SyncUpgrades> TYPE = new Type<>(Upgrades.id("sync"));
 		public static final StreamCodec<RegistryFriendlyByteBuf, SyncUpgrades> CODEC = StreamCodec.composite(
 				ByteBufCodecs.VAR_INT, SyncUpgrades::entityId,
 				ByteBufCodecs.VAR_LONG, SyncUpgrades::mask,
 				ByteBufCodecs.VAR_INT, SyncUpgrades::selected,
+				ByteBufCodecs.LONG, SyncUpgrades::bonusesLow,
+				ByteBufCodecs.LONG, SyncUpgrades::bonusesHigh,
 				SyncUpgrades::new);
 
 		@Override

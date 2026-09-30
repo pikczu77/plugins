@@ -1,6 +1,9 @@
 package io.github.pikczu77.upgrades.util;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -8,11 +11,15 @@ import com.mojang.math.Transformation;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
+import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Brightness;
 import net.minecraft.world.entity.Display;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
 /**
@@ -22,6 +29,11 @@ import net.minecraft.world.level.block.state.BlockState;
 public final class TempDisplays {
 	private static final String TAG = "upgrades_temp";
 	private static final Set<UUID> ACTIVE = new HashSet<>();
+
+	private record Timed(ResourceKey<Level> dimension, UUID id, long removeAt) {
+	}
+
+	private static final List<Timed> TIMED = new ArrayList<>();
 
 	private TempDisplays() {
 	}
@@ -45,6 +57,32 @@ public final class TempDisplays {
 		return display;
 	}
 
+	/** A glowing outline of a block that disappears after the given number of ticks. */
+	public static void outline(ServerLevel level, BlockState state, BlockPos pos, int color, int ticks) {
+		Display.BlockDisplay display = box(level, state, pos.getX() + 0.02, pos.getY() + 0.02, pos.getZ() + 0.02, pos.getX() + 0.98,
+				pos.getY() + 0.98, pos.getZ() + 0.98, true);
+		display.setGlowingTag(true);
+		display.setGlowColorOverride(color);
+		TIMED.add(new Timed(level.dimension(), display.getUUID(), level.getGameTime() + ticks));
+	}
+
+	public static void tick(MinecraftServer server) {
+		Iterator<Timed> iterator = TIMED.iterator();
+
+		while (iterator.hasNext()) {
+			Timed timed = iterator.next();
+			ServerLevel level = server.getLevel(timed.dimension());
+
+			if (level == null || level.getGameTime() >= timed.removeAt()) {
+				iterator.remove();
+
+				if (level != null) {
+					remove(level, timed.id());
+				}
+			}
+		}
+	}
+
 	public static void remove(ServerLevel level, UUID id) {
 		ACTIVE.remove(id);
 		Entity entity = level.getEntity(id);
@@ -63,5 +101,6 @@ public final class TempDisplays {
 
 	public static void reset() {
 		ACTIVE.clear();
+		TIMED.clear();
 	}
 }

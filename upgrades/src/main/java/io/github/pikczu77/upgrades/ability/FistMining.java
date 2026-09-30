@@ -5,6 +5,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.state.BlockState;
 
+import io.github.pikczu77.upgrades.upgrade.Bonus;
 import io.github.pikczu77.upgrades.upgrade.Upgrade;
 import io.github.pikczu77.upgrades.upgrade.UpgradeAccess;
 
@@ -22,6 +23,15 @@ public final class FistMining {
 			new ItemStack(Items.NETHERITE_PICKAXE)
 	};
 
+	private static final ItemStack[] AXES = {
+			ItemStack.EMPTY,
+			new ItemStack(Items.WOODEN_AXE),
+			new ItemStack(Items.STONE_AXE),
+			new ItemStack(Items.IRON_AXE),
+			new ItemStack(Items.DIAMOND_AXE),
+			new ItemStack(Items.NETHERITE_AXE)
+	};
+
 	private FistMining() {
 	}
 
@@ -29,13 +39,30 @@ public final class FistMining {
 		return PICKAXES[Upgrade.fistTier(UpgradeAccess.mask(player))];
 	}
 
+	/** The Wax Off bonus: fists also chop like an axe of the same tier (at least wood). */
+	private static ItemStack axe(Player player) {
+		if (!UpgradeAccess.hasSpecial(player, Bonus.Special.FIST_AXE)) {
+			return ItemStack.EMPTY;
+		}
+
+		return AXES[Math.max(1, Upgrade.fistTier(UpgradeAccess.mask(player)))];
+	}
+
 	public static float destroySpeed(Player player, ItemStack held, BlockState state, float heldSpeed) {
-		ItemStack fist = fist(player);
-		return fist.isEmpty() ? heldSpeed : Math.max(heldSpeed, fist.getDestroySpeed(state));
+		float speed = heldSpeed;
+
+		for (ItemStack tool : new ItemStack[] {fist(player), axe(player)}) {
+			if (!tool.isEmpty()) {
+				speed = Math.max(speed, tool.getDestroySpeed(state));
+			}
+		}
+
+		return speed;
 	}
 
 	public static boolean correctTool(Player player, BlockState state) {
 		ItemStack fist = fist(player);
-		return !fist.isEmpty() && fist.isCorrectToolForDrops(state);
+		ItemStack axe = axe(player);
+		return !fist.isEmpty() && fist.isCorrectToolForDrops(state) || !axe.isEmpty() && axe.isCorrectToolForDrops(state);
 	}
 }

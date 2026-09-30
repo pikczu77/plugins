@@ -27,6 +27,8 @@ import net.minecraft.server.level.ServerPlayer;
 import io.github.pikczu77.upgrades.ability.Clones;
 import io.github.pikczu77.upgrades.ability.PortalGun;
 import io.github.pikczu77.upgrades.config.UpgradesConfig;
+import io.github.pikczu77.upgrades.upgrade.Bonus;
+import io.github.pikczu77.upgrades.upgrade.Unlockable;
 import io.github.pikczu77.upgrades.upgrade.Upgrade;
 import io.github.pikczu77.upgrades.upgrade.UpgradeManager;
 
@@ -35,11 +37,14 @@ import io.github.pikczu77.upgrades.upgrade.UpgradeManager;
  */
 public final class UpgradesCommand {
 	private static final SuggestionProvider<CommandSourceStack> UPGRADES = (context, builder) -> {
-		List<String> ids = new ArrayList<>();
-		ids.add("all");
+		List<String> ids = new ArrayList<>(List.of("all", "main", "bonus"));
 
 		for (Upgrade upgrade : Upgrade.VALUES) {
 			ids.add(upgrade.id());
+		}
+
+		for (Bonus bonus : Bonus.VALUES) {
+			ids.add(bonus.id());
 		}
 
 		return SharedSuggestionProvider.suggest(ids, builder);
@@ -63,6 +68,16 @@ public final class UpgradesCommand {
 						.then(Commands.argument("players", EntityArgument.players())
 								.then(Commands.argument("upgrade", StringArgumentType.word()).suggests(UPGRADES)
 										.executes(context -> change(context, false)))))
+				.then(Commands.literal("bonuses")
+						.executes(context -> listBonuses(context.getSource(), context.getSource().getPlayerOrException()))
+						.then(Commands.argument("player", EntityArgument.player())
+								.executes(context -> listBonuses(context.getSource(), EntityArgument.getPlayer(context, "player"))))
+						.then(Commands.literal("on").requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+								.executes(context -> apply(context.getSource(), config -> config.bonuses = true,
+										"Bonusowe ulepszenia (pozostałe osiągnięcia): WŁ")))
+						.then(Commands.literal("off").requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+								.executes(context -> apply(context.getSource(), config -> config.bonuses = false,
+										"Bonusowe ulepszenia (pozostałe osiągnięcia): WYŁ — tylko ulepszenia z filmu"))))
 				.then(Commands.literal("settings").executes(context -> settings(context.getSource())))
 				.then(setting("on", config -> config.enabled = true, "Ulepszenia włączone"))
 				.then(setting("off", config -> config.enabled = false, "Ulepszenia wyłączone (osiągnięcia zostają)"))
@@ -131,6 +146,7 @@ public final class UpgradesCommand {
 							UpgradesConfig config = UpgradesConfig.get();
 							UpgradesConfig defaults = new UpgradesConfig();
 							config.enabled = defaults.enabled;
+							config.bonuses = defaults.bonuses;
 							config.disabled = defaults.disabled;
 							config.powerMode = defaults.powerMode;
 							config.titles = defaults.titles;
@@ -180,12 +196,51 @@ public final class UpgradesCommand {
 			source.sendSuccess(() -> line, false);
 		}
 
+		int bonuses = Bonus.count(UpgradeManager.bonuses(player));
+		source.sendSuccess(() -> Component.literal(" + bonusy za pozostałe osiągnięcia: " + bonuses + "/" + Bonus.VALUES.size()
+				+ " (/upgrades bonuses)").withStyle(ChatFormatting.DARK_AQUA), false);
+		return count;
+	}
+
+	private static int listBonuses(CommandSourceStack source, ServerPlayer player) {
+		long[] bits = UpgradeManager.bonuses(player);
+		int count = Bonus.count(bits);
+		source.sendSuccess(() -> prefix().append(Component.literal("Bonusy gracza " + player.getScoreboardName() + ": " + count + "/"
+				+ Bonus.VALUES.size()).withStyle(ChatFormatting.GRAY)), false);
+		MutableComponent line = Component.empty();
+		int inLine = 0;
+
+		for (Bonus bonus : Bonus.VALUES) {
+			boolean has = Bonus.has(bits, bonus);
+			MutableComponent name = Component.literal(bonus.displayName())
+					.withStyle(has ? UpgradeManager.style(bonus).withBold(false) : net.minecraft.network.chat.Style.EMPTY.withColor(ChatFormatting.DARK_GRAY));
+
+			if (has) {
+				name.withStyle(style -> style.withHoverEvent(new net.minecraft.network.chat.HoverEvent.ShowText(
+						UpgradeManager.line(bonus, bonus.lines().getFirst()))));
+			}
+
+			line.append(inLine == 0 ? Component.literal(" ") : Component.literal(", ").withStyle(ChatFormatting.DARK_GRAY)).append(name);
+
+			if (++inLine == 6) {
+				MutableComponent full = line;
+				source.sendSuccess(() -> full, false);
+				line = Component.empty();
+				inLine = 0;
+			}
+		}
+
+		if (inLine > 0) {
+			MutableComponent full = line;
+			source.sendSuccess(() -> full, false);
+		}
+
 		return count;
 	}
 
 	private static int change(CommandContext<CommandSourceStack> context, boolean give) throws CommandSyntaxException {
 		Collection<ServerPlayer> players = EntityArgument.getPlayers(context, "players");
-		List<Upgrade> upgrades = parse(context);
+		List<? extends Unlockable> upgrades = parse(context);
 
 		if (upgrades.isEmpty()) {
 			return fail(context.getSource(), "Nie ma takiego ulepszenia: " + StringArgumentType.getString(context, "upgrade"));
@@ -194,7 +249,7 @@ public final class UpgradesCommand {
 		int changed = 0;
 
 		for (ServerPlayer player : players) {
-			for (Upgrade upgrade : upgrades) {
+			for (Unlockable upgrade : upgrades) {
 				if (UpgradeManager.setAdvancement(player, upgrade, give)) {
 					changed++;
 				}
@@ -208,37 +263,55 @@ public final class UpgradesCommand {
 	}
 
 	private static int toggle(CommandContext<CommandSourceStack> context, boolean enable) {
-		List<Upgrade> upgrades = parse(context);
+		List<? extends Unlockable> upgrades = parse(context);
 
 		if (upgrades.isEmpty()) {
 			return fail(context.getSource(), "Nie ma takiego ulepszenia: " + StringArgumentType.getString(context, "upgrade"));
 		}
 
 		return apply(context.getSource(), config -> {
-			for (Upgrade upgrade : upgrades) {
+			for (Unlockable upgrade : upgrades) {
 				if (enable) {
 					config.disabled.remove(upgrade.id());
 				} else {
 					config.disabled.add(upgrade.id());
 				}
 			}
-		}, (enable ? "Włączono: " : "Wyłączono: ") + (upgrades.size() == 1 ? upgrades.getFirst().displayName : "wszystkie ulepszenia"));
+		}, (enable ? "Włączono: " : "Wyłączono: ") + (upgrades.size() == 1 ? upgrades.getFirst().displayName() : upgrades.size() + " ulepszeń"));
 	}
 
-	private static List<Upgrade> parse(CommandContext<CommandSourceStack> context) {
+	private static List<? extends Unlockable> parse(CommandContext<CommandSourceStack> context) {
 		String id = StringArgumentType.getString(context, "upgrade");
 
-		if (id.equals("all")) {
-			return Upgrade.VALUES;
+		switch (id) {
+			case "all" -> {
+				List<Unlockable> all = new ArrayList<>(Upgrade.VALUES);
+				all.addAll(Bonus.VALUES);
+				return all;
+			}
+			case "main" -> {
+				return Upgrade.VALUES;
+			}
+			case "bonus" -> {
+				return Bonus.VALUES;
+			}
+			default -> {
+			}
 		}
 
 		Upgrade upgrade = Upgrade.byId(id);
-		return upgrade == null ? List.of() : List.of(upgrade);
+
+		if (upgrade != null) {
+			return List.of(upgrade);
+		}
+
+		Bonus bonus = Bonus.byId(id);
+		return bonus == null ? List.of() : List.of(bonus);
 	}
 
 	private static int settings(CommandSourceStack source) {
 		UpgradesConfig config = UpgradesConfig.get();
-		ok(source, "Ulepszenia: " + onOff(config.enabled) + ", moce: " + config.powerMode.description);
+		ok(source, "Ulepszenia: " + onOff(config.enabled) + ", bonusy: " + onOff(config.bonuses) + ", moce: " + config.powerMode.description);
 		ok(source, "Vein Miner: " + config.veinSizes[0] + " / " + config.veinSizes[1] + " / " + config.veinSizes[2] + " / "
 				+ config.veinSizes[3] + " bloków, kucanie = 1 blok: " + onOff(config.veinSneakSingle));
 		ok(source, "Klony: maks. " + config.maxClones + ", Następne Pokolenie: maks. " + config.multiplicityLimit
