@@ -1,0 +1,83 @@
+name: upgrades
+
+on:
+  push:
+    paths:
+      - 'upgrades/**'
+      - '.github/workflows/upgrades.yml'
+  pull_request:
+    paths:
+      - 'upgrades/**'
+      - '.github/workflows/upgrades.yml'
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: upgrades
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: gradle/actions/wrapper-validation@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'microsoft'
+          java-version: '25'
+      - uses: gradle/actions/setup-gradle@v4
+      - run: chmod +x ./gradlew ci/api-dump.sh
+
+      # Compiles the mod and runs the server game tests (src/gametest).
+      - name: Build and run server game tests
+        run: ./gradlew build --stacktrace
+
+      # Runs the remapped release jar on a real dedicated server and drives it over RCON (ci/rcon-smoke.py).
+      - name: Smoke test the release jar on a real dedicated server
+        timeout-minutes: 20
+        run: |
+          mkdir -p run/productionServer
+          echo "eula=true" > run/productionServer/eula.txt
+          printf 'level-type=minecraft\\:flat\nonline-mode=false\nenable-rcon=true\nrcon.port=25575\nrcon.password=upgrades\n' > run/productionServer/server.properties
+          ./gradlew runProductionServer --stacktrace < /dev/null > production-server.log 2>&1 &
+          server=$!
+          if python3 ci/rcon-smoke.py; then result=0; else result=1; fi
+          if [ $result -ne 0 ]; then kill $server || true; fi
+          wait $server || true
+          tail -n 60 production-server.log
+          if grep -q "Exception in server tick loop\|Encountered an unexpected exception" production-server.log; then result=1; fi
+          exit $result
+
+      - name: Minecraft API signatures (for debugging compile errors)
+        if: always()
+        run: ci/api-dump.sh
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: upgrades-mod
+          path: upgrades/build/libs/
+
+  client-test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'microsoft'
+          java-version: '25'
+      - uses: gradle/actions/setup-gradle@v4
+      - run: sudo apt-get update && sudo apt-get install -y xvfb
+      - run: chmod +x ./gradlew
+
+      # Starts a real Minecraft client, creates a world, runs the commands and takes screenshots.
+      - name: Run client game test
+        run: xvfb-run -a -s "-screen 0 1920x1080x24" ./gradlew runClientGameTest --stacktrace
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: client-test-screenshots
+          path: |
+            upgrades/build/run/clientGameTest/screenshots/
+            upgrades/build/run/clientGameTest/logs/

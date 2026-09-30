@@ -1,0 +1,16 @@
+{
+	"required": true,
+	"package": "io.github.pikczu77.upgrades.mixin",
+	"compatibilityLevel": "JAVA_21",
+	"mixins": [
+		"BlockMixin",
+		"EntityMixin",
+		"LivingEntityMixin",
+		"PlayerAdvancementsMixin",
+		"PlayerMixin",
+		"ProjectileMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

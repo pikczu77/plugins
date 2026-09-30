@@ -1,0 +1,11 @@
+{
+	"required": true,
+	"package": "io.github.pikczu77.upgrades.client.mixin",
+	"compatibilityLevel": "JAVA_21",
+	"client": [
+		"MinecraftMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

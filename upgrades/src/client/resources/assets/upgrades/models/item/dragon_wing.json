@@ -1,0 +1,81 @@
+{
+	"textures": {
+		"wing": "upgrades:item/dragon_wing",
+		"particle": "upgrades:item/dragon_wing"
+	},
+	"elements": [
+		{
+			"from": [
+				0,
+				0,
+				7.75
+			],
+			"to": [
+				16,
+				16,
+				8.25
+			],
+			"faces": {
+				"north": {
+					"texture": "#wing",
+					"uv": [
+						0,
+						0,
+						16,
+						16
+					]
+				},
+				"south": {
+					"texture": "#wing",
+					"uv": [
+						0,
+						0,
+						16,
+						16
+					]
+				}
+			}
+		},
+		{
+			"from": [
+				0,
+				13,
+				7.5
+			],
+			"to": [
+				16,
+				14.5,
+				8.5
+			],
+			"faces": {
+				"up": {
+					"texture": "#wing",
+					"uv": [
+						0,
+						1,
+						16,
+						2
+					]
+				},
+				"down": {
+					"texture": "#wing",
+					"uv": [
+						0,
+						1,
+						16,
+						2
+					]
+				},
+				"east": {
+					"texture": "#wing",
+					"uv": [
+						0,
+						1,
+						16,
+						2
+					]
+				}
+			}
+		}
+	]
+}

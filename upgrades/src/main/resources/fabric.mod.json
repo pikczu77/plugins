@@ -1,0 +1,37 @@
+{
+	"schemaVersion": 1,
+	"id": "upgrades",
+	"version": "${version}",
+	"name": "Body Upgrades",
+	"description": "Każde osiągnięcie ulepsza twoje ciało — nowe moce i części ciała (na podstawie filmu „Minecraft but you can UPGRADE Yourself Infinitely”).",
+	"authors": [
+		"pikczu77"
+	],
+	"contact": {
+		"sources": "https://github.com/pikczu77/plugins"
+	},
+	"license": "MIT",
+	"icon": "assets/upgrades/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"io.github.pikczu77.upgrades.Upgrades"
+		],
+		"client": [
+			"io.github.pikczu77.upgrades.client.UpgradesClient"
+		]
+	},
+	"mixins": [
+		"upgrades.mixins.json",
+		{
+			"config": "upgrades.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.17.3",
+		"minecraft": "~1.21.11",
+		"java": ">=21",
+		"fabric-api": "*"
+	}
+}

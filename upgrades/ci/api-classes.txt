@@ -1,0 +1,16 @@
+# Class [filter] - members the mod relies on (see ci/api-dump.sh)
+net.minecraft.server.PlayerAdvancements award|revoke|getOrStartProgress
+net.minecraft.world.entity.player.Player getDestroySpeed|hasCorrectToolForDrops|getSleepTimer|stopSleepInBed
+net.minecraft.world.entity.LivingEntity startSleeping|dropAllDeathLoot|hurtServer
+net.minecraft.world.entity.Entity deflection|spawnAtLocation|considersEntityAsAlly
+net.minecraft.world.entity.projectile.Projectile deflect|setOwner
+net.minecraft.world.level.block.Block popResource
+net.minecraft.world.attribute.BedRule canSleep
+net.minecraft.client.Minecraft startUseItem
+net.minecraft.client.renderer.entity.player.AvatarRenderer AvatarRenderer\(
+net.minecraft.client.renderer.entity.state.AvatarRenderState id|skin
+net.minecraft.client.renderer.item.ItemModelResolver updateForTopItem
+net.minecraft.client.renderer.item.ItemStackRenderState submit
+net.minecraft.world.item.trading.Merchant
+net.minecraft.world.entity.Display$BlockDisplay setBlockState
+net.minecraft.gametest.framework.GameTestHelper assertTrue|spawn\(|absoluteVec|absolutePos|succeed\(
