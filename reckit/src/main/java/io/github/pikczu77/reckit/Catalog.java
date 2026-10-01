@@ -37,8 +37,9 @@ public record Catalog(List<Pack> packs) {
 	 * @param glint whether the item always has the enchantment glint
 	 * @param color RGB color of the item name, or null for the default white
 	 * @param bold whether the item name is bold
+	 * @param head whether the item can be worn on the head (right click), shown with its "head" model transform
 	 */
-	public record Entry(String id, int stack, boolean glint, @Nullable Integer color, boolean bold) {
+	public record Entry(String id, int stack, boolean glint, @Nullable Integer color, boolean bold, boolean head) {
 	}
 
 	public static Catalog load() {
@@ -72,7 +73,8 @@ public record Catalog(List<Pack> packs) {
 				boolean glint = itemJson.has("glint") && itemJson.get("glint").getAsBoolean();
 				Integer color = itemJson.has("color") ? Integer.parseInt(itemJson.get("color").getAsString().substring(1), 16) : null;
 				boolean bold = itemJson.has("bold") && itemJson.get("bold").getAsBoolean();
-				items.add(new Entry(id, stack, glint, color, bold));
+				boolean head = itemJson.has("head") && itemJson.get("head").getAsBoolean();
+				items.add(new Entry(id, stack, glint, color, bold, head));
 			}
 
 			require(!items.isEmpty(), "Pack " + packId + " has no items");

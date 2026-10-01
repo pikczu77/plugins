@@ -1,0 +1,333 @@
+{
+	"id": "dumb_ideas",
+	"name": {
+		"en_us": "Dumb Ideas",
+		"pl_pl": "Głupie pomysły"
+	},
+	"icon": "rageblade",
+	"source": {
+		"title": "I added YOUR DUMB IDEAS to Minecraft...",
+		"author": "Diamond_dev",
+		"url": "https://www.planetminecraft.com/data-pack/i-added-your-dumb-ideas-to-minecraft/",
+		"minecraft": "1.18",
+		"files": [
+			"dumb-ideas-1-2.zip",
+			"dumb-ideas-resourcepack.zip"
+		]
+	},
+	"items": [
+		{
+			"id": "rageblade",
+			"name": {
+				"en_us": "Rageblade",
+				"pl_pl": "Rageblade"
+			},
+			"model": "item/custom/rageblade",
+			"color": "#FFBB00",
+			"stack": 1
+		},
+		{
+			"id": "rageblade_fragment",
+			"name": {
+				"en_us": "Rageblade Fragment",
+				"pl_pl": "Odłamek Rageblade"
+			},
+			"texture": "item/disc_fragment_5",
+			"parent": "minecraft:item/generated",
+			"color": "#FFAA00",
+			"stack": 64
+		},
+		{
+			"id": "tall_hand",
+			"name": {
+				"en_us": "Tall Hand",
+				"pl_pl": "Wysoka ręka"
+			},
+			"model": "item/custom/tall_hand",
+			"color": "#0F9FFF",
+			"stack": 1,
+			"display": {
+				"thirdperson_righthand": {
+					"rotation": [
+						88.25,
+						0,
+						0
+					],
+					"translation": [
+						0,
+						6,
+						-13
+					],
+					"scale": [
+						0.6,
+						0.6,
+						0.6
+					]
+				},
+				"thirdperson_lefthand": {
+					"rotation": [
+						88.25,
+						0,
+						0
+					],
+					"translation": [
+						0,
+						6,
+						-13
+					],
+					"scale": [
+						0.6,
+						0.6,
+						0.6
+					]
+				}
+			}
+		},
+		{
+			"id": "grow_arrow",
+			"name": {
+				"en_us": "Grow Arrow",
+				"pl_pl": "Strzała wzrostu"
+			},
+			"model": "item/custom/grow",
+			"color": "#1CC72B",
+			"stack": 1
+		},
+		{
+			"id": "shrink_arrow",
+			"name": {
+				"en_us": "Shrink Arrow",
+				"pl_pl": "Strzała zmniejszania"
+			},
+			"model": "item/custom/shrink",
+			"color": "#C81C1C",
+			"stack": 1
+		},
+		{
+			"id": "llama_helmet",
+			"name": {
+				"en_us": "Llama Helmet",
+				"pl_pl": "Lamia głowa"
+			},
+			"model": "item/custom/llama_head",
+			"head": true,
+			"color": "#FFAA00",
+			"bold": true,
+			"stack": 1
+		},
+		{
+			"id": "llama_spit",
+			"name": {
+				"en_us": "Llama Spit",
+				"pl_pl": "Plucie lamy"
+			},
+			"model": "item/custom/llama",
+			"color": "#AAAAAA",
+			"stack": 16
+		},
+		{
+			"id": "water_staff",
+			"name": {
+				"en_us": "Water Staff",
+				"pl_pl": "Laska wody"
+			},
+			"model": "item/custom/water_staff",
+			"color": "#19F7FF",
+			"bold": true,
+			"stack": 1
+		},
+		{
+			"id": "chicken_pie",
+			"name": {
+				"en_us": "Chicken Pie",
+				"pl_pl": "Kurzy placek"
+			},
+			"model": "item/custom/chick_pie",
+			"color": "#FFF4F0",
+			"bold": true,
+			"stack": 1
+		},
+		{
+			"id": "small_multi_tool",
+			"name": {
+				"en_us": "Multi-Tool",
+				"pl_pl": "Multinarzędzie"
+			},
+			"model": "item/custom/multi_tool",
+			"color": "#12FFE7",
+			"bold": true,
+			"stack": 1
+		},
+		{
+			"id": "globe",
+			"name": {
+				"en_us": "Globe",
+				"pl_pl": "Globus"
+			},
+			"model": "item/custom/globe",
+			"stack": 1
+		},
+		{
+			"id": "lammy",
+			"name": {
+				"en_us": "Lammy",
+				"pl_pl": "Lammy"
+			},
+			"model": "item/custom/lammy_spawn",
+			"stack": 1
+		},
+		{
+			"id": "buff_chick",
+			"name": {
+				"en_us": "Buff Chick",
+				"pl_pl": "Napakowany kurczak"
+			},
+			"model": "item/custom/buff_chick",
+			"stack": 1
+		},
+		{
+			"id": "black_diamond",
+			"name": {
+				"en_us": "Black Diamond",
+				"pl_pl": "Czarny diament"
+			},
+			"texture": "item/diamond",
+			"parent": "minecraft:item/generated",
+			"stack": 64
+		},
+		{
+			"id": "black_diamond_sword",
+			"name": {
+				"en_us": "Black Diamond Sword",
+				"pl_pl": "Czarny diamentowy miecz"
+			},
+			"texture": "item/diamond_sword",
+			"stack": 1
+		},
+		{
+			"id": "black_diamond_pickaxe",
+			"name": {
+				"en_us": "Black Diamond Pickaxe",
+				"pl_pl": "Czarny diamentowy kilof"
+			},
+			"texture": "item/diamond_pickaxe",
+			"stack": 1
+		},
+		{
+			"id": "black_diamond_axe",
+			"name": {
+				"en_us": "Black Diamond Axe",
+				"pl_pl": "Czarna diamentowa siekiera"
+			},
+			"texture": "item/diamond_axe",
+			"stack": 1
+		},
+		{
+			"id": "black_diamond_shovel",
+			"name": {
+				"en_us": "Black Diamond Shovel",
+				"pl_pl": "Czarna diamentowa łopata"
+			},
+			"texture": "item/diamond_shovel",
+			"stack": 1
+		},
+		{
+			"id": "black_diamond_hoe",
+			"name": {
+				"en_us": "Black Diamond Hoe",
+				"pl_pl": "Czarna diamentowa motyka"
+			},
+			"texture": "item/diamond_hoe",
+			"stack": 1
+		},
+		{
+			"id": "black_diamond_helmet",
+			"name": {
+				"en_us": "Black Diamond Helmet",
+				"pl_pl": "Czarny diamentowy hełm"
+			},
+			"texture": "item/diamond_helmet",
+			"parent": "minecraft:item/generated",
+			"stack": 1
+		},
+		{
+			"id": "black_diamond_chestplate",
+			"name": {
+				"en_us": "Black Diamond Chestplate",
+				"pl_pl": "Czarny diamentowy napierśnik"
+			},
+			"texture": "item/diamond_chestplate",
+			"parent": "minecraft:item/generated",
+			"stack": 1
+		},
+		{
+			"id": "black_diamond_leggings",
+			"name": {
+				"en_us": "Black Diamond Leggings",
+				"pl_pl": "Czarne diamentowe spodnie"
+			},
+			"texture": "item/diamond_leggings",
+			"parent": "minecraft:item/generated",
+			"stack": 1
+		},
+		{
+			"id": "black_diamond_boots",
+			"name": {
+				"en_us": "Black Diamond Boots",
+				"pl_pl": "Czarne diamentowe buty"
+			},
+			"texture": "item/diamond_boots",
+			"parent": "minecraft:item/generated",
+			"stack": 1
+		},
+		{
+			"id": "diamond_stick",
+			"name": {
+				"en_us": "Diamond Stick",
+				"pl_pl": "Diamentowy patyk"
+			},
+			"texture": "item/stick",
+			"stack": 64
+		},
+		{
+			"id": "diamond_boat",
+			"name": {
+				"en_us": "Diamond Boat",
+				"pl_pl": "Diamentowa łódka"
+			},
+			"texture": "item/oak_boat",
+			"parent": "minecraft:item/generated",
+			"stack": 1
+		},
+		{
+			"id": "diamond_chest_boat",
+			"name": {
+				"en_us": "Diamond Boat with Chest",
+				"pl_pl": "Diamentowa łódka ze skrzynią"
+			},
+			"texture": "item/oak_chest_boat",
+			"parent": "minecraft:item/generated",
+			"stack": 1
+		},
+		{
+			"id": "diamond_door",
+			"name": {
+				"en_us": "Diamond Door",
+				"pl_pl": "Diamentowe drzwi"
+			},
+			"texture": "item/oak_door",
+			"parent": "minecraft:item/generated",
+			"stack": 64
+		},
+		{
+			"id": "diamond_sign",
+			"name": {
+				"en_us": "Diamond Sign",
+				"pl_pl": "Diamentowa tabliczka"
+			},
+			"texture": "item/oak_sign",
+			"parent": "minecraft:item/generated",
+			"stack": 16
+		}
+	]
+}

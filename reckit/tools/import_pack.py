@@ -31,6 +31,8 @@ README = "README.md"
 # Textures bigger than this that are not square or not a multiple of 16 are padded and scaled down, so they do not
 # limit the mipmaps of the whole atlas (and flat items do not get thousands of edge faces).
 MAX_ODD_TEXTURE = 128
+# Still images bigger than this are scaled down: an item never needs more, and flat items get one face per pixel edge.
+MAX_TEXTURE = 256
 
 
 def load_json(path):
@@ -38,10 +40,13 @@ def load_json(path):
         return json.load(f)
 
 
-def save_json(path, data):
+def save_json(path, data, compact=False):
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent="\t")
+        if compact:
+            json.dump(data, f, ensure_ascii=False, separators=(",", ":"))
+        else:
+            json.dump(data, f, ensure_ascii=False, indent="\t")
         f.write("\n")
 
 
@@ -162,6 +167,10 @@ class Importer:
             square.paste(picture.convert("RGBA"), ((side - width) // 2, (side - height) // 2))
             square.resize((MAX_ODD_TEXTURE, MAX_ODD_TEXTURE), Image.LANCZOS).save(dest)
             print(f"  {ref}: {width}x{height} padded and scaled to {MAX_ODD_TEXTURE}x{MAX_ODD_TEXTURE}")
+        elif mcmeta is None and max(width, height) > MAX_TEXTURE:
+            scale = MAX_TEXTURE / max(width, height)
+            picture.resize((int(width * scale), int(height * scale)), Image.LANCZOS).save(dest)
+            print(f"  {ref}: {width}x{height} scaled to {int(width * scale)}x{int(height * scale)}")
         else:
             with open(dest, "wb") as f:
                 f.write(image)
@@ -215,11 +224,18 @@ class Importer:
                     self.problems.append(f"{ref}: texture '{key}' replaced with {fallback}")
         if "elements" in model and fallback and "particle" not in textures:
             textures["particle"] = fallback
-        save_json(f"{ASSETS}/{NS}/models/{split_id(ref)[1]}.json", model)
+        # Models are generated and can have thousands of elements, so they are stored on one line.
+        save_json(f"{ASSETS}/{NS}/models/{split_id(ref)[1]}.json", model, compact=True)
 
     def item(self, entry):
         if "model" in entry:
             model = self.model(entry["model"])
+            if "display" in entry:
+                # Own copy of the model with some display transforms replaced (e.g. one hidden in third person).
+                source = load_json(f"{ASSETS}/{NS}/models/{split_id(model)[1]}.json")
+                source["display"] = {**source.get("display", {}), **entry["display"]}
+                model = f"{NS}:item/{self.pack}/{self.unique('models', entry['id'])}"
+                save_json(f"{ASSETS}/{NS}/models/{split_id(model)[1]}.json", source, compact=True)
         else:
             model = f"{NS}:item/{self.pack}/{self.unique('models', entry['id'])}"
             texture = entry["texture"]
@@ -228,6 +244,22 @@ class Importer:
                 source["display"] = entry["display"]
             self.write_model(model, source, self.atlas_of([texture]))
         save_json(f"{ASSETS}/{NS}/items/{entry['id']}.json", {"model": {"type": "minecraft:model", "model": model}})
+
+    def remove_unused_models(self, item_ids):
+        """Deletes copied models no item uses any more (the originals of models with replaced display transforms)."""
+        used, todo = set(), []
+        for item_id in item_ids:
+            todo.append(load_json(f"{ASSETS}/{NS}/items/{item_id}.json")["model"]["model"])
+        while todo:
+            ref = todo.pop()
+            ns, path = split_id(ref)
+            file = os.path.normpath(f"{ASSETS}/{ns}/models/{path}.json")
+            if ns == NS and file not in used and os.path.isfile(file):
+                used.add(file)
+                todo.extend([load_json(file)["parent"]] if "parent" in load_json(file) else [])
+        for file in glob.glob(f"{ASSETS}/{NS}/models/item/{self.pack}/*.json"):
+            if os.path.normpath(file) not in used:
+                os.remove(file)
 
 
 def resource_root(path, temp):
@@ -271,7 +303,7 @@ def regenerate():
         readme.append("| Przedmiot | Komenda |\n|---|---|")
         for entry in recipe["items"]:
             item = {"id": entry["id"]}
-            for key in ("stack", "glint", "color", "bold"):
+            for key in ("stack", "glint", "color", "bold", "head"):
                 if key in entry:
                     item[key] = entry[key]
             items.append(item)
@@ -307,6 +339,7 @@ def main():
         importer = Importer(recipe, resource_root(sys.argv[2], temp), VanillaAssets())
         for entry in recipe["items"]:
             importer.item(entry)
+        importer.remove_unused_models([entry["id"] for entry in recipe["items"]])
 
     if importer.atlas:
         atlas = load_json(ATLAS) if os.path.isfile(ATLAS) else {"sources": []}

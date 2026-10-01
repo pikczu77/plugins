@@ -12,6 +12,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -48,6 +49,11 @@ public final class PropItems {
 
 		if (entry.glint()) {
 			properties.component(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true);
+		}
+
+		if (entry.head()) {
+			// No equipment asset, so the item model itself is drawn on the head.
+			properties.equippable(EquipmentSlot.HEAD);
 		}
 
 		return Registry.register(BuiltInRegistries.ITEM, key, new PropItem(properties, entry.color(), entry.bold()));

@@ -1,7 +1,1 @@
-{
-	"credit": "Made by Diamond_DP",
-	"parent": "minecraft:item/handheld",
-	"textures": {
-		"layer0": "reckit:item/blocks_drop_custom_items/emerald_pickaxe"
-	}
-}
+{"credit":"Made by Diamond_DP","parent":"minecraft:item/handheld","textures":{"layer0":"reckit:item/blocks_drop_custom_items/emerald_pickaxe"}}

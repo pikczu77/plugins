@@ -2,6 +2,7 @@ package io.github.pikczu77.reckit.test;
 
 import java.util.List;
 
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.item.Item;
@@ -30,6 +31,7 @@ public class ReckitGameTest {
 				ItemStack stack = new ItemStack(item);
 				helper.assertTrue(stack.getMaxStackSize() == entry.stack(), "Wrong stack size of " + entry.id());
 				helper.assertTrue(stack.hasFoil() == entry.glint(), "Wrong glint of " + entry.id());
+				helper.assertTrue(stack.has(DataComponents.EQUIPPABLE) == entry.head(), "Wrong head slot of " + entry.id());
 			}
 		}
 

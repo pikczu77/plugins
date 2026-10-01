@@ -2,13 +2,16 @@ package io.github.pikczu77.reckit.test;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 
 import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
@@ -21,7 +24,7 @@ import io.github.pikczu77.reckit.Reckit;
 
 /**
  * Starts a real client and takes screenshots of every pack's creative tab and of every prop held in first and third
- * person. Screenshots land in the run directory (build/run/clientGameTest/screenshots).
+ * person (and worn, for head props). Screenshots land in the run directory (build/run/clientGameTest/screenshots).
  */
 @SuppressWarnings("UnstableApiUsage")
 public class ReckitClientGameTest implements FabricClientGameTest {
@@ -41,17 +44,28 @@ public class ReckitClientGameTest implements FabricClientGameTest {
 			singleplayer.getClientWorld().waitForChunksRender();
 			context.runOnClient(minecraft -> minecraft.gui.getChat().clearMessages(false));
 
+			// RECKIT_ONLY=id1,id2 limits the screenshots to a few props (when tuning their models).
+			String only = System.getenv("RECKIT_ONLY");
+			Set<String> ids = only == null ? null : Set.of(only.split(","));
+
 			for (Map.Entry<String, List<Item>> pack : PropItems.byPack().entrySet()) {
-				creativeTab(context, pack.getKey());
+				if (ids == null) {
+					creativeTab(context, server, pack.getKey());
+				}
 
 				for (Item item : pack.getValue()) {
-					held(context, server, pack.getKey(), BuiltInRegistries.ITEM.getKey(item).getPath());
+					String id = BuiltInRegistries.ITEM.getKey(item).getPath();
+
+					if (ids == null || ids.contains(id)) {
+						held(context, server, pack.getKey(), id);
+					}
 				}
 			}
 		}
 	}
 
-	private static void creativeTab(ClientGameTestContext context, String pack) {
+	private static void creativeTab(ClientGameTestContext context, TestServerContext server, String pack) {
+		server.runCommand("item replace entity @a weapon.mainhand with minecraft:air");
 		context.setScreen(() -> {
 			LocalPlayer player = Minecraft.getInstance().player;
 			return new CreativeModeInventoryScreen(player, player.connection.enabledFeatures(), true);
@@ -80,5 +94,12 @@ public class ReckitClientGameTest implements FabricClientGameTest {
 		});
 		context.waitTicks(3);
 		context.takeScreenshot("reckit-" + pack + "-" + id + "-3rd");
+
+		if (new ItemStack(BuiltInRegistries.ITEM.getValue(Reckit.id(id))).has(DataComponents.EQUIPPABLE)) {
+			server.runCommand("item replace entity @a armor.head with reckit:" + id);
+			context.waitTicks(3);
+			context.takeScreenshot("reckit-" + pack + "-" + id + "-head");
+			server.runCommand("item replace entity @a armor.head with minecraft:air");
+		}
 	}
 }

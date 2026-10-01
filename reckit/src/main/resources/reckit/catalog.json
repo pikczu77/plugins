@@ -279,6 +279,139 @@
 					"bold": true
 				}
 			]
+		},
+		{
+			"id": "dumb_ideas",
+			"icon": "rageblade",
+			"items": [
+				{
+					"id": "rageblade",
+					"stack": 1,
+					"color": "#FFBB00"
+				},
+				{
+					"id": "rageblade_fragment",
+					"stack": 64,
+					"color": "#FFAA00"
+				},
+				{
+					"id": "tall_hand",
+					"stack": 1,
+					"color": "#0F9FFF"
+				},
+				{
+					"id": "grow_arrow",
+					"stack": 1,
+					"color": "#1CC72B"
+				},
+				{
+					"id": "shrink_arrow",
+					"stack": 1,
+					"color": "#C81C1C"
+				},
+				{
+					"id": "llama_helmet",
+					"stack": 1,
+					"color": "#FFAA00",
+					"bold": true,
+					"head": true
+				},
+				{
+					"id": "llama_spit",
+					"stack": 16,
+					"color": "#AAAAAA"
+				},
+				{
+					"id": "water_staff",
+					"stack": 1,
+					"color": "#19F7FF",
+					"bold": true
+				},
+				{
+					"id": "chicken_pie",
+					"stack": 1,
+					"color": "#FFF4F0",
+					"bold": true
+				},
+				{
+					"id": "small_multi_tool",
+					"stack": 1,
+					"color": "#12FFE7",
+					"bold": true
+				},
+				{
+					"id": "globe",
+					"stack": 1
+				},
+				{
+					"id": "lammy",
+					"stack": 1
+				},
+				{
+					"id": "buff_chick",
+					"stack": 1
+				},
+				{
+					"id": "black_diamond",
+					"stack": 64
+				},
+				{
+					"id": "black_diamond_sword",
+					"stack": 1
+				},
+				{
+					"id": "black_diamond_pickaxe",
+					"stack": 1
+				},
+				{
+					"id": "black_diamond_axe",
+					"stack": 1
+				},
+				{
+					"id": "black_diamond_shovel",
+					"stack": 1
+				},
+				{
+					"id": "black_diamond_hoe",
+					"stack": 1
+				},
+				{
+					"id": "black_diamond_helmet",
+					"stack": 1
+				},
+				{
+					"id": "black_diamond_chestplate",
+					"stack": 1
+				},
+				{
+					"id": "black_diamond_leggings",
+					"stack": 1
+				},
+				{
+					"id": "black_diamond_boots",
+					"stack": 1
+				},
+				{
+					"id": "diamond_stick",
+					"stack": 64
+				},
+				{
+					"id": "diamond_boat",
+					"stack": 1
+				},
+				{
+					"id": "diamond_chest_boat",
+					"stack": 1
+				},
+				{
+					"id": "diamond_door",
+					"stack": 64
+				},
+				{
+					"id": "diamond_sign",
+					"stack": 16
+				}
+			]
 		}
 	]
 }

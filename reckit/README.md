@@ -22,7 +22,7 @@ Na serwerze mod musi być **na serwerze i u wszystkich graczy** (przedmioty są 
 ## Przedmioty
 
 Lista generowana przez `tools/import_pack.py` z plików w `sources/`. Podgląd każdego przedmiotu w ręce (pierwsza i trzecia
-osoba): [Bloki dropią customowe itemy](docs/blocks_drop_custom_items.png).
+osoba): [Bloki dropią customowe itemy](docs/blocks_drop_custom_items.png), [Głupie pomysły](docs/dumb_ideas.png).
 
 ![Zakładka w trybie kreatywnym](docs/blocks_drop_custom_items_tab.png)
 
@@ -85,6 +85,41 @@ osoba): [Bloki dropią customowe itemy](docs/blocks_drop_custom_items.png).
 | Wiśniowy staw | `/give @s reckit:cherry_pond` |
 | Bambusowa chatka | `/give @s reckit:bamboo_hut` |
 
+### Głupie pomysły
+
+Źródło: [I added YOUR DUMB IDEAS to Minecraft...](https://www.planetminecraft.com/data-pack/i-added-your-dumb-ideas-to-minecraft/) (Diamond_dev, Minecraft 1.18).
+
+| Przedmiot | Komenda |
+|---|---|
+| Rageblade | `/give @s reckit:rageblade` |
+| Odłamek Rageblade | `/give @s reckit:rageblade_fragment` |
+| Wysoka ręka | `/give @s reckit:tall_hand` |
+| Strzała wzrostu | `/give @s reckit:grow_arrow` |
+| Strzała zmniejszania | `/give @s reckit:shrink_arrow` |
+| Lamia głowa | `/give @s reckit:llama_helmet` |
+| Plucie lamy | `/give @s reckit:llama_spit` |
+| Laska wody | `/give @s reckit:water_staff` |
+| Kurzy placek | `/give @s reckit:chicken_pie` |
+| Multinarzędzie | `/give @s reckit:small_multi_tool` |
+| Globus | `/give @s reckit:globe` |
+| Lammy | `/give @s reckit:lammy` |
+| Napakowany kurczak | `/give @s reckit:buff_chick` |
+| Czarny diament | `/give @s reckit:black_diamond` |
+| Czarny diamentowy miecz | `/give @s reckit:black_diamond_sword` |
+| Czarny diamentowy kilof | `/give @s reckit:black_diamond_pickaxe` |
+| Czarna diamentowa siekiera | `/give @s reckit:black_diamond_axe` |
+| Czarna diamentowa łopata | `/give @s reckit:black_diamond_shovel` |
+| Czarna diamentowa motyka | `/give @s reckit:black_diamond_hoe` |
+| Czarny diamentowy hełm | `/give @s reckit:black_diamond_helmet` |
+| Czarny diamentowy napierśnik | `/give @s reckit:black_diamond_chestplate` |
+| Czarne diamentowe spodnie | `/give @s reckit:black_diamond_leggings` |
+| Czarne diamentowe buty | `/give @s reckit:black_diamond_boots` |
+| Diamentowy patyk | `/give @s reckit:diamond_stick` |
+| Diamentowa łódka | `/give @s reckit:diamond_boat` |
+| Diamentowa łódka ze skrzynią | `/give @s reckit:diamond_chest_boat` |
+| Diamentowe drzwi | `/give @s reckit:diamond_door` |
+| Diamentowa tabliczka | `/give @s reckit:diamond_sign` |
+
 <!-- items:end -->
 
 ## Jak to jest zbudowane
@@ -113,7 +148,9 @@ osoba): [Bloki dropią customowe itemy](docs/blocks_drop_custom_items.png).
    - `id` — nazwa w `/give` (`reckit:ruby_sword`), unikalna w całym modzie,
    - `model` — model z paczki tekstur albo `texture` — sama tekstura (zrobi się z niej płaski przedmiot w ręce),
    - `stack` — ile mieści się w jednym slocie (domyślnie 64),
-   - `glint` — zawsze świeci jak zaklęty, `color` — kolor nazwy, `bold` — pogrubiona nazwa.
+   - `glint` — zawsze świeci jak zaklęty, `color` — kolor nazwy, `bold` — pogrubiona nazwa,
+   - `head` — można założyć na głowę (PPM), np. hełmy i czapki,
+   - `display` — podmienia ustawienia modelu w ręce/na głowie/w GUI (np. gdy oryginał chowa przedmiot w trzeciej osobie).
 
    `icon` paczki to przedmiot na ikonie zakładki (domyślnie pierwszy).
 3. `python3 tools/import_pack.py sources/<paczka>.json <paczka tekstur .zip>` kopiuje modele i tekstury (z poprawionymi
@@ -121,7 +158,9 @@ osoba): [Bloki dropią customowe itemy](docs/blocks_drop_custom_items.png).
 
 `python3 tools/check_assets.py` (także w `./gradlew build`) sprawdza, czy każdy przedmiot ma definicję, modele,
 tekstury i nazwy w obu językach. `./gradlew runClientGameTest` uruchamia prawdziwego klienta i robi zrzuty ekranu
-każdej zakładki i każdego przedmiotu w ręce (pierwsza i trzecia osoba) do `build/run/clientGameTest/screenshots`.
+każdej zakładki i każdego przedmiotu w ręce (pierwsza i trzecia osoba, przedmioty na głowę także założone) do
+`build/run/clientGameTest/screenshots`; `RECKIT_ONLY=id1,id2` ogranicza zrzuty do wybranych przedmiotów.
+`python3 tools/contact_sheet.py` składa je w jeden podgląd na paczkę (`build/contact-sheets`).
 
 ## Licencja
 

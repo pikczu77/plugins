@@ -72,6 +72,8 @@ def check_texture(ref, where):
             errors.append(f"{where}: vanilla texture {ref} is not on an atlas (add it to {ATLAS})")
         return
     file = f"{ASSETS}/{ns}/textures/{path}.png"
+    if os.path.normpath(file) in used_textures:
+        return
     used_textures.add(os.path.normpath(file))
     if not os.path.isfile(file):
         errors.append(f"{where}: missing texture {ref} ({file})")
@@ -81,15 +83,10 @@ def check_texture(ref, where):
         errors.append(f"{file}: not a PNG file")
         return
     width, height = size
-    if height != width:
-        if height % width == 0 and os.path.isfile(file + ".mcmeta"):
-            used_textures.add(os.path.normpath(file + ".mcmeta"))
-        elif height % width == 0:
-            warnings.append(f"{file}: {width}x{height} looks like an animation strip but has no .mcmeta")
-        else:
-            warnings.append(f"{file}: not square ({width}x{height})")
-    elif os.path.isfile(file + ".mcmeta"):
+    if os.path.isfile(file + ".mcmeta"):
         used_textures.add(os.path.normpath(file + ".mcmeta"))
+    elif height > width and height % width == 0 and width <= 32:
+        warnings.append(f"{file}: {width}x{height} looks like an animation strip but has no .mcmeta")
 
 
 def chain_textures(ref):
@@ -169,6 +166,8 @@ def main():
         lang_keys.add(key)
         for item in pack["items"]:
             item_id = item["id"]
+            if item_id in item_ids:
+                errors.append(f"catalog: item id {item_id} is used twice")
             item_ids.add(item_id)
             lang_keys.add(f"item.{NS}.{item_id}")
             definition = f"{ASSETS}/{NS}/items/{item_id}.json"
