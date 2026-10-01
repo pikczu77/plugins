@@ -26,8 +26,8 @@ import net.fabricmc.loader.api.FabricLoader;
 public record Catalog(List<Pack> packs) {
 	public static final String PATH = "reckit/catalog.json";
 
-	/** A source datapack/resource pack. {@code source} is only for credits and is not used by the game. */
-	public record Pack(String id, List<Entry> items) {
+	/** A source datapack/resource pack, shown as a creative tab with the {@code icon} item (the first item by default). */
+	public record Pack(String id, String icon, List<Entry> items) {
 	}
 
 	/**
@@ -36,8 +36,9 @@ public record Catalog(List<Pack> packs) {
 	 * @param stack max stack size (1-99)
 	 * @param glint whether the item always has the enchantment glint
 	 * @param color RGB color of the item name, or null for the default white
+	 * @param bold whether the item name is bold
 	 */
-	public record Entry(String id, int stack, boolean glint, @Nullable Integer color) {
+	public record Entry(String id, int stack, boolean glint, @Nullable Integer color, boolean bold) {
 	}
 
 	public static Catalog load() {
@@ -70,11 +71,14 @@ public record Catalog(List<Pack> packs) {
 				require(stack >= 1 && stack <= 99, "Stack size of " + id + " must be 1-99");
 				boolean glint = itemJson.has("glint") && itemJson.get("glint").getAsBoolean();
 				Integer color = itemJson.has("color") ? Integer.parseInt(itemJson.get("color").getAsString().substring(1), 16) : null;
-				items.add(new Entry(id, stack, glint, color));
+				boolean bold = itemJson.has("bold") && itemJson.get("bold").getAsBoolean();
+				items.add(new Entry(id, stack, glint, color, bold));
 			}
 
 			require(!items.isEmpty(), "Pack " + packId + " has no items");
-			packs.add(new Pack(packId, List.copyOf(items)));
+			String icon = packJson.has("icon") ? packJson.get("icon").getAsString() : items.getFirst().id();
+			require(items.stream().anyMatch(item -> item.id().equals(icon)), "Icon " + icon + " of pack " + packId + " is not one of its items");
+			packs.add(new Pack(packId, icon, List.copyOf(items)));
 		}
 
 		return new Catalog(List.copyOf(packs));

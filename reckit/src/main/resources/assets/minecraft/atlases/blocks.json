@@ -1,0 +1,12 @@
+{
+	"sources": [
+		{
+			"type": "minecraft:single",
+			"resource": "minecraft:entity/camel/camel"
+		},
+		{
+			"type": "minecraft:single",
+			"resource": "minecraft:entity/end_gateway_beam"
+		}
+	]
+}

@@ -1,0 +1,33 @@
+{
+	"credit": "Made with Blockbench",
+	"parent": "minecraft:item/handheld",
+	"textures": {
+		"layer0": "reckit:item/blocks_drop_custom_items/library"
+	},
+	"display": {
+		"firstperson_righthand": {
+			"translation": [
+				3.75,
+				3.75,
+				-2.25
+			],
+			"scale": [
+				1,
+				1,
+				0.26
+			]
+		},
+		"firstperson_lefthand": {
+			"translation": [
+				1.75,
+				3,
+				0
+			],
+			"scale": [
+				1,
+				1,
+				0.26
+			]
+		}
+	}
+}

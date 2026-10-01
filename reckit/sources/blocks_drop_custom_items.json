@@ -1,0 +1,549 @@
+{
+	"id": "blocks_drop_custom_items",
+	"name": {
+		"en_us": "Blocks Drop Custom Items",
+		"pl_pl": "Bloki dropią customowe itemy"
+	},
+	"icon": "giant_lucky_block",
+	"source": {
+		"title": "Minecraft, but Blocks Drop Custom Items!",
+		"author": "Diamond dev",
+		"url": "https://www.planetminecraft.com/data-pack/minecraft-but-blocks-drop-custom-items/",
+		"minecraft": "1.20.4",
+		"files": [
+			"every-item-datapack-v1-1.zip",
+			"every-item-reosurcepack.zip"
+		]
+	},
+	"items": [
+		{
+			"id": "tiny_wooden_pickaxe",
+			"name": {
+				"en_us": "Tiny Wooden Pickaxe",
+				"pl_pl": "Malutki drewniany kilof"
+			},
+			"model": "item/custom/long_wooden_pick",
+			"color": "#55FFFF",
+			"stack": 1
+		},
+		{
+			"id": "tiny_wooden_axe",
+			"name": {
+				"en_us": "Tiny Wooden Axe",
+				"pl_pl": "Malutka drewniana siekiera"
+			},
+			"model": "item/custom/long_wooden_axe",
+			"color": "#55FFFF",
+			"stack": 1
+		},
+		{
+			"id": "tiny_wooden_sword",
+			"name": {
+				"en_us": "Tiny Wooden Sword",
+				"pl_pl": "Malutki drewniany miecz"
+			},
+			"model": "item/custom/long_wooden_sword",
+			"color": "#55FFFF",
+			"stack": 1
+		},
+		{
+			"id": "tiny_stone_pickaxe",
+			"name": {
+				"en_us": "Tiny Stone Pickaxe",
+				"pl_pl": "Malutki kamienny kilof"
+			},
+			"model": "item/custom/long_stone_pick",
+			"color": "#55FFFF",
+			"stack": 1
+		},
+		{
+			"id": "tiny_stone_axe",
+			"name": {
+				"en_us": "Tiny Stone Axe",
+				"pl_pl": "Malutka kamienna siekiera"
+			},
+			"model": "item/custom/long_stone_axe",
+			"color": "#55FFFF",
+			"stack": 1
+		},
+		{
+			"id": "tiny_stone_sword",
+			"name": {
+				"en_us": "Tiny Stone Sword",
+				"pl_pl": "Malutki kamienny miecz"
+			},
+			"model": "item/custom/long_stone_sword",
+			"color": "#55FFFF",
+			"stack": 1
+		},
+		{
+			"id": "tiny_iron_pickaxe",
+			"name": {
+				"en_us": "Tiny Iron Pickaxe",
+				"pl_pl": "Malutki żelazny kilof"
+			},
+			"model": "item/custom/long_iron_pick",
+			"color": "#55FFFF",
+			"stack": 1
+		},
+		{
+			"id": "tiny_iron_axe",
+			"name": {
+				"en_us": "Tiny Iron Axe",
+				"pl_pl": "Malutka żelazna siekiera"
+			},
+			"model": "item/custom/long_iron_axe",
+			"color": "#55FFFF",
+			"stack": 1
+		},
+		{
+			"id": "tiny_iron_sword",
+			"name": {
+				"en_us": "Tiny Iron Sword",
+				"pl_pl": "Malutki żelazny miecz"
+			},
+			"model": "item/custom/long_iron_sword",
+			"color": "#55FFFF",
+			"stack": 1
+		},
+		{
+			"id": "tiny_diamond_pickaxe",
+			"name": {
+				"en_us": "Tiny Diamond Pickaxe",
+				"pl_pl": "Malutki diamentowy kilof"
+			},
+			"model": "item/custom/long_diamond_pick",
+			"color": "#55FFFF",
+			"stack": 1
+		},
+		{
+			"id": "tiny_diamond_axe",
+			"name": {
+				"en_us": "Tiny Diamond Axe",
+				"pl_pl": "Malutka diamentowa siekiera"
+			},
+			"model": "item/custom/long_diamond_axe",
+			"color": "#55FFFF",
+			"stack": 1
+		},
+		{
+			"id": "tiny_diamond_sword",
+			"name": {
+				"en_us": "Tiny Diamond Sword",
+				"pl_pl": "Malutki diamentowy miecz"
+			},
+			"model": "item/custom/long_diamond_sword",
+			"color": "#55FFFF",
+			"stack": 1
+		},
+		{
+			"id": "long_wooden_pickaxe",
+			"name": {
+				"en_us": "Long Wooden Pickaxe",
+				"pl_pl": "Długi drewniany kilof"
+			},
+			"texture": "item/long_wood_pick",
+			"color": "#55FFFF",
+			"stack": 1
+		},
+		{
+			"id": "long_wooden_axe",
+			"name": {
+				"en_us": "Long Wooden Axe",
+				"pl_pl": "Długa drewniana siekiera"
+			},
+			"texture": "item/long_wooden_axe",
+			"color": "#55FFFF",
+			"stack": 1
+		},
+		{
+			"id": "long_wooden_sword",
+			"name": {
+				"en_us": "Long Wooden Sword",
+				"pl_pl": "Długi drewniany miecz"
+			},
+			"texture": "item/long_wooden_sword",
+			"color": "#55FFFF",
+			"stack": 1
+		},
+		{
+			"id": "long_stone_pickaxe",
+			"name": {
+				"en_us": "Long Stone Pickaxe",
+				"pl_pl": "Długi kamienny kilof"
+			},
+			"texture": "item/long_stone_pick",
+			"color": "#55FFFF",
+			"stack": 1
+		},
+		{
+			"id": "long_stone_axe",
+			"name": {
+				"en_us": "Long Stone Axe",
+				"pl_pl": "Długa kamienna siekiera"
+			},
+			"texture": "item/long_stone_axe",
+			"color": "#55FFFF",
+			"stack": 1
+		},
+		{
+			"id": "long_stone_sword",
+			"name": {
+				"en_us": "Long Stone Sword",
+				"pl_pl": "Długi kamienny miecz"
+			},
+			"texture": "item/long_stone_sword",
+			"color": "#55FFFF",
+			"stack": 1
+		},
+		{
+			"id": "long_iron_pickaxe",
+			"name": {
+				"en_us": "Long Iron Pickaxe",
+				"pl_pl": "Długi żelazny kilof"
+			},
+			"texture": "item/long_iron_pickaxe",
+			"color": "#55FFFF",
+			"stack": 1
+		},
+		{
+			"id": "long_iron_axe",
+			"name": {
+				"en_us": "Long Iron Axe",
+				"pl_pl": "Długa żelazna siekiera"
+			},
+			"texture": "item/long_iron_axe",
+			"color": "#55FFFF",
+			"stack": 1
+		},
+		{
+			"id": "long_iron_sword",
+			"name": {
+				"en_us": "Long Iron Sword",
+				"pl_pl": "Długi żelazny miecz"
+			},
+			"texture": "item/long_iron_sword",
+			"color": "#55FFFF",
+			"stack": 1
+		},
+		{
+			"id": "long_diamond_pickaxe",
+			"name": {
+				"en_us": "Long Diamond Pickaxe",
+				"pl_pl": "Długi diamentowy kilof"
+			},
+			"texture": "item/long_diamond_pickaxe",
+			"color": "#55FFFF",
+			"stack": 1
+		},
+		{
+			"id": "long_diamond_axe",
+			"name": {
+				"en_us": "Long Diamond Axe",
+				"pl_pl": "Długa diamentowa siekiera"
+			},
+			"texture": "item/long_diamond_axe",
+			"color": "#55FFFF",
+			"stack": 1
+		},
+		{
+			"id": "long_diamond_sword",
+			"name": {
+				"en_us": "Long Diamond Sword",
+				"pl_pl": "Długi diamentowy miecz"
+			},
+			"texture": "item/long_diamond_sword",
+			"color": "#55FFFF",
+			"stack": 1
+		},
+		{
+			"id": "long_golden_apple",
+			"name": {
+				"en_us": "Long Golden Apple",
+				"pl_pl": "Długie złote jabłko"
+			},
+			"model": "item/custom/long_apple",
+			"color": "#55FFFF",
+			"stack": 1
+		},
+		{
+			"id": "long_bow",
+			"name": {
+				"en_us": "Long Bow",
+				"pl_pl": "Długi łuk"
+			},
+			"model": "item/custom/long_bow",
+			"color": "#55FFFF",
+			"stack": 1
+		},
+		{
+			"id": "giant_netherite_pickaxe",
+			"name": {
+				"en_us": "Giant Netherite Pickaxe",
+				"pl_pl": "Gigantyczny netherytowy kilof"
+			},
+			"model": "item/custom/big_pickaxe",
+			"color": "#FFAA00",
+			"bold": true,
+			"stack": 1
+		},
+		{
+			"id": "giant_netherite_axe",
+			"name": {
+				"en_us": "Giant Netherite Axe",
+				"pl_pl": "Gigantyczna netherytowa siekiera"
+			},
+			"model": "item/custom/big_axe",
+			"color": "#FFAA00",
+			"bold": true,
+			"stack": 1
+		},
+		{
+			"id": "giant_netherite_sword",
+			"name": {
+				"en_us": "Giant Netherite Sword",
+				"pl_pl": "Gigantyczny netherytowy miecz"
+			},
+			"model": "item/custom/big_sword",
+			"color": "#FFAA00",
+			"bold": true,
+			"stack": 1
+		},
+		{
+			"id": "giant_golden_apple",
+			"name": {
+				"en_us": "Giant Golden Apple",
+				"pl_pl": "Gigantyczne złote jabłko"
+			},
+			"model": "item/custom/big_apple",
+			"color": "#FFAA00",
+			"bold": true,
+			"stack": 1
+		},
+		{
+			"id": "giant_lucky_block",
+			"name": {
+				"en_us": "Giant Structure Lucky Block",
+				"pl_pl": "Gigantyczny Lucky Block"
+			},
+			"model": "item/custom/big_lucky_block",
+			"color": "#FFAA00",
+			"bold": true,
+			"stack": 1
+		},
+		{
+			"id": "super_pickaxe",
+			"name": {
+				"en_us": "Super Pickaxe",
+				"pl_pl": "Super kilof"
+			},
+			"model": "item/custom/super_pickaxe",
+			"color": "#FFAA00",
+			"stack": 1
+		},
+		{
+			"id": "sword_sword_sword",
+			"name": {
+				"en_us": "Sword Sword Sword",
+				"pl_pl": "Miecz Miecz Miecz"
+			},
+			"model": "item/custom/sword_x3",
+			"color": "#FFFF55",
+			"stack": 1
+		},
+		{
+			"id": "extreme_bow",
+			"name": {
+				"en_us": "Extreme Bow",
+				"pl_pl": "Ekstremalny łuk"
+			},
+			"model": "item/custom/super_bow",
+			"color": "#FFFF55",
+			"stack": 1
+		},
+		{
+			"id": "super_golden_apple",
+			"name": {
+				"en_us": "Super Golden Apple",
+				"pl_pl": "Super złote jabłko"
+			},
+			"model": "item/custom/super_apple",
+			"color": "#FFFF55",
+			"stack": 1
+		},
+		{
+			"id": "super_trident",
+			"name": {
+				"en_us": "Super Trident",
+				"pl_pl": "Super trójząb"
+			},
+			"model": "item/custom/trident_x3",
+			"color": "#AAAAAA",
+			"stack": 1
+		},
+		{
+			"id": "eye_of_god",
+			"name": {
+				"en_us": "Eye Of God",
+				"pl_pl": "Oko Boga"
+			},
+			"model": "item/custom/eye",
+			"color": "#FFFF55",
+			"bold": true,
+			"stack": 1
+		},
+		{
+			"id": "multi_tool",
+			"name": {
+				"en_us": "Multi Tool",
+				"pl_pl": "Multinarzędzie"
+			},
+			"model": "item/custom/multi_tool",
+			"color": "#FFFF55",
+			"stack": 1
+		},
+		{
+			"id": "pickaxe_x3",
+			"name": {
+				"en_us": "Pickaxe X3",
+				"pl_pl": "Kilof X3"
+			},
+			"model": "item/custom/pick_x3",
+			"color": "#FF970F",
+			"bold": true,
+			"stack": 1
+		},
+		{
+			"id": "emerald_pickaxe",
+			"name": {
+				"en_us": "Emerald Pickaxe",
+				"pl_pl": "Szmaragdowy kilof"
+			},
+			"model": "item/custom/emerald_pickaxe",
+			"color": "#00FF22",
+			"bold": true,
+			"stack": 1
+		},
+		{
+			"id": "amethyst_sword",
+			"name": {
+				"en_us": "Amethyst Sword",
+				"pl_pl": "Ametystowy miecz"
+			},
+			"model": "item/custom/amethyst_sword",
+			"color": "#FF00F7",
+			"bold": true,
+			"stack": 1
+		},
+		{
+			"id": "camel_sword",
+			"name": {
+				"en_us": "Camel Sword",
+				"pl_pl": "Wielbłądzi miecz"
+			},
+			"model": "item/custom/camel_sword",
+			"color": "#FF00F7",
+			"bold": true,
+			"stack": 1
+		},
+		{
+			"id": "sculk_sword",
+			"name": {
+				"en_us": "Sculk Sword",
+				"pl_pl": "Sculkowy miecz"
+			},
+			"model": "item/custom/void_sword",
+			"color": "#1F0073",
+			"bold": true,
+			"stack": 1
+		},
+		{
+			"id": "sculk_sword_2",
+			"name": {
+				"en_us": "Sculk Sword (Variant)",
+				"pl_pl": "Sculkowy miecz (wariant)"
+			},
+			"model": "item/custom/sculk_sword",
+			"color": "#1F0073",
+			"bold": true,
+			"stack": 1
+		},
+		{
+			"id": "sawblade_shield",
+			"name": {
+				"en_us": "Sawblade Shield",
+				"pl_pl": "Tarcza-piła"
+			},
+			"model": "item/custom/sawblade",
+			"color": "#BAE6FF",
+			"bold": true,
+			"stack": 1
+		},
+		{
+			"id": "camel_bomb",
+			"name": {
+				"en_us": "Camel Bomb",
+				"pl_pl": "Wielbłądzia bomba"
+			},
+			"model": "item/custom/camel_bomb",
+			"color": "#FF5555",
+			"bold": true,
+			"stack": 1
+		},
+		{
+			"id": "diamond_temple",
+			"name": {
+				"en_us": "Diamond Temple",
+				"pl_pl": "Diamentowa świątynia"
+			},
+			"model": "item/custom/diamond_temple",
+			"color": "#00FFF7",
+			"bold": true,
+			"stack": 1
+		},
+		{
+			"id": "library",
+			"name": {
+				"en_us": "Library Structure",
+				"pl_pl": "Biblioteka"
+			},
+			"model": "item/custom/library",
+			"color": "#55FF55",
+			"bold": true,
+			"stack": 1
+		},
+		{
+			"id": "sniffer_temple",
+			"name": {
+				"en_us": "Sniffer Temple",
+				"pl_pl": "Świątynia sniffera"
+			},
+			"model": "item/custom/sniffer_temple",
+			"color": "#55FF55",
+			"bold": true,
+			"stack": 1
+		},
+		{
+			"id": "cherry_pond",
+			"name": {
+				"en_us": "Cherry Pond",
+				"pl_pl": "Wiśniowy staw"
+			},
+			"model": "item/custom/pond",
+			"color": "#55FF55",
+			"bold": true,
+			"stack": 1
+		},
+		{
+			"id": "bamboo_hut",
+			"name": {
+				"en_us": "Bamboo Hut",
+				"pl_pl": "Bambusowa chatka"
+			},
+			"model": "item/custom/bamboo_hut",
+			"color": "#55FF55",
+			"bold": true,
+			"stack": 1
+		}
+	]
+}

@@ -1,0 +1,6 @@
+{
+	"parent": "minecraft:item/handheld",
+	"textures": {
+		"layer0": "reckit:item/blocks_drop_custom_items/long_wooden_axe"
+	}
+}

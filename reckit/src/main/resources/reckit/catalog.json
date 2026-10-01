@@ -1,3 +1,284 @@
 {
-	"packs": []
+	"packs": [
+		{
+			"id": "blocks_drop_custom_items",
+			"icon": "giant_lucky_block",
+			"items": [
+				{
+					"id": "tiny_wooden_pickaxe",
+					"stack": 1,
+					"color": "#55FFFF"
+				},
+				{
+					"id": "tiny_wooden_axe",
+					"stack": 1,
+					"color": "#55FFFF"
+				},
+				{
+					"id": "tiny_wooden_sword",
+					"stack": 1,
+					"color": "#55FFFF"
+				},
+				{
+					"id": "tiny_stone_pickaxe",
+					"stack": 1,
+					"color": "#55FFFF"
+				},
+				{
+					"id": "tiny_stone_axe",
+					"stack": 1,
+					"color": "#55FFFF"
+				},
+				{
+					"id": "tiny_stone_sword",
+					"stack": 1,
+					"color": "#55FFFF"
+				},
+				{
+					"id": "tiny_iron_pickaxe",
+					"stack": 1,
+					"color": "#55FFFF"
+				},
+				{
+					"id": "tiny_iron_axe",
+					"stack": 1,
+					"color": "#55FFFF"
+				},
+				{
+					"id": "tiny_iron_sword",
+					"stack": 1,
+					"color": "#55FFFF"
+				},
+				{
+					"id": "tiny_diamond_pickaxe",
+					"stack": 1,
+					"color": "#55FFFF"
+				},
+				{
+					"id": "tiny_diamond_axe",
+					"stack": 1,
+					"color": "#55FFFF"
+				},
+				{
+					"id": "tiny_diamond_sword",
+					"stack": 1,
+					"color": "#55FFFF"
+				},
+				{
+					"id": "long_wooden_pickaxe",
+					"stack": 1,
+					"color": "#55FFFF"
+				},
+				{
+					"id": "long_wooden_axe",
+					"stack": 1,
+					"color": "#55FFFF"
+				},
+				{
+					"id": "long_wooden_sword",
+					"stack": 1,
+					"color": "#55FFFF"
+				},
+				{
+					"id": "long_stone_pickaxe",
+					"stack": 1,
+					"color": "#55FFFF"
+				},
+				{
+					"id": "long_stone_axe",
+					"stack": 1,
+					"color": "#55FFFF"
+				},
+				{
+					"id": "long_stone_sword",
+					"stack": 1,
+					"color": "#55FFFF"
+				},
+				{
+					"id": "long_iron_pickaxe",
+					"stack": 1,
+					"color": "#55FFFF"
+				},
+				{
+					"id": "long_iron_axe",
+					"stack": 1,
+					"color": "#55FFFF"
+				},
+				{
+					"id": "long_iron_sword",
+					"stack": 1,
+					"color": "#55FFFF"
+				},
+				{
+					"id": "long_diamond_pickaxe",
+					"stack": 1,
+					"color": "#55FFFF"
+				},
+				{
+					"id": "long_diamond_axe",
+					"stack": 1,
+					"color": "#55FFFF"
+				},
+				{
+					"id": "long_diamond_sword",
+					"stack": 1,
+					"color": "#55FFFF"
+				},
+				{
+					"id": "long_golden_apple",
+					"stack": 1,
+					"color": "#55FFFF"
+				},
+				{
+					"id": "long_bow",
+					"stack": 1,
+					"color": "#55FFFF"
+				},
+				{
+					"id": "giant_netherite_pickaxe",
+					"stack": 1,
+					"color": "#FFAA00",
+					"bold": true
+				},
+				{
+					"id": "giant_netherite_axe",
+					"stack": 1,
+					"color": "#FFAA00",
+					"bold": true
+				},
+				{
+					"id": "giant_netherite_sword",
+					"stack": 1,
+					"color": "#FFAA00",
+					"bold": true
+				},
+				{
+					"id": "giant_golden_apple",
+					"stack": 1,
+					"color": "#FFAA00",
+					"bold": true
+				},
+				{
+					"id": "giant_lucky_block",
+					"stack": 1,
+					"color": "#FFAA00",
+					"bold": true
+				},
+				{
+					"id": "super_pickaxe",
+					"stack": 1,
+					"color": "#FFAA00"
+				},
+				{
+					"id": "sword_sword_sword",
+					"stack": 1,
+					"color": "#FFFF55"
+				},
+				{
+					"id": "extreme_bow",
+					"stack": 1,
+					"color": "#FFFF55"
+				},
+				{
+					"id": "super_golden_apple",
+					"stack": 1,
+					"color": "#FFFF55"
+				},
+				{
+					"id": "super_trident",
+					"stack": 1,
+					"color": "#AAAAAA"
+				},
+				{
+					"id": "eye_of_god",
+					"stack": 1,
+					"color": "#FFFF55",
+					"bold": true
+				},
+				{
+					"id": "multi_tool",
+					"stack": 1,
+					"color": "#FFFF55"
+				},
+				{
+					"id": "pickaxe_x3",
+					"stack": 1,
+					"color": "#FF970F",
+					"bold": true
+				},
+				{
+					"id": "emerald_pickaxe",
+					"stack": 1,
+					"color": "#00FF22",
+					"bold": true
+				},
+				{
+					"id": "amethyst_sword",
+					"stack": 1,
+					"color": "#FF00F7",
+					"bold": true
+				},
+				{
+					"id": "camel_sword",
+					"stack": 1,
+					"color": "#FF00F7",
+					"bold": true
+				},
+				{
+					"id": "sculk_sword",
+					"stack": 1,
+					"color": "#1F0073",
+					"bold": true
+				},
+				{
+					"id": "sculk_sword_2",
+					"stack": 1,
+					"color": "#1F0073",
+					"bold": true
+				},
+				{
+					"id": "sawblade_shield",
+					"stack": 1,
+					"color": "#BAE6FF",
+					"bold": true
+				},
+				{
+					"id": "camel_bomb",
+					"stack": 1,
+					"color": "#FF5555",
+					"bold": true
+				},
+				{
+					"id": "diamond_temple",
+					"stack": 1,
+					"color": "#00FFF7",
+					"bold": true
+				},
+				{
+					"id": "library",
+					"stack": 1,
+					"color": "#55FF55",
+					"bold": true
+				},
+				{
+					"id": "sniffer_temple",
+					"stack": 1,
+					"color": "#55FF55",
+					"bold": true
+				},
+				{
+					"id": "cherry_pond",
+					"stack": 1,
+					"color": "#55FF55",
+					"bold": true
+				},
+				{
+					"id": "bamboo_hut",
+					"stack": 1,
+					"color": "#55FF55",
+					"bold": true
+				}
+			]
+		}
+	]
 }

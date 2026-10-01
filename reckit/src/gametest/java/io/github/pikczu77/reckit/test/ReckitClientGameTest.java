@@ -60,6 +60,7 @@ public class ReckitClientGameTest implements FabricClientGameTest {
 			FabricCreativeInventoryScreen screen = (FabricCreativeInventoryScreen) minecraft.screen;
 			screen.setSelectedItemGroup(BuiltInRegistries.CREATIVE_MODE_TAB.getValue(Reckit.id(pack)));
 		});
+		context.getInput().setCursorPos(0, 0);
 		context.waitTicks(5);
 		context.takeScreenshot("reckit-" + pack + "-00-tab");
 		context.setScreen(() -> null);

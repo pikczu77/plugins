@@ -21,7 +21,71 @@ Na serwerze mod musi być **na serwerze i u wszystkich graczy** (przedmioty są 
 
 ## Przedmioty
 
-Jeszcze żadnych — dochodzą z kolejnymi paczkami.
+Lista generowana przez `tools/import_pack.py` z plików w `sources/`. Podgląd każdego przedmiotu w ręce (pierwsza i trzecia
+osoba): [Bloki dropią customowe itemy](docs/blocks_drop_custom_items.png).
+
+![Zakładka w trybie kreatywnym](docs/blocks_drop_custom_items_tab.png)
+
+<!-- items:start -->
+### Bloki dropią customowe itemy
+
+Źródło: [Minecraft, but Blocks Drop Custom Items!](https://www.planetminecraft.com/data-pack/minecraft-but-blocks-drop-custom-items/) (Diamond dev, Minecraft 1.20.4).
+
+| Przedmiot | Komenda |
+|---|---|
+| Malutki drewniany kilof | `/give @s reckit:tiny_wooden_pickaxe` |
+| Malutka drewniana siekiera | `/give @s reckit:tiny_wooden_axe` |
+| Malutki drewniany miecz | `/give @s reckit:tiny_wooden_sword` |
+| Malutki kamienny kilof | `/give @s reckit:tiny_stone_pickaxe` |
+| Malutka kamienna siekiera | `/give @s reckit:tiny_stone_axe` |
+| Malutki kamienny miecz | `/give @s reckit:tiny_stone_sword` |
+| Malutki żelazny kilof | `/give @s reckit:tiny_iron_pickaxe` |
+| Malutka żelazna siekiera | `/give @s reckit:tiny_iron_axe` |
+| Malutki żelazny miecz | `/give @s reckit:tiny_iron_sword` |
+| Malutki diamentowy kilof | `/give @s reckit:tiny_diamond_pickaxe` |
+| Malutka diamentowa siekiera | `/give @s reckit:tiny_diamond_axe` |
+| Malutki diamentowy miecz | `/give @s reckit:tiny_diamond_sword` |
+| Długi drewniany kilof | `/give @s reckit:long_wooden_pickaxe` |
+| Długa drewniana siekiera | `/give @s reckit:long_wooden_axe` |
+| Długi drewniany miecz | `/give @s reckit:long_wooden_sword` |
+| Długi kamienny kilof | `/give @s reckit:long_stone_pickaxe` |
+| Długa kamienna siekiera | `/give @s reckit:long_stone_axe` |
+| Długi kamienny miecz | `/give @s reckit:long_stone_sword` |
+| Długi żelazny kilof | `/give @s reckit:long_iron_pickaxe` |
+| Długa żelazna siekiera | `/give @s reckit:long_iron_axe` |
+| Długi żelazny miecz | `/give @s reckit:long_iron_sword` |
+| Długi diamentowy kilof | `/give @s reckit:long_diamond_pickaxe` |
+| Długa diamentowa siekiera | `/give @s reckit:long_diamond_axe` |
+| Długi diamentowy miecz | `/give @s reckit:long_diamond_sword` |
+| Długie złote jabłko | `/give @s reckit:long_golden_apple` |
+| Długi łuk | `/give @s reckit:long_bow` |
+| Gigantyczny netherytowy kilof | `/give @s reckit:giant_netherite_pickaxe` |
+| Gigantyczna netherytowa siekiera | `/give @s reckit:giant_netherite_axe` |
+| Gigantyczny netherytowy miecz | `/give @s reckit:giant_netherite_sword` |
+| Gigantyczne złote jabłko | `/give @s reckit:giant_golden_apple` |
+| Gigantyczny Lucky Block | `/give @s reckit:giant_lucky_block` |
+| Super kilof | `/give @s reckit:super_pickaxe` |
+| Miecz Miecz Miecz | `/give @s reckit:sword_sword_sword` |
+| Ekstremalny łuk | `/give @s reckit:extreme_bow` |
+| Super złote jabłko | `/give @s reckit:super_golden_apple` |
+| Super trójząb | `/give @s reckit:super_trident` |
+| Oko Boga | `/give @s reckit:eye_of_god` |
+| Multinarzędzie | `/give @s reckit:multi_tool` |
+| Kilof X3 | `/give @s reckit:pickaxe_x3` |
+| Szmaragdowy kilof | `/give @s reckit:emerald_pickaxe` |
+| Ametystowy miecz | `/give @s reckit:amethyst_sword` |
+| Wielbłądzi miecz | `/give @s reckit:camel_sword` |
+| Sculkowy miecz | `/give @s reckit:sculk_sword` |
+| Sculkowy miecz (wariant) | `/give @s reckit:sculk_sword_2` |
+| Tarcza-piła | `/give @s reckit:sawblade_shield` |
+| Wielbłądzia bomba | `/give @s reckit:camel_bomb` |
+| Diamentowa świątynia | `/give @s reckit:diamond_temple` |
+| Biblioteka | `/give @s reckit:library` |
+| Świątynia sniffera | `/give @s reckit:sniffer_temple` |
+| Wiśniowy staw | `/give @s reckit:cherry_pond` |
+| Bambusowa chatka | `/give @s reckit:bamboo_hut` |
+
+<!-- items:end -->
 
 ## Jak to jest zbudowane
 
@@ -32,17 +96,28 @@ Jeszcze żadnych — dochodzą z kolejnymi paczkami.
 | `src/main/resources/assets/reckit/models/item/<paczka>/` | modele przedmiotów danej paczki |
 | `src/main/resources/assets/reckit/textures/item/<paczka>/` | tekstury danej paczki (animowane z `.mcmeta`) |
 | `src/main/resources/assets/reckit/lang/pl_pl.json`, `en_us.json` | nazwy przedmiotów i zakładek |
+| `src/main/resources/assets/minecraft/atlases/blocks.json` | tekstury z vanilli spoza `block/` i `item/` używane przez modele (np. wielbłąd) |
+| `sources/<paczka>.json` | skąd jest paczka i które przedmioty z niej wzięliśmy (z tego generuje się wszystko wyżej) |
 
-Wpis w katalogu:
+### Dodawanie paczki
 
-```json
-{"id": "ruby_sword", "stack": 1, "glint": true, "color": "#FF5555"}
-```
+1. Rozpakuj datapack i paczkę tekstur, wybierz przedmioty (z komend `give`, tabel łupów, receptur) i znajdź ich modele
+   (np. `overrides` z `custom_model_data` w `assets/minecraft/models/item/<przedmiot>.json`).
+2. Zapisz wybór w `sources/<paczka>.json` (przykład: `sources/blocks_drop_custom_items.json`). Każdy przedmiot:
 
-- `id` — nazwa w `/give` (`reckit:ruby_sword`), unikalna w całym modzie,
-- `stack` — ile mieści się w jednym slocie (domyślnie 64),
-- `glint` — zawsze świeci jak zaklęty (domyślnie nie),
-- `color` — kolor nazwy (domyślnie biały).
+   ```json
+   {"id": "ruby_sword", "name": {"en_us": "Ruby Sword", "pl_pl": "Rubinowy miecz"},
+    "model": "item/custom/ruby_sword", "stack": 1, "color": "#FF5555", "bold": true}
+   ```
+
+   - `id` — nazwa w `/give` (`reckit:ruby_sword`), unikalna w całym modzie,
+   - `model` — model z paczki tekstur albo `texture` — sama tekstura (zrobi się z niej płaski przedmiot w ręce),
+   - `stack` — ile mieści się w jednym slocie (domyślnie 64),
+   - `glint` — zawsze świeci jak zaklęty, `color` — kolor nazwy, `bold` — pogrubiona nazwa.
+
+   `icon` paczki to przedmiot na ikonie zakładki (domyślnie pierwszy).
+3. `python3 tools/import_pack.py sources/<paczka>.json <paczka tekstur .zip>` kopiuje modele i tekstury (z poprawionymi
+   ścieżkami, bez `overrides`) i odświeża katalog, nazwy i listę przedmiotów w tym README.
 
 `python3 tools/check_assets.py` (także w `./gradlew build`) sprawdza, czy każdy przedmiot ma definicję, modele,
 tekstury i nazwy w obu językach. `./gradlew runClientGameTest` uruchamia prawdziwego klienta i robi zrzuty ekranu

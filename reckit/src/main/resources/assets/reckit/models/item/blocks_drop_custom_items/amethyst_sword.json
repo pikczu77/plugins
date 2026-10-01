@@ -1,0 +1,962 @@
+{
+	"credit": "Made by Diamond_DP",
+	"textures": {
+		"1": "minecraft:block/small_amethyst_bud",
+		"2": "reckit:block/blocks_drop_custom_items/adventurer_sword",
+		"particle": "reckit:block/blocks_drop_custom_items/adventurer_sword"
+	},
+	"elements": [
+		{
+			"from": [
+				17.63782,
+				2.11343,
+				7
+			],
+			"to": [
+				20.63782,
+				5.11343,
+				9
+			],
+			"rotation": {
+				"angle": -45,
+				"axis": "z",
+				"origin": [
+					8.00052,
+					14.75,
+					8
+				]
+			},
+			"faces": {
+				"north": {
+					"uv": [
+						8,
+						8,
+						9.5,
+						9.5
+					],
+					"rotation": 270,
+					"texture": "#2"
+				},
+				"east": {
+					"uv": [
+						10,
+						10.5,
+						8.5,
+						9.5
+					],
+					"rotation": 90,
+					"texture": "#2"
+				},
+				"south": {
+					"uv": [
+						6,
+						9,
+						7.5,
+						10.5
+					],
+					"rotation": 90,
+					"texture": "#2"
+				},
+				"west": {
+					"uv": [
+						1.5,
+						12,
+						0,
+						13
+					],
+					"rotation": 90,
+					"texture": "#2"
+				},
+				"up": {
+					"uv": [
+						9.5,
+						8,
+						10.5,
+						9.5
+					],
+					"rotation": 90,
+					"texture": "#2"
+				},
+				"down": {
+					"uv": [
+						7.5,
+						9.5,
+						8.5,
+						11
+					],
+					"rotation": 90,
+					"texture": "#2"
+				}
+			}
+		},
+		{
+			"from": [
+				7.01104,
+				-0.49,
+				7.01
+			],
+			"to": [
+				8.99104,
+				8.49,
+				8.99
+			],
+			"rotation": {
+				"angle": 0,
+				"axis": "z",
+				"origin": [
+					8.00052,
+					14.75,
+					8
+				]
+			},
+			"faces": {
+				"north": {
+					"uv": [
+						6,
+						0,
+						7,
+						4.5
+					],
+					"rotation": 180,
+					"texture": "#2"
+				},
+				"east": {
+					"uv": [
+						7,
+						4.5,
+						8,
+						9
+					],
+					"rotation": 180,
+					"texture": "#2"
+				},
+				"south": {
+					"uv": [
+						7,
+						0,
+						8,
+						4.5
+					],
+					"rotation": 180,
+					"texture": "#2"
+				},
+				"west": {
+					"uv": [
+						6,
+						4.5,
+						7,
+						9
+					],
+					"rotation": 180,
+					"texture": "#2"
+				},
+				"up": {
+					"uv": [
+						2.5,
+						12,
+						1.5,
+						13
+					],
+					"rotation": 180,
+					"texture": "#2"
+				},
+				"down": {
+					"uv": [
+						11,
+						2,
+						10,
+						1
+					],
+					"rotation": 180,
+					"texture": "#2"
+				}
+			}
+		},
+		{
+			"from": [
+				4.50104,
+				8.5,
+				7
+			],
+			"to": [
+				11.50104,
+				10.5,
+				9
+			],
+			"rotation": {
+				"angle": 0,
+				"axis": "z",
+				"origin": [
+					8.00052,
+					14.75,
+					8
+				]
+			},
+			"faces": {
+				"north": {
+					"uv": [
+						8,
+						4,
+						11.5,
+						5
+					],
+					"rotation": 180,
+					"texture": "#2"
+				},
+				"east": {
+					"uv": [
+						2.5,
+						12,
+						3.5,
+						13
+					],
+					"rotation": 180,
+					"texture": "#2"
+				},
+				"south": {
+					"uv": [
+						8,
+						5,
+						11.5,
+						6
+					],
+					"rotation": 180,
+					"texture": "#2"
+				},
+				"west": {
+					"uv": [
+						10,
+						2,
+						11,
+						3
+					],
+					"rotation": 180,
+					"texture": "#2"
+				},
+				"up": {
+					"uv": [
+						11.5,
+						7,
+						8,
+						8
+					],
+					"rotation": 180,
+					"texture": "#2"
+				},
+				"down": {
+					"uv": [
+						11.5,
+						7,
+						8,
+						6
+					],
+					"rotation": 180,
+					"texture": "#2"
+				}
+			}
+		},
+		{
+			"from": [
+				5.50104,
+				10.5,
+				7.5
+			],
+			"to": [
+				10.50104,
+				30.5,
+				8.5
+			],
+			"rotation": {
+				"angle": 0,
+				"axis": "z",
+				"origin": [
+					8.00052,
+					14.75,
+					8
+				]
+			},
+			"faces": {
+				"north": {
+					"uv": [
+						3,
+						0,
+						5.5,
+						10
+					],
+					"rotation": 180,
+					"texture": "#2"
+				},
+				"east": {
+					"uv": [
+						5.5,
+						0,
+						6,
+						10
+					],
+					"rotation": 180,
+					"texture": "#2"
+				},
+				"south": {
+					"uv": [
+						0,
+						0,
+						2.5,
+						10
+					],
+					"rotation": 180,
+					"texture": "#2"
+				},
+				"west": {
+					"uv": [
+						2.5,
+						0,
+						3,
+						10
+					],
+					"rotation": 180,
+					"texture": "#2"
+				},
+				"up": {
+					"uv": [
+						12.5,
+						0.5,
+						10,
+						1
+					],
+					"rotation": 180,
+					"texture": "#2"
+				},
+				"down": {
+					"uv": [
+						12.5,
+						0.5,
+						10,
+						0
+					],
+					"rotation": 180,
+					"texture": "#2"
+				}
+			}
+		},
+		{
+			"from": [
+				-4.90528,
+				24.11807,
+				7.499
+			],
+			"to": [
+				-1.36828,
+				27.65507,
+				8.501
+			],
+			"rotation": {
+				"angle": -45,
+				"axis": "z",
+				"origin": [
+					8.00052,
+					14.75,
+					8
+				]
+			},
+			"faces": {
+				"north": {
+					"uv": [
+						3,
+						10,
+						5,
+						12
+					],
+					"rotation": 270,
+					"texture": "#2"
+				},
+				"east": {
+					"uv": [
+						12,
+						3.5,
+						10,
+						3
+					],
+					"rotation": 90,
+					"texture": "#2"
+				},
+				"south": {
+					"uv": [
+						0,
+						10,
+						2,
+						12
+					],
+					"rotation": 90,
+					"texture": "#2"
+				},
+				"west": {
+					"uv": [
+						2,
+						11.5,
+						0,
+						12
+					],
+					"rotation": 90,
+					"texture": "#2"
+				},
+				"up": {
+					"uv": [
+						5.5,
+						10,
+						6,
+						12
+					],
+					"rotation": 90,
+					"texture": "#2"
+				},
+				"down": {
+					"uv": [
+						3.5,
+						10,
+						4,
+						12
+					],
+					"rotation": 90,
+					"texture": "#2"
+				}
+			}
+		},
+		{
+			"name": "amethust",
+			"from": [
+				1,
+				10,
+				8
+			],
+			"to": [
+				6,
+				20,
+				8
+			],
+			"rotation": {
+				"angle": 0,
+				"axis": "y",
+				"origin": [
+					7,
+					0,
+					7
+				]
+			},
+			"faces": {
+				"north": {
+					"uv": [
+						3,
+						11,
+						13,
+						16
+					],
+					"rotation": 90,
+					"texture": "#1"
+				},
+				"east": {
+					"uv": [
+						0,
+						0,
+						0,
+						16
+					],
+					"texture": "#1"
+				},
+				"south": {
+					"uv": [
+						3,
+						11,
+						13,
+						16
+					],
+					"rotation": 270,
+					"texture": "#1"
+				},
+				"west": {
+					"uv": [
+						0,
+						0,
+						0,
+						16
+					],
+					"texture": "#1"
+				},
+				"up": {
+					"uv": [
+						0,
+						0,
+						16,
+						0
+					],
+					"texture": "#1"
+				},
+				"down": {
+					"uv": [
+						0,
+						0,
+						16,
+						0
+					],
+					"texture": "#1"
+				}
+			}
+		},
+		{
+			"name": "amethust",
+			"from": [
+				1,
+				21,
+				8
+			],
+			"to": [
+				6,
+				31,
+				8
+			],
+			"rotation": {
+				"angle": 0,
+				"axis": "y",
+				"origin": [
+					7,
+					0,
+					7
+				]
+			},
+			"faces": {
+				"north": {
+					"uv": [
+						3,
+						11,
+						13,
+						16
+					],
+					"rotation": 90,
+					"texture": "#1"
+				},
+				"east": {
+					"uv": [
+						0,
+						0,
+						0,
+						16
+					],
+					"texture": "#1"
+				},
+				"south": {
+					"uv": [
+						3,
+						11,
+						13,
+						16
+					],
+					"rotation": 270,
+					"texture": "#1"
+				},
+				"west": {
+					"uv": [
+						0,
+						0,
+						0,
+						16
+					],
+					"texture": "#1"
+				},
+				"up": {
+					"uv": [
+						0,
+						0,
+						16,
+						0
+					],
+					"texture": "#1"
+				},
+				"down": {
+					"uv": [
+						0,
+						0,
+						16,
+						0
+					],
+					"texture": "#1"
+				}
+			}
+		},
+		{
+			"name": "amethust",
+			"from": [
+				10,
+				10,
+				8
+			],
+			"to": [
+				15,
+				20,
+				8
+			],
+			"rotation": {
+				"angle": 0,
+				"axis": "y",
+				"origin": [
+					9,
+					0,
+					7
+				]
+			},
+			"faces": {
+				"north": {
+					"uv": [
+						3,
+						16,
+						13,
+						11
+					],
+					"rotation": 90,
+					"texture": "#1"
+				},
+				"east": {
+					"uv": [
+						0,
+						0,
+						0,
+						16
+					],
+					"texture": "#1"
+				},
+				"south": {
+					"uv": [
+						3,
+						16,
+						13,
+						11
+					],
+					"rotation": 270,
+					"texture": "#1"
+				},
+				"west": {
+					"uv": [
+						0,
+						0,
+						0,
+						16
+					],
+					"texture": "#1"
+				},
+				"up": {
+					"uv": [
+						16,
+						0,
+						0,
+						0
+					],
+					"texture": "#1"
+				},
+				"down": {
+					"uv": [
+						16,
+						0,
+						0,
+						0
+					],
+					"texture": "#1"
+				}
+			}
+		},
+		{
+			"name": "amethust",
+			"from": [
+				10,
+				21,
+				8
+			],
+			"to": [
+				15,
+				31,
+				8
+			],
+			"rotation": {
+				"angle": 0,
+				"axis": "y",
+				"origin": [
+					9,
+					0,
+					7
+				]
+			},
+			"faces": {
+				"north": {
+					"uv": [
+						3,
+						16,
+						13,
+						11
+					],
+					"rotation": 90,
+					"texture": "#1"
+				},
+				"east": {
+					"uv": [
+						0,
+						0,
+						0,
+						16
+					],
+					"texture": "#1"
+				},
+				"south": {
+					"uv": [
+						3,
+						16,
+						13,
+						11
+					],
+					"rotation": 270,
+					"texture": "#1"
+				},
+				"west": {
+					"uv": [
+						0,
+						0,
+						0,
+						16
+					],
+					"texture": "#1"
+				},
+				"up": {
+					"uv": [
+						16,
+						0,
+						0,
+						0
+					],
+					"texture": "#1"
+				},
+				"down": {
+					"uv": [
+						16,
+						0,
+						0,
+						0
+					],
+					"texture": "#1"
+				}
+			}
+		}
+	],
+	"display": {
+		"thirdperson_righthand": {
+			"rotation": [
+				0,
+				90,
+				0
+			],
+			"translation": [
+				0,
+				2.25,
+				1.5
+			],
+			"scale": [
+				0.8,
+				0.8,
+				0.8
+			]
+		},
+		"thirdperson_lefthand": {
+			"rotation": [
+				0,
+				90,
+				0
+			],
+			"translation": [
+				0,
+				2.25,
+				1.5
+			],
+			"scale": [
+				0.8,
+				0.8,
+				0.8
+			]
+		},
+		"firstperson_righthand": {
+			"rotation": [
+				0,
+				90,
+				0
+			],
+			"translation": [
+				0.5,
+				3,
+				1.5
+			],
+			"scale": [
+				0.6,
+				0.6,
+				0.6
+			]
+		},
+		"firstperson_lefthand": {
+			"rotation": [
+				0,
+				90,
+				0
+			],
+			"translation": [
+				0.5,
+				3,
+				1.5
+			],
+			"scale": [
+				0.6,
+				0.6,
+				0.6
+			]
+		},
+		"ground": {
+			"translation": [
+				0,
+				3.25,
+				0
+			],
+			"scale": [
+				0.5,
+				0.5,
+				0.5
+			]
+		},
+		"gui": {
+			"rotation": [
+				0,
+				0,
+				-45
+			],
+			"translation": [
+				-3,
+				-2.75,
+				0
+			],
+			"scale": [
+				0.55,
+				0.55,
+				0.55
+			]
+		},
+		"head": {
+			"translation": [
+				0.25,
+				8.5,
+				0.75
+			],
+			"scale": [
+				0.6,
+				0.6,
+				0.6
+			]
+		},
+		"fixed": {
+			"rotation": [
+				0,
+				0,
+				-135
+			],
+			"translation": [
+				-3,
+				3,
+				-0.75
+			],
+			"scale": [
+				0.65,
+				0.65,
+				0.65
+			]
+		}
+	},
+	"groups": [
+		{
+			"name": "sword",
+			"origin": [
+				8,
+				8,
+				8
+			],
+			"color": 0,
+			"nbt": "{}",
+			"armAnimationEnabled": false,
+			"children": [
+				{
+					"name": "pommel",
+					"origin": [
+						8,
+						8,
+						8
+					],
+					"color": 0,
+					"nbt": "{}",
+					"armAnimationEnabled": false,
+					"children": [
+						0
+					]
+				},
+				{
+					"name": "grip",
+					"origin": [
+						8,
+						8,
+						8
+					],
+					"color": 0,
+					"nbt": "{}",
+					"armAnimationEnabled": false,
+					"children": [
+						1
+					]
+				},
+				{
+					"name": "guard",
+					"origin": [
+						8,
+						8,
+						8
+					],
+					"color": 0,
+					"nbt": "{}",
+					"armAnimationEnabled": false,
+					"children": [
+						{
+							"name": "cross-guard",
+							"origin": [
+								8,
+								8,
+								8
+							],
+							"color": 0,
+							"nbt": "{}",
+							"armAnimationEnabled": false,
+							"children": [
+								2
+							]
+						}
+					]
+				},
+				{
+					"name": "blade",
+					"origin": [
+						8,
+						8,
+						8
+					],
+					"color": 0,
+					"nbt": "{}",
+					"armAnimationEnabled": false,
+					"children": [
+						3,
+						4,
+						5,
+						6,
+						7,
+						8
+					]
+				}
+			]
+		}
+	]
+}

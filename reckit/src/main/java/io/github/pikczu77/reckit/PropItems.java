@@ -31,11 +31,12 @@ public final class PropItems {
 			List<Item> items = pack.items().stream().map(PropItems::register).toList();
 			BY_PACK.put(pack.id(), items);
 			ALL.addAll(items);
+			Item icon = BuiltInRegistries.ITEM.getValue(Reckit.id(pack.icon()));
 
 			ResourceKey<CreativeModeTab> key = ResourceKey.create(Registries.CREATIVE_MODE_TAB, Reckit.id(pack.id()));
 			Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, key, FabricItemGroup.builder()
 					.title(Component.translatable("itemGroup.reckit." + pack.id()))
-					.icon(() -> new ItemStack(items.getFirst()))
+					.icon(() -> new ItemStack(icon))
 					.displayItems((parameters, output) -> items.forEach(output::accept))
 					.build());
 		}
@@ -49,7 +50,7 @@ public final class PropItems {
 			properties.component(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true);
 		}
 
-		return Registry.register(BuiltInRegistries.ITEM, key, new PropItem(properties, entry.color()));
+		return Registry.register(BuiltInRegistries.ITEM, key, new PropItem(properties, entry.color(), entry.bold()));
 	}
 
 	/** Items of each pack, in catalog order. */
