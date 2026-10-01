@@ -14,8 +14,6 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Display;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.NeutralMob;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
@@ -88,12 +86,7 @@ final class PumpkinBoots {
 		state.pumpkin.setPos(player.getX(), player.getY(), player.getZ());
 		if (player.tickCount % 5 == 0) {
 			// Nothing to see here, just a pumpkin.
-			for (Mob mob : level.getEntitiesOfClass(Mob.class, player.getBoundingBox().inflate(32.0), mob -> mob.getTarget() == player)) {
-				mob.setTarget(null);
-				if (mob instanceof NeutralMob neutral) {
-					neutral.stopBeingAngry();
-				}
-			}
+			Stealth.loseTrack(player, 0.0, mob -> true);
 		}
 	}
 

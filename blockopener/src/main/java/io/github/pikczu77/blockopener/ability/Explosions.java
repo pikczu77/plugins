@@ -73,7 +73,7 @@ public final class Explosions {
 
 		@Override
 		public boolean shouldBlockExplode(Explosion explosion, BlockGetter level, BlockPos pos, BlockState state, float power) {
-			return this.breakBlocks;
+			return this.breakBlocks && !TempBlocks.isTemporary(explosion.level(), pos);
 		}
 
 		@Override

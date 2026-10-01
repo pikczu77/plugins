@@ -1,12 +1,15 @@
 package io.github.pikczu77.blockopener.ability;
 
+import io.github.pikczu77.blockopener.registry.ModAttachments;
 import io.github.pikczu77.blockopener.registry.ModItems;
+import io.github.pikczu77.blockopener.settings.ModSettings;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.server.MinecraftServer;
@@ -18,6 +21,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.animal.bee.Bee;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -34,6 +38,9 @@ public final class ModAbilities {
 		ServerTickEvents.END_SERVER_TICK.register(ModAbilities::tick);
 		UseEntityCallback.EVENT.register(ModAbilities::onUseEntity);
 		ServerLivingEntityEvents.ALLOW_DAMAGE.register(ModAbilities::allowDamage);
+		ServerLivingEntityEvents.ALLOW_DEATH.register((entity, source, amount) ->
+			!(entity instanceof ServerPlayer player) || !WeepingTotem.trySave(player, source));
+		PlayerBlockBreakEvents.BEFORE.register((level, player, pos, state, blockEntity) -> !TempBlocks.remove(level, pos));
 		ServerLivingEntityEvents.AFTER_DAMAGE.register((entity, source, baseDamage, damage, blocked) -> {
 			if (entity instanceof ServerPlayer player && source.getEntity() instanceof LivingEntity attacker && attacker != player) {
 				BeeSwarm.defend(player, attacker);
@@ -54,6 +61,8 @@ public final class ModAbilities {
 				}
 			}
 			STATES.clear();
+			TempBlocks.clear();
+			Allies.clear();
 			Bombs.clear();
 			MegaKick.clear();
 			DripstoneRain.clear();
@@ -87,13 +96,33 @@ public final class ModAbilities {
 			DiamondLeggings.tick(player, state);
 			SculkHelmet.tick(player);
 			CopperMagnet.tick(player, shift);
+			SizeShift.tick(player);
+			WeepingTotem.tick(player, state);
+			GlassSpyglass.tick(player);
+			EnderGloves.tick(player);
+			SlimeGloves.tick(player, state, shift);
+			IceWand.tick(player);
+			MagmaFist.tick(player);
 			tickLaunch(player, state);
 			state.prevShift = shift;
 		}
+		syncExtendedMode(server);
+		TempBlocks.tick();
+		Allies.tick(server);
 		Bombs.tick();
 		MegaKick.tick();
 		DripstoneRain.tick();
 		BeeSwarm.tick(server);
+	}
+
+	/** Lets the client know how many items the tracker should show. */
+	private static void syncExtendedMode(MinecraftServer server) {
+		boolean extended = ModSettings.get(server).extendedItems();
+		for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+			if (player.getAttachedOrElse(ModAttachments.EXTENDED_MODE, false) != extended) {
+				player.setAttached(ModAttachments.EXTENDED_MODE, extended);
+			}
+		}
 	}
 
 	/** Fall protection after a Turbo Launch lasts until the player lands. */
@@ -131,6 +160,19 @@ public final class ModAbilities {
 			}
 			return InteractionResult.SUCCESS;
 		}
+		if (stack.is(ModItems.MOB_CAGE) && !MobCage.isFull(stack) && MobCage.canCatch(target)) {
+			if (player instanceof ServerPlayer serverPlayer && target instanceof Mob mob) {
+				MobCage.capture(serverPlayer, stack, mob);
+			}
+			return InteractionResult.SUCCESS;
+		}
+		if (stack.is(ModItems.ENDER_GLOVES) && target instanceof LivingEntity living && !player.getCooldowns().isOnCooldown(stack)) {
+			if (player instanceof ServerPlayer serverPlayer) {
+				EnderGloves.swap(serverPlayer, living);
+				player.getCooldowns().addCooldown(stack, 30);
+			}
+			return InteractionResult.SUCCESS;
+		}
 		return InteractionResult.PASS;
 	}
 
@@ -141,8 +183,12 @@ public final class ModAbilities {
 		if (entity instanceof Bee bee && source.getEntity() instanceof Player player && BeeSwarm.isOwnBee(player, bee)) {
 			return false;
 		}
+		if (source.getEntity() instanceof Player player && Allies.isAllyOf(player, entity)) {
+			// No friendly fire from a jump attack's lightning or a fire nova; a direct hit still lands.
+			return source.getDirectEntity() == player && !source.is(DamageTypeTags.IS_LIGHTNING);
+		}
 		if (entity instanceof ServerPlayer player) {
-			if (DripstoneRain.isOwnDripstone(player, source)) {
+			if (DripstoneRain.isOwnDripstone(player, source) || StormHammer.isOwnStorm(player, source)) {
 				return false;
 			}
 			if (source.is(DamageTypeTags.IS_FALL)) {
@@ -150,7 +196,7 @@ public final class ModAbilities {
 				if (state.launched || state.slamming || player.level().getGameTime() <= state.noFallUntil) {
 					return false;
 				}
-				if (DiamondLeggings.isFlightOn(player)) {
+				if (DiamondLeggings.isFlightOn(player) || SlimeGloves.holding(player)) {
 					return false;
 				}
 			}

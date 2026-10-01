@@ -1,6 +1,7 @@
 package io.github.pikczu77.blockopener.registry;
 
 import io.github.pikczu77.blockopener.BlockOpener;
+import io.github.pikczu77.blockopener.entity.HoneyBlobEntity;
 import io.github.pikczu77.blockopener.entity.MossphereEntity;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -16,6 +17,14 @@ public final class ModEntities {
 			.noLootTable()
 			.sized(0.3F, 0.3F)
 			.clientTrackingRange(8)
+			.updateInterval(10)
+	);
+	public static final EntityType<HoneyBlobEntity> HONEY_BLOB = register(
+		"honey_blob",
+		EntityType.Builder.<HoneyBlobEntity>of(HoneyBlobEntity::new, MobCategory.MISC)
+			.noLootTable()
+			.sized(0.4F, 0.4F)
+			.clientTrackingRange(6)
 			.updateInterval(10)
 	);
 

@@ -1,6 +1,7 @@
 package io.github.pikczu77.blockopener.opening;
 
 import io.github.pikczu77.blockopener.BlockOpener;
+import io.github.pikczu77.blockopener.ability.TempBlocks;
 import io.github.pikczu77.blockopener.progress.Progress;
 import io.github.pikczu77.blockopener.progress.SecretItem;
 import io.github.pikczu77.blockopener.registry.ModItems;
@@ -94,7 +95,8 @@ public final class BlockOpening {
 		return !state.isAir()
 			&& !state.is(UNOPENABLE)
 			&& !(state.getBlock() instanceof net.minecraft.world.level.block.LiquidBlock)
-			&& !OpeningAnimations.isAnimating(level, pos);
+			&& !OpeningAnimations.isAnimating(level, pos)
+			&& !TempBlocks.isTemporary(level, pos);
 	}
 
 	/**

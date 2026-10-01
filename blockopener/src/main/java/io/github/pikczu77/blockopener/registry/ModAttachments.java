@@ -43,6 +43,12 @@ public final class ModAttachments {
 			.syncWith(ByteBufCodecs.BOOL, AttachmentSyncPredicate.targetOnly())
 	);
 
+	/** Mirror of the extendedItems setting for the client (tracker HUD layout). */
+	public static final AttachmentType<Boolean> EXTENDED_MODE = AttachmentRegistry.create(
+		BlockOpener.id("extended_mode"),
+		builder -> builder.syncWith(ByteBufCodecs.BOOL, AttachmentSyncPredicate.targetOnly())
+	);
+
 	/** World-wide settings, stored on the overworld. */
 	public static final AttachmentType<ModSettings> SETTINGS = AttachmentRegistry.create(
 		BlockOpener.id("settings"),

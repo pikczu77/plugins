@@ -11,11 +11,13 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
 
 public final class ModPayloads {
 	public static void init() {
 		PayloadTypeRegistry.playC2S().register(AbilityKeyPayload.TYPE, AbilityKeyPayload.CODEC);
 		ServerPlayNetworking.registerGlobalReceiver(AbilityKeyPayload.TYPE, (payload, context) -> handle(context.player(), payload.ability()));
+		PayloadTypeRegistry.playS2C().register(ItemActivationPayload.TYPE, ItemActivationPayload.CODEC);
 	}
 
 	private static void handle(ServerPlayer player, Ability ability) {
@@ -43,6 +45,18 @@ public final class ModPayloads {
 		public static final StreamCodec<RegistryFriendlyByteBuf, AbilityKeyPayload> CODEC = ByteBufCodecs.VAR_INT
 			.<RegistryFriendlyByteBuf>cast()
 			.map(id -> new AbilityKeyPayload(Ability.values()[Math.floorMod(id, Ability.values().length)]), payload -> payload.ability().ordinal());
+
+		@Override
+		public Type<? extends CustomPacketPayload> type() {
+			return TYPE;
+		}
+	}
+
+	/** Plays the totem-style "item pops up on screen" animation on the client (Weeping Totem). */
+	public record ItemActivationPayload(ItemStack stack) implements CustomPacketPayload {
+		public static final Type<ItemActivationPayload> TYPE = new Type<>(BlockOpener.id("item_activation"));
+		public static final StreamCodec<RegistryFriendlyByteBuf, ItemActivationPayload> CODEC = ItemStack.STREAM_CODEC
+			.map(ItemActivationPayload::new, ItemActivationPayload::stack);
 
 		@Override
 		public Type<? extends CustomPacketPayload> type() {

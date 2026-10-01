@@ -1,19 +1,31 @@
 package io.github.pikczu77.blockopener.gametest;
 
+import io.github.pikczu77.blockopener.ability.Allies;
 import io.github.pikczu77.blockopener.ability.Explosions;
+import io.github.pikczu77.blockopener.ability.IceWand;
+import io.github.pikczu77.blockopener.ability.MobCage;
+import io.github.pikczu77.blockopener.ability.StormHammer;
+import io.github.pikczu77.blockopener.ability.TempBlocks;
+import io.github.pikczu77.blockopener.ability.WeepingTotem;
 import io.github.pikczu77.blockopener.entity.MossphereEntity;
 import io.github.pikczu77.blockopener.opening.BlockOpening;
 import io.github.pikczu77.blockopener.opening.OpeningLoot;
+import io.github.pikczu77.blockopener.progress.Progress;
 import io.github.pikczu77.blockopener.progress.SecretItem;
 import io.github.pikczu77.blockopener.registry.ModEntities;
 import io.github.pikczu77.blockopener.registry.ModFluids;
 import io.github.pikczu77.blockopener.registry.ModItems;
+import io.github.pikczu77.blockopener.settings.ModSettings;
 import java.util.List;
+import net.fabricmc.fabric.api.entity.FakePlayer;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.animal.pig.Pig;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.zombie.Zombie;
@@ -24,6 +36,7 @@ import net.minecraft.world.level.block.StairBlock;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 public class BlockOpenerGameTests {
@@ -53,7 +66,7 @@ public class BlockOpenerGameTests {
 
 	@GameTest
 	public void everySecretBlockHidesItsItem(GameTestHelper helper) {
-		for (SecretItem secret : SecretItem.values()) {
+		for (SecretItem secret : SecretItem.VIDEO) {
 			for (var block : secret.sourceBlocks()) {
 				List<ItemStack> loot = roll(helper, block.defaultBlockState());
 				helper.assertTrue(loot.stream().anyMatch(stack -> stack.is(secret.item())),
@@ -145,6 +158,124 @@ public class BlockOpenerGameTests {
 		level.addFreshEntity(kept);
 		Explosions.explode(level, null, at, 3.0F, false, false);
 		helper.assertFalse(kept.isRemoved(), "the anvil slam keeps the loot it just opened");
+		helper.succeed();
+	}
+
+	@GameTest
+	public void extendedModeAddsTwelveItems(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		ModSettings before = ModSettings.get(level.getServer());
+		helper.assertTrue(roll(helper, Blocks.OBSIDIAN.defaultBlockState()).stream().noneMatch(stack -> stack.is(ModItems.OBSIDIAN_SHIELD)),
+			"extended items must not drop in normal mode");
+		ModSettings.set(level.getServer(), before.withExtendedItems(true));
+		try {
+			helper.assertValueEqual(Progress.active(level.getServer()).size(), 22, "items in extended mode");
+			for (SecretItem secret : SecretItem.ALL) {
+				for (var block : secret.sourceBlocks()) {
+					List<ItemStack> loot = roll(helper, block.defaultBlockState());
+					helper.assertTrue(loot.stream().anyMatch(stack -> stack.is(secret.item())),
+						block.getName().getString() + " should hide " + secret.id() + " in extended mode but gave " + loot);
+				}
+			}
+			List<ItemStack> candleCake = roll(helper, Blocks.RED_CANDLE_CAKE.defaultBlockState());
+			helper.assertTrue(candleCake.stream().anyMatch(stack -> stack.is(ModItems.CAKE_OF_LIFE)), "candle cakes count as cake");
+		} finally {
+			ModSettings.set(level.getServer(), before);
+		}
+		helper.succeed();
+	}
+
+	@GameTest
+	public void workstationsHideVillageLoot(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		for (BlockState state : List.of(Blocks.BLAST_FURNACE.defaultBlockState(), Blocks.LECTERN.defaultBlockState(),
+			Blocks.ENCHANTING_TABLE.defaultBlockState(), Blocks.OAK_LEAVES.defaultBlockState(), Blocks.WATER_CAULDRON.defaultBlockState())) {
+			helper.assertFalse(OpeningLoot.tableFor(level, state).equals(OpeningLoot.DEFAULT), state + " should have its own loot");
+		}
+		List<ItemStack> table = roll(helper, Blocks.ENCHANTING_TABLE.defaultBlockState());
+		helper.assertTrue(table.stream().anyMatch(stack -> stack.is(Items.ENCHANTED_BOOK)), "enchanting table gives a book: " + table);
+		helper.succeed();
+	}
+
+	@GameTest(maxTicks = 40)
+	public void mobCageCatchesAndReleasesAnAlly(GameTestHelper helper) {
+		floor(helper);
+		FakePlayer player = FakePlayer.get(helper.getLevel());
+		Zombie zombie = helper.spawn(EntityType.ZOMBIE, POS);
+		zombie.setCustomName(Component.literal("Bob"));
+		ItemStack cage = new ItemStack(ModItems.MOB_CAGE);
+		helper.assertTrue(MobCage.capture(player, cage, zombie), "the cage should catch the zombie");
+		helper.assertTrue(zombie.isRemoved(), "the caught zombie leaves the world");
+		helper.assertValueEqual(MobCage.capturedType(cage), "minecraft:zombie", "caught type");
+		helper.assertFalse(MobCage.capture(player, cage, helper.spawn(EntityType.PIG, POS)), "a full cage cannot catch another mob");
+
+		Vec3 at = helper.absoluteVec(Vec3.atBottomCenterOf(new BlockPos(1, 2, 1)));
+		helper.assertTrue(MobCage.release(player, cage, at), "the cage should release the zombie");
+		helper.assertFalse(MobCage.isFull(cage), "the cage is empty again");
+		Zombie released = helper.getLevel().getEntitiesOfClass(Zombie.class, new AABB(at, at).inflate(1.0)).stream().findFirst().orElse(null);
+		helper.assertTrue(released != null && "Bob".equals(released.getCustomName().getString()), "the same zombie comes back");
+		helper.assertTrue(Allies.isAllyOf(player, released), "released mobs are allies");
+		helper.assertTrue(released.isPersistenceRequired(), "released mobs never despawn");
+		helper.succeed();
+	}
+
+	@GameTest
+	public void weepingTotemCheatsDeathOnce(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		FakePlayer player = FakePlayer.get(level);
+		player.getInventory().clearContent();
+		player.getInventory().setItem(20, new ItemStack(ModItems.WEEPING_TOTEM));
+		player.setHealth(1.0F);
+		helper.assertTrue(WeepingTotem.trySave(player, level.damageSources().fall()), "the totem should save the player from the inventory");
+		helper.assertTrue(player.getHealth() >= 10.0F, "the totem heals");
+		helper.assertTrue(player.getInventory().getItem(20).isEmpty(), "the totem is used up");
+		helper.assertFalse(WeepingTotem.trySave(player, level.damageSources().fall()), "only once");
+		player.getInventory().setItem(20, new ItemStack(ModItems.WEEPING_TOTEM));
+		helper.assertFalse(WeepingTotem.trySave(player, level.damageSources().genericKill()), "/kill still works");
+		player.getInventory().clearContent();
+		player.removeAllEffects();
+		helper.succeed();
+	}
+
+	@GameTest(maxTicks = 40)
+	public void temporaryBlocksDisappearAndCannotBeOpened(GameTestHelper helper) {
+		floor(helper);
+		ServerLevel level = helper.getLevel();
+		BlockPos dome = new BlockPos(1, 2, 1);
+		BlockPos lava = new BlockPos(3, 2, 3);
+		helper.setBlock(lava, Blocks.LAVA);
+		helper.assertTrue(TempBlocks.place(level, helper.absolutePos(dome), Blocks.OBSIDIAN.defaultBlockState(), 10), "placed into air");
+		helper.assertFalse(TempBlocks.place(level, helper.absolutePos(lava), Blocks.OBSIDIAN.defaultBlockState(), 10), "place() never covers fluids");
+		helper.assertTrue(TempBlocks.placeOverSource(level, helper.absolutePos(lava), Blocks.MAGMA_BLOCK.defaultBlockState(), Blocks.LAVA, 10), "lava crust");
+		helper.assertFalse(BlockOpening.canOpen(level, helper.absolutePos(dome), helper.getBlockState(dome)), "temporary blocks hide no loot");
+		helper.assertBlockPresent(Blocks.OBSIDIAN, dome);
+		helper.assertBlockPresent(Blocks.MAGMA_BLOCK, lava);
+		helper.succeedWhen(() -> {
+			helper.assertBlockPresent(Blocks.AIR, dome);
+			helper.assertBlockPresent(Blocks.LAVA, lava);
+		});
+	}
+
+	@GameTest(maxTicks = 20)
+	public void stormHammerCallsLightning(GameTestHelper helper) {
+		floor(helper);
+		FakePlayer player = FakePlayer.get(helper.getLevel());
+		StormHammer.strike(player, helper.absoluteVec(Vec3.atBottomCenterOf(POS)));
+		LightningBolt bolt = helper.getLevel().getEntitiesOfClass(LightningBolt.class, new AABB(helper.absolutePos(POS)).inflate(2.0)).stream()
+			.findFirst().orElse(null);
+		helper.assertTrue(bolt != null && bolt.getCause() == player, "a lightning bolt owned by the player");
+		helper.succeed();
+	}
+
+	@GameTest(maxTicks = 20)
+	public void iceWandFreezesInIce(GameTestHelper helper) {
+		floor(helper);
+		Zombie zombie = helper.spawn(EntityType.ZOMBIE, POS);
+		IceWand.freeze(null, zombie);
+		helper.assertTrue(zombie.hasEffect(MobEffects.SLOWNESS), "frozen mobs cannot move");
+		helper.assertTrue(zombie.isFullyFrozen(), "frozen mobs shiver");
+		helper.assertBlockPresent(Blocks.ICE, POS.east());
+		helper.assertBlockPresent(Blocks.ICE, POS.above(2));
 		helper.succeed();
 	}
 

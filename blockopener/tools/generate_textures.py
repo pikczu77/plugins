@@ -439,6 +439,381 @@ def mossphere():
     return out
 
 
+# ----------------------------------------------------------------- extended mode items
+
+def size_mushroom():
+    grid = [
+        "................",
+        "................",
+        ".....rrrrrr.....",
+        "...rrwrrrrwrr...",
+        "..rrrrrrwrrrrr..",
+        "..rwrrrrrrrrwr..",
+        ".rrrrrwrrrrrrrr.",
+        ".rrrrrrrrrwrrrr.",
+        "..uuuuuuuuuuuu..",
+        "......ssss......",
+        "......ssss......",
+        "......ssss......",
+        ".....ssssss.....",
+        ".....ssssss.....",
+        "................",
+        "................",
+    ]
+    mats = {
+        "r": Mat("#ff7a6b", "#e03c3c", "#9e1f2a", "#3d0a10", 6),
+        "u": Mat("#d9b98f", "#b8956a", "#8a6a45", "#3a2412", 3),
+        "s": Mat("#fff6e0", "#eadfc2", "#bfae8a", "#4a3c22", 4),
+    }
+    img = render(grid, mats, {"w": rgb("#fff8f0")}, seed=40)
+    for x, y in [(2, 1), (13, 2), (14, 9), (1, 10)]:
+        img.putpixel((x, y), rgb("#ffd36b"))
+    return img
+
+
+def weeping_totem():
+    grid = [
+        "................",
+        "......oooo......",
+        ".....oooooo.....",
+        ".....oeooeo.....",
+        ".....oooooo.....",
+        "......oooo......",
+        "...oooooooooo...",
+        "..oo.oooooo.oo..",
+        "..o..oooooo..o..",
+        ".....oooooo.....",
+        ".....oooooo.....",
+        ".....oo..oo.....",
+        ".....oo..oo.....",
+        "................",
+        "................",
+        "................",
+    ]
+    mats = {"o": Mat("#5a3a8a", "#2a1a45", "#140b24", "#05020c", 6)}
+    img = render(grid, mats, {"e": rgb("#d58bff")}, seed=41)
+    for x, y in [(6, 4), (9, 4), (6, 5), (9, 6), (9, 7)]:
+        img.putpixel((x, y), rgb("#a05cff"))
+    for x, y in [(7, 7), (8, 8), (7, 9), (8, 10)]:
+        img.putpixel((x, y), rgb("#7a3fd0"))
+    return img
+
+
+def _cage(full):
+    grid = [
+        "................",
+        ".......hh.......",
+        "......h..h......",
+        ".....tttttt.....",
+        "....tttttttt....",
+        "...tttttttttt...",
+        "...b..b..b..b...",
+        "...b..b..b..b...",
+        "...b..b..b..b...",
+        "...b..b..b..b...",
+        "...b..b..b..b...",
+        "...b..b..b..b...",
+        "..pppppppppppp..",
+        "..pppppppppppp..",
+        "................",
+        "................",
+    ]
+    mats = {
+        "h": Mat("#c9d4e0", "#8c9aab", "#5a6676", "#1c2129", 3),
+        "t": Mat("#b7c9db", "#7a9cc0", "#4d6a8c", "#151d29", 4),
+        "b": Mat("#b7c9db", "#7a9cc0", "#4d6a8c", "#151d29", 3),
+        "p": Mat("#8a6a4a", "#5e4630", "#3a2a1a", "#140c06", 6),
+    }
+    img = render(grid, mats, seed=42)
+    rnd = random.Random(43)
+    for y in range(6, 12):
+        for x in range(4, 12):
+            if grid[y][x] == ".":
+                img.putpixel((x, y), shade(rgb("#120a18"), rnd.randint(-4, 4)) if full else (0, 0, 0, 0))
+    if full:
+        for x, y in [(5, 8), (10, 8)]:
+            img.putpixel((x, y), rgb("#ff3b3b"))
+        img.putpixel((7, 10), rgb("#3a2a40"))
+        img.putpixel((8, 10), rgb("#3a2a40"))
+    return img
+
+
+def mob_cage():
+    return _cage(False)
+
+
+def mob_cage_full():
+    return _cage(True)
+
+
+def _rotated(cx, cy, fn):
+    """Grid from a predicate on (u, v): u along the down-right diagonal, v along the up-right one."""
+    def char(x, y):
+        dx, dy = x + 0.5 - cx, y + 0.5 - cy
+        return fn((dx + dy) / math.sqrt(2), (dx - dy) / math.sqrt(2))
+    return grid_from(char)
+
+
+def storm_hammer():
+    def shape(u, v):
+        if abs(u) <= 4.0 and -2.2 <= v <= 2.0:
+            return "H"
+        if abs(u) <= 0.75 and -10.5 <= v < -2.2:
+            return "g" if v < -8.6 else "s"
+        return "."
+    grid = _rotated(10.0, 6.0, shape)
+    mats = {
+        "H": Mat("#d6e6f5", "#7f9fbf", "#47617d", "#121a26", 6),
+        "s": Mat("#a8774a", "#7a5030", "#4f321c", "#1c1008", 4),
+        "g": Mat("#4a4a5a", "#2e2e3a", "#1a1a22", "#08080c", 3),
+    }
+    img = render(grid, mats, seed=44)
+    for x, y in [(11, 3), (10, 4), (11, 4), (10, 5), (9, 6), (10, 6), (9, 7)]:
+        if img.getpixel((x, y))[3]:
+            img.putpixel((x, y), rgb("#ffe94a"))
+    return img
+
+
+def glass_spyglass():
+    def shape(u, v):
+        if abs(u) > 1.3 or not -7.0 <= v <= 6.0:
+            return "."
+        if v > 4.6:
+            return "l"
+        if v < -5.4:
+            return "e"
+        if abs(v - 0.0) < 0.6 or abs(v + 4.0) < 0.6:
+            return "r"
+        return "g"
+    grid = _rotated(7.5, 8.0, shape)
+    mats = {
+        "g": Mat("#eafaff", "#a9def5", "#5fa9cc", "#163245", 5),
+        "l": Mat("#ffffff", "#d5f4ff", "#8fd0ec", "#163245", 2),
+        "r": Mat("#ffe39a", "#e0b23c", "#9c7418", "#2e1f04", 3),
+        "e": Mat("#6a5a4a", "#40362c", "#251e18", "#0c0806", 3),
+    }
+    return render(grid, mats, seed=45)
+
+
+def glass_spyglass_model():
+    """Texture laid out for the vanilla in-hand spyglass geometry (2 pixel wide strips)."""
+    img = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
+    rnd = random.Random(46)
+    for y in range(16):
+        for x in range(2):
+            if y < 2:
+                c = rgb("#e8fbff")
+            elif y < 13:
+                ring = y in (2, 6, 7, 12)
+                c = rgb("#e0b23c") if ring else rgb("#a9def5") if x == 0 else rgb("#7cc4e4")
+            elif y < 15:
+                c = rgb("#40362c")
+            else:
+                continue
+            img.putpixel((x, y), shade(c, rnd.randint(-5, 5)))
+    return img
+
+
+def obsidian_shield():
+    grid = [
+        "................",
+        "..rrrrrrrrrrrr..",
+        "..roooooooooor..",
+        "..roooooooooor..",
+        "..roooooooooor..",
+        "..roooooooooor..",
+        "..roooooooooor..",
+        "..roooooooooor..",
+        "..roooooooooor..",
+        "..roooooooooor..",
+        "...roooooooor...",
+        "....roooooor....",
+        ".....roooor.....",
+        "......rrrr......",
+        "................",
+        "................",
+    ]
+    grid[5] = "..r" + "oooo" + "gg" + "oooo" + "r.."
+    grid[6] = "..r" + "oooo" + "gg" + "oooo" + "r.."
+    mats = {
+        "r": Mat("#c08cff", "#8a5cd0", "#5a3a92", "#120a22", 4),
+        "o": Mat("#3a2a55", "#1c1230", "#0e0819", "#05020a", 8),
+    }
+    img = render(grid, mats, {"g": rgb("#e0a8ff")}, seed=47)
+    for x, y in [(4, 3), (11, 4), (5, 9), (10, 9), (7, 11)]:
+        img.putpixel((x, y), rgb("#6a3fb0"))
+    return img
+
+
+GLOVE = [
+    "................",
+    ".....f.f.f.f....",
+    ".....f.f.f.f....",
+    ".....fffffff....",
+    ".....fffffff....",
+    "..t..fffffff....",
+    "..tt.fffffff....",
+    "...ttfffffff....",
+    "....tfffffff....",
+    ".....fffffff....",
+    "....ccccccccc...",
+    "....ccccccccc...",
+    "................",
+    "................",
+    "................",
+    "................",
+]
+
+
+def ender_gloves():
+    mats = {
+        "f": Mat("#4a3a63", "#2b1f3a", "#170f22", "#06030c", 5),
+        "t": Mat("#4a3a63", "#2b1f3a", "#170f22", "#06030c", 5),
+        "c": Mat("#f0ffb0", "#d6f07a", "#9cb042", "#2c3410", 4),
+    }
+    img = render(GLOVE, mats, seed=48)
+    for x, y, c in [(7, 5, "#1e6b5c"), (8, 5, "#2fd4b0"), (9, 5, "#1e6b5c"), (7, 6, "#1e6b5c"), (8, 6, "#0b2b25"), (9, 6, "#1e6b5c")]:
+        img.putpixel((x, y), rgb(c))
+    return img
+
+
+def slime_gloves():
+    mats = {
+        "f": Mat("#b6ff9a", "#7ed957", "#4c9a30", "#163a0c", 6),
+        "t": Mat("#b6ff9a", "#7ed957", "#4c9a30", "#163a0c", 6),
+        "c": Mat("#6ac046", "#3f8a2a", "#25591a", "#0c2006", 4),
+    }
+    img = render(GLOVE, mats, seed=49)
+    for x, y in [(6, 4), (9, 7), (7, 8)]:
+        img.putpixel((x, y), rgb("#e6ffd8"))
+    for x, y in [(8, 5), (10, 6)]:
+        img.putpixel((x, y), rgb("#3f8a2a"))
+    return img
+
+
+def ice_wand():
+    def char(x, y):
+        cx, cy = 11.0, 4.5
+        if abs(x + 0.5 - cx) + abs(y + 0.5 - cy) <= 3.2:
+            return "i"
+        if x + y == 15 and 2 <= x <= 8:
+            return "s"
+        return "."
+    grid = grid_from(char)
+    mats = {
+        "i": Mat("#ffffff", "#8fd3ff", "#3f8fd0", "#0c2a4a", 6),
+        "s": Mat("#d0e8ff", "#7aa6c8", "#4a6e8c", "#0e1e2c", 3),
+    }
+    img = render(grid, mats, seed=50)
+    for x, y in [(10, 3), (11, 2), (12, 4)]:
+        img.putpixel((x, y), rgb("#ffffff"))
+    for x, y in [(4, 4), (14, 9), (7, 2)]:
+        img.putpixel((x, y), rgb("#cdeeff"))
+    return img
+
+
+def magma_fist():
+    grid = [
+        "................",
+        "................",
+        "....kkkkkkk.....",
+        "...kkkkkkkkk....",
+        "...kkkkkkkkk....",
+        "...kkkkkkkkk....",
+        "..tkkkkkkkkk....",
+        "..ttkkkkkkkk....",
+        "...tkkkkkkkk....",
+        "....kkkkkkk.....",
+        ".....mmmmmm.....",
+        ".....mmmmmm.....",
+        ".....mmmmmm.....",
+        "................",
+        "................",
+        "................",
+    ]
+    mats = {
+        "k": Mat("#5a3a2a", "#3a2418", "#22140c", "#0a0402", 6),
+        "t": Mat("#5a3a2a", "#3a2418", "#22140c", "#0a0402", 6),
+        "m": Mat("#8a4a1a", "#5e2e10", "#3a1a08", "#120602", 4),
+    }
+    img = render(grid, mats, seed=51)
+    for x in (6, 8, 10):
+        for y in (2, 3, 4):
+            img.putpixel((x, y), rgb("#1a0c06"))
+    for x, y in [(4, 5), (5, 6), (6, 6), (7, 7), (9, 6), (10, 7), (8, 8), (5, 8), (11, 5), (6, 11), (9, 11), (8, 12)]:
+        img.putpixel((x, y), rgb("#ff8a1a") if (x + y) % 2 else rgb("#ffd23a"))
+    return img
+
+
+def cake_of_life():
+    grid = [
+        "................",
+        "................",
+        ".....hh.hh......",
+        ".....hhhhh......",
+        "......hhh.......",
+        ".......h........",
+        "....pppppppp....",
+        "...pppppppppp...",
+        "...pbbpbbbpbp...",
+        "...bbbbbbbbbb...",
+        "...cccccccccc...",
+        "...bbbbbbbbbb...",
+        "...bbbbbbbbbb...",
+        "..ssssssssssss..",
+        "................",
+        "................",
+    ]
+    mats = {
+        "h": Mat("#ffb3c8", "#ff4f7a", "#c41f4a", "#3a0614", 2),
+        "p": Mat("#fff0f6", "#ffc2dc", "#e88ab4", "#4a1a30", 3),
+        "b": Mat("#e8b07a", "#c4844a", "#8a5428", "#2a1408", 5),
+        "c": Mat("#fffaf0", "#f5ead0", "#d0c09a", "#3a2a14", 2),
+        "s": Mat("#ffffff", "#dfe6ee", "#a8b4c0", "#2a3038", 2),
+    }
+    img = render(grid, mats, seed=52)
+    img.putpixel((6, 2), rgb("#ffe0ea"))
+    for x, y in [(5, 9), (9, 11), (11, 9)]:
+        img.putpixel((x, y), rgb("#ff4f7a"))
+    return img
+
+
+def honey_blaster():
+    grid = [
+        "................",
+        "................",
+        "................",
+        "....hhhh........",
+        "...hhhhhh.......",
+        "...hhhhhh.......",
+        ".bbbbbbbbbbbbn..",
+        ".bbbbbbbbbbbbnn.",
+        ".bbbbbbbbbbbbn..",
+        "..gg.tt.........",
+        "..gg..t.........",
+        "..gg............",
+        "..gg............",
+        "................",
+        "................",
+        "................",
+    ]
+    mats = {
+        "h": Mat("#ffe08a", "#f9b233", "#c47a10", "#3a2002", 5),
+        "b": Mat("#7a7a86", "#4e4e5a", "#2e2e36", "#0a0a0e", 4),
+        "n": Mat("#ffd36b", "#e09a1a", "#a0620a", "#2a1402", 3),
+        "g": Mat("#6a4a2a", "#4a3018", "#2c1a0c", "#0c0604", 4),
+        "t": Mat("#4a4a52", "#2e2e34", "#1a1a1e", "#08080a", 2),
+    }
+    img = render(grid, mats, seed=53)
+    for y in (6, 7, 8):
+        for x in (4, 5, 9, 10):
+            img.putpixel((x, y), rgb("#f2c230") if y < 8 else rgb("#c4920f"))
+    img.putpixel((4, 4), rgb("#fff4c8"))
+    img.putpixel((14, 9), rgb("#f9b233"))
+    img.putpixel((14, 10), rgb("#c47a10"))
+    return img
+
+
 ITEMS = {
     "block_opener": block_opener,
     "pumpkin_boots": pumpkin_boots,
@@ -451,6 +826,18 @@ ITEMS = {
     "bedrock_bucket": bedrock_bucket,
     "sculk_helmet": sculk_helmet,
     "mossphere": mossphere,
+    "size_mushroom": size_mushroom,
+    "weeping_totem": weeping_totem,
+    "mob_cage": mob_cage,
+    "storm_hammer": storm_hammer,
+    "glass_spyglass": glass_spyglass,
+    "obsidian_shield": obsidian_shield,
+    "ender_gloves": ender_gloves,
+    "slime_gloves": slime_gloves,
+    "ice_wand": ice_wand,
+    "magma_fist": magma_fist,
+    "cake_of_life": cake_of_life,
+    "honey_blaster": honey_blaster,
 }
 
 
@@ -655,6 +1042,9 @@ def main():
         save(items[name], "item", name + ".png")
         if name != "block_opener":
             save(silhouette(items[name]), "gui", "sprites", "tracker", name + ".png")
+
+    save(mob_cage_full(), "item", "mob_cage_full.png")
+    save(glass_spyglass_model(), "item", "glass_spyglass_model.png")
 
     save(sculk_helmet_layer(), "entity", "equipment", "humanoid", "sculk_helmet.png")
     save(anvil_chestplate_layer(), "entity", "equipment", "humanoid", "anvil_chestplate.png")

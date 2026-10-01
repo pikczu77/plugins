@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/spyglass_in_hand",
+  "textures": {
+    "spyglass": "blockopener:item/glass_spyglass_model",
+    "particle": "blockopener:item/glass_spyglass"
+  }
+}

@@ -11,6 +11,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.protocol.game.ClientboundSetSubtitleTextPacket;
 import net.minecraft.network.protocol.game.ClientboundSetTitleTextPacket;
 import net.minecraft.network.protocol.game.ClientboundSetTitlesAnimationPacket;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -27,8 +28,19 @@ public final class Progress {
 		return found(player).contains(secret.id());
 	}
 
+	/** The items in play on this server: the video's 10, or 22 in extended mode. */
+	public static List<SecretItem> active(MinecraftServer server) {
+		return SecretItem.active(ModSettings.get(server).extendedItems());
+	}
+
+	public static int total(ServerPlayer player) {
+		return active(player.level().getServer()).size();
+	}
+
+	/** Found items that count in the current mode. */
 	public static int count(ServerPlayer player) {
-		return found(player).size();
+		List<String> found = found(player);
+		return (int) active(player.level().getServer()).stream().filter(secret -> found.contains(secret.id())).count();
 	}
 
 	/** @return true if this was new for the player */
@@ -48,9 +60,11 @@ public final class Progress {
 	}
 
 	public static void setAll(ServerPlayer player) {
-		List<String> all = new ArrayList<>();
-		for (SecretItem secret : SecretItem.values()) {
-			all.add(secret.id());
+		List<String> all = new ArrayList<>(found(player));
+		for (SecretItem secret : active(player.level().getServer())) {
+			if (!all.contains(secret.id())) {
+				all.add(secret.id());
+			}
 		}
 		player.setAttached(ModAttachments.FOUND_SECRETS, List.copyOf(all));
 	}
@@ -73,32 +87,33 @@ public final class Progress {
 	 */
 	public static void reveal(ServerPlayer player, SecretItem secret, boolean announce) {
 		int count = count(player);
+		int total = total(player);
 		Component name = itemName(secret);
 		player.connection.send(new ClientboundSetTitlesAnimationPacket(5, 50, 15));
 		player.connection.send(new ClientboundSetTitleTextPacket(Component.translatable("blockopener.reveal.title").withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD)));
 		player.connection.send(new ClientboundSetSubtitleTextPacket(
-			Component.empty().append(name).append(Component.literal("  " + count + "/" + SecretItem.COUNT).withStyle(ChatFormatting.GRAY))
+			Component.empty().append(name).append(Component.literal("  " + count + "/" + total).withStyle(ChatFormatting.GRAY))
 		));
 		player.level().playSound(null, player.blockPosition(), SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundSource.PLAYERS, 0.9F, 1.0F);
 
 		if (announce && ModSettings.get(player.level().getServer()).announceFinds()) {
 			MutableComponent line = Component.literal("✦ ").withColor(secret.color())
-				.append(Component.translatable("blockopener.reveal.chat", player.getDisplayName(), name, count, SecretItem.COUNT).withStyle(ChatFormatting.WHITE));
+				.append(Component.translatable("blockopener.reveal.chat", player.getDisplayName(), name, count, total).withStyle(ChatFormatting.WHITE));
 			player.level().getServer().getPlayerList().broadcastSystemMessage(line, false);
 		}
-		if (count == SecretItem.COUNT) {
-			allFound(player);
+		if (count == total) {
+			allFound(player, total);
 		}
 	}
 
-	private static void allFound(ServerPlayer player) {
+	private static void allFound(ServerPlayer player, int total) {
 		player.connection.send(new ClientboundSetTitlesAnimationPacket(10, 70, 20));
-		player.connection.send(new ClientboundSetTitleTextPacket(Component.translatable("blockopener.reveal.all_title").withStyle(ChatFormatting.LIGHT_PURPLE, ChatFormatting.BOLD)));
+		player.connection.send(new ClientboundSetTitleTextPacket(Component.translatable("blockopener.reveal.all_title", total).withStyle(ChatFormatting.LIGHT_PURPLE, ChatFormatting.BOLD)));
 		player.connection.send(new ClientboundSetSubtitleTextPacket(Component.translatable("blockopener.reveal.all_subtitle").withStyle(ChatFormatting.YELLOW)));
 		player.level().playSound(null, player.blockPosition(), SoundEvents.ENDER_DRAGON_GROWL, SoundSource.PLAYERS, 0.5F, 1.4F);
 		if (ModSettings.get(player.level().getServer()).announceFinds()) {
 			player.level().getServer().getPlayerList().broadcastSystemMessage(
-				Component.translatable("blockopener.reveal.all_chat", player.getDisplayName()).withStyle(ChatFormatting.LIGHT_PURPLE), false
+				Component.translatable("blockopener.reveal.all_chat", player.getDisplayName(), total).withStyle(ChatFormatting.LIGHT_PURPLE), false
 			);
 		}
 	}

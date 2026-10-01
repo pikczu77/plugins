@@ -128,7 +128,9 @@ public final class BlockOpenerCommand {
 				.then(Commands.literal("lootRolls").then(Commands.argument("value", IntegerArgumentType.integer(1, 16))
 					.executes(ctx -> updateSettings(ctx.getSource(), s -> s.withLootRolls(IntegerArgumentType.getInteger(ctx, "value"))))))
 				.then(Commands.literal("openCooldown").then(Commands.argument("ticks", IntegerArgumentType.integer(0, 200))
-					.executes(ctx -> updateSettings(ctx.getSource(), s -> s.withOpenCooldown(IntegerArgumentType.getInteger(ctx, "ticks")))))));
+					.executes(ctx -> updateSettings(ctx.getSource(), s -> s.withOpenCooldown(IntegerArgumentType.getInteger(ctx, "ticks"))))))
+				.then(Commands.literal("extendedItems").then(Commands.argument("value", BoolArgumentType.bool())
+					.executes(ctx -> updateSettings(ctx.getSource(), s -> s.withExtendedItems(BoolArgumentType.getBool(ctx, "value")))))));
 
 		dispatcher.register(root);
 		dispatcher.register(Commands.literal("bo").executes(BlockOpenerCommand::help).redirect(dispatcher.getRoot().getChild("blockopener")));
@@ -159,7 +161,7 @@ public final class BlockOpenerCommand {
 			case "opener" -> stacks.add(new ItemStack(ModItems.BLOCK_OPENER));
 			case "all" -> {
 				stacks.add(new ItemStack(ModItems.BLOCK_OPENER));
-				for (SecretItem secret : SecretItem.values()) {
+				for (SecretItem secret : SecretItem.ALL) {
 					stacks.add(stackOf(secret));
 				}
 			}
@@ -186,9 +188,9 @@ public final class BlockOpenerCommand {
 	}
 
 	private static int progress(CommandSourceStack source, ServerPlayer player) {
-		source.sendSuccess(() -> Component.translatable("blockopener.command.progress", player.getDisplayName(), Progress.count(player), SecretItem.COUNT)
+		source.sendSuccess(() -> Component.translatable("blockopener.command.progress", player.getDisplayName(), Progress.count(player), Progress.total(player))
 			.withStyle(ChatFormatting.GOLD), false);
-		for (SecretItem secret : SecretItem.values()) {
+		for (SecretItem secret : Progress.active(source.getServer())) {
 			boolean found = Progress.hasFound(player, secret);
 			MutableComponent line = Component.literal(found ? " ✔ " : " ✘ ").withStyle(found ? ChatFormatting.GREEN : ChatFormatting.DARK_GRAY);
 			line.append(found ? Progress.itemName(secret) : Component.literal("???").withStyle(ChatFormatting.DARK_GRAY));
@@ -298,21 +300,28 @@ public final class BlockOpenerCommand {
 		ServerLevel level = player.level();
 		Direction facing = player.getDirection();
 		Direction side = facing.getClockWise();
-		BlockPos start = player.blockPosition().relative(facing, 3);
-		SecretItem[] secrets = SecretItem.values();
-		for (int i = 0; i < secrets.length; i++) {
-			BlockPos pos = start.relative(side, (i - secrets.length / 2) * 2);
-			BlockState state = secrets[i].mainSourceBlock().defaultBlockState();
-			if (state.hasProperty(DirectionalBlock.FACING)) {
-				state = state.setValue(DirectionalBlock.FACING, Direction.UP);
-			}
-			level.setBlockAndUpdate(pos, state);
-			if (level.getBlockState(pos.below()).isAir()) {
-				level.setBlockAndUpdate(pos.below(), Blocks.SMOOTH_STONE.defaultBlockState());
+		List<SecretItem> secrets = Progress.active(source.getServer());
+		// One row for the video's 10 items, a second row behind it for the extended ones.
+		List<List<SecretItem>> rows = secrets.size() > SecretItem.COUNT
+			? List.of(SecretItem.VIDEO, secrets.subList(SecretItem.COUNT, secrets.size()))
+			: List.of(secrets);
+		for (int row = 0; row < rows.size(); row++) {
+			List<SecretItem> line = rows.get(row);
+			BlockPos start = player.blockPosition().relative(facing, 3 + row * 3);
+			for (int i = 0; i < line.size(); i++) {
+				BlockPos pos = start.relative(side, (i - line.size() / 2) * 2);
+				BlockState state = line.get(i).mainSourceBlock().defaultBlockState();
+				if (state.hasProperty(DirectionalBlock.FACING)) {
+					state = state.setValue(DirectionalBlock.FACING, Direction.UP);
+				}
+				if (level.getBlockState(pos.below()).isAir()) {
+					level.setBlockAndUpdate(pos.below(), Blocks.SMOOTH_STONE.defaultBlockState());
+				}
+				level.setBlockAndUpdate(pos, state);
 			}
 		}
 		source.sendSuccess(() -> Component.translatable("blockopener.command.testrow"), true);
-		return secrets.length;
+		return secrets.size();
 	}
 
 	private static int showcase(CommandSourceStack source, int seconds) throws CommandSyntaxException {
@@ -384,6 +393,7 @@ public final class BlockOpenerCommand {
 		source.sendSuccess(() -> setting("announceFinds", settings.announceFinds()), false);
 		source.sendSuccess(() -> setting("lootRolls", settings.lootRolls()), false);
 		source.sendSuccess(() -> setting("openCooldown", settings.openCooldown()), false);
+		source.sendSuccess(() -> setting("extendedItems", settings.extendedItems()), false);
 		return 1;
 	}
 

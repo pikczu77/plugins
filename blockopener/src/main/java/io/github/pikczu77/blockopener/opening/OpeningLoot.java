@@ -1,6 +1,7 @@
 package io.github.pikczu77.blockopener.opening;
 
 import io.github.pikczu77.blockopener.BlockOpener;
+import io.github.pikczu77.blockopener.settings.ModSettings;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.core.BlockPos;
@@ -22,6 +23,7 @@ import org.jspecify.annotations.Nullable;
 /**
  * What is inside a block is fully data driven:
  * {@code blockopener:opening/<namespace>/<block>} if it exists, otherwise {@code blockopener:opening/default}.
+ * In extended mode {@code blockopener:opening_extended/<namespace>/<block>} wins over both.
  * Tables use the chest context (origin + opening player), so vanilla structure chest tables can be nested.
  */
 public final class OpeningLoot {
@@ -29,11 +31,19 @@ public final class OpeningLoot {
 
 	public static ResourceKey<LootTable> tableFor(ServerLevel level, BlockState state) {
 		Identifier blockId = BuiltInRegistries.BLOCK.getKey(state.getBlock());
-		ResourceKey<LootTable> specific = key("opening/" + blockId.getNamespace() + "/" + blockId.getPath());
-		if (level.getServer().reloadableRegistries().getLootTable(specific) != LootTable.EMPTY) {
-			return specific;
+		String path = blockId.getNamespace() + "/" + blockId.getPath();
+		if (ModSettings.get(level.getServer()).extendedItems()) {
+			ResourceKey<LootTable> extended = key("opening_extended/" + path);
+			if (exists(level, extended)) {
+				return extended;
+			}
 		}
-		return DEFAULT;
+		ResourceKey<LootTable> specific = key("opening/" + path);
+		return exists(level, specific) ? specific : DEFAULT;
+	}
+
+	private static boolean exists(ServerLevel level, ResourceKey<LootTable> key) {
+		return level.getServer().reloadableRegistries().getLootTable(key) != LootTable.EMPTY;
 	}
 
 	public static List<ItemStack> roll(ServerLevel level, BlockPos pos, BlockState state, @Nullable Player player, int rolls) {

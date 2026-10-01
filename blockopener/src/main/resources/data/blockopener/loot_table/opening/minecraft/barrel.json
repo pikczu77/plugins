@@ -6,7 +6,7 @@
       "entries": [
         {
           "type": "minecraft:loot_table",
-          "value": "minecraft:chests/village/village_plains_house"
+          "value": "minecraft:chests/village/village_fisher"
         }
       ]
     }

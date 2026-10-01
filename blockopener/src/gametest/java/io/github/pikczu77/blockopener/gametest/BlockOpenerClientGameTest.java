@@ -1,11 +1,14 @@
 package io.github.pikczu77.blockopener.gametest;
 
+import io.github.pikczu77.blockopener.ability.IceWand;
 import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.monster.zombie.Zombie;
 
 /**
  * Starts a real client, stages the typical recording shots with the mod's commands and saves
@@ -83,7 +86,35 @@ public class BlockOpenerClientGameTest implements FabricClientGameTest {
 			context.getInput().releaseShift();
 			context.setScreen(() -> null);
 
-			// 5. The custom armor on the player (third person).
+			// 5. Extended mode: the 12 extra items, a second tracker row and a frozen zombie.
+			server.runCommand("bo settings extendedItems true");
+			server.runCommand("bo reveal @p storm_hammer");
+			server.runCommand("bo reveal @p ice_wand");
+			server.runCommand("bo reveal @p cake_of_life");
+			context.waitTicks(90);
+			context.takeScreenshot("blockopener_extended_tracker");
+			server.runCommand("execute as @a at @s run bo showcase 600");
+			context.waitTicks(30);
+			context.takeScreenshot("blockopener_extended_showcase");
+			server.runCommand("bo showcase clear");
+			server.runOnServer(minecraft -> {
+				ServerPlayer player = minecraft.getPlayerList().getPlayers().getFirst();
+				Zombie zombie = new Zombie(player.level());
+				zombie.snapTo(player.getX() + 1.0, player.getY(), player.getZ() + 6.0, 180.0F, 0.0F);
+				zombie.setNoAi(true);
+				player.level().addFreshEntity(zombie);
+				IceWand.freeze(player, zombie);
+			});
+			context.waitTicks(10);
+			context.takeScreenshot("blockopener_ice_wand");
+			server.runCommand("give @a blockopener:mob_cage[minecraft:custom_data={blockopener_mob:{id:\"minecraft:zombie\"}}]");
+			context.waitTicks(5);
+			context.setScreen(() -> new InventoryScreen(Minecraft.getInstance().player));
+			context.waitTicks(5);
+			context.takeScreenshot("blockopener_extended_inventory");
+			context.setScreen(() -> null);
+
+			// 6. The custom armor on the player (third person).
 			server.runCommand("item replace entity @a armor.head with blockopener:sculk_helmet");
 			server.runCommand("item replace entity @a armor.chest with blockopener:anvil_chestplate");
 			server.runCommand("item replace entity @a armor.legs with blockopener:diamond_leggings");
@@ -94,7 +125,7 @@ public class BlockOpenerClientGameTest implements FabricClientGameTest {
 			context.takeScreenshot("blockopener_armor");
 			context.runOnClient(client -> client.options.setCameraType(CameraType.FIRST_PERSON));
 
-			// 6. Void water.
+			// 7. Void water.
 			server.runCommand("execute as @a at @s run setblock ~ ~-1 ~2 blockopener:void_water");
 			context.waitTicks(40);
 			context.takeScreenshot("blockopener_void_water");

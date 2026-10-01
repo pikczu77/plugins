@@ -1,5 +1,6 @@
 package io.github.pikczu77.blockopener.client;
 
+import io.github.pikczu77.blockopener.ability.MobCage;
 import io.github.pikczu77.blockopener.progress.SecretItem;
 import io.github.pikczu77.blockopener.registry.ModItems;
 import java.util.List;
@@ -13,6 +14,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.Mth;
 import net.minecraft.util.Util;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
 
 /**
@@ -54,6 +56,12 @@ final class Tooltips {
 		} else {
 			extra.add(Component.translatable("tooltip.blockopener.shift", Component.literal("SHIFT").withStyle(ChatFormatting.WHITE, ChatFormatting.BOLD))
 				.withStyle(ChatFormatting.DARK_GRAY));
+		}
+		String caught = MobCage.capturedType(stack);
+		if (caught != null) {
+			Component name = EntityType.byString(caught).map(EntityType::getDescription).orElse(Component.literal(caught));
+			extra.add(Component.translatable("tooltip.blockopener.mob_cage.caught", name.copy().withStyle(ChatFormatting.WHITE))
+				.withStyle(ChatFormatting.AQUA));
 		}
 		if (secret != null) {
 			extra.add(Component.translatable("tooltip.blockopener.source", secret.mainSourceBlock().getName())

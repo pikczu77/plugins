@@ -34,6 +34,11 @@ public final class Markers {
 
 	/** A glowing copy of the block, visible through walls, for {@code seconds}. */
 	static void highlight(ServerLevel level, BlockPos pos, BlockState state, int color, int seconds) {
+		highlight(level, pos, state, color, seconds * 20, false);
+	}
+
+	/** Same as above with the duration in ticks (used by the Glass Spyglass, refreshed every second). */
+	public static void highlight(ServerLevel level, BlockPos pos, BlockState state, int color, int ticks, boolean inTicks) {
 		Display.BlockDisplay display = new Display.BlockDisplay(EntityType.BLOCK_DISPLAY, level);
 		display.setPos(pos.getX(), pos.getY(), pos.getZ());
 		display.setBlockState(state);
@@ -42,22 +47,32 @@ public final class Markers {
 		display.setGlowColorOverride(color);
 		display.setViewRange(8.0F);
 		TransientEntities.spawn(level, display);
-		ACTIVE.add(new Marker(display, level.getGameTime() + seconds * 20L, false));
+		ACTIVE.add(new Marker(display, level.getGameTime() + ticks, false));
 	}
 
 	/**
-	 * All 10 secret items floating and spinning in an arc in front of the player, each with its name
-	 * and source block, like the intro shot of the video.
+	 * The secret items floating and spinning in an arc in front of the player, each with its name,
+	 * like the intro shot of the video. In extended mode the 12 extra items get a second, higher arc.
 	 */
 	static void showcase(ServerPlayer player, int seconds) {
 		ServerLevel level = player.level();
 		long expires = level.getGameTime() + seconds * 20L;
+		boolean extended = Progress.active(level.getServer()).size() > SecretItem.COUNT;
+		showcaseArc(level, player, SecretItem.VIDEO, 7.0, 1.2, 8.5, expires);
+		if (extended) {
+			List<SecretItem> extra = SecretItem.ALL.stream().filter(SecretItem::extended).toList();
+			showcaseArc(level, player, extra, 9.5, 2.9, 6.0, expires);
+		}
+		level.sendParticles(ParticleTypes.TOTEM_OF_UNDYING, player.getX(), player.getY() + 1.0, player.getZ(), 80, 3.0, 1.0, 3.0, 0.3);
+	}
+
+	private static void showcaseArc(ServerLevel level, ServerPlayer player, List<SecretItem> secrets, double radius, double height,
+		double spacing, long expires) {
 		float yaw = player.getYRot();
-		SecretItem[] secrets = SecretItem.values();
-		for (int i = 0; i < secrets.length; i++) {
-			SecretItem secret = secrets[i];
-			double angle = Math.toRadians(yaw + (i - (secrets.length - 1) / 2.0) * 8.5);
-			Vec3 at = player.position().add(-Math.sin(angle) * 7.0, 1.2, Math.cos(angle) * 7.0);
+		for (int i = 0; i < secrets.size(); i++) {
+			SecretItem secret = secrets.get(i);
+			double angle = Math.toRadians(yaw + (i - (secrets.size() - 1) / 2.0) * spacing);
+			Vec3 at = player.position().add(-Math.sin(angle) * radius, height, Math.cos(angle) * radius);
 
 			Display.ItemDisplay item = new Display.ItemDisplay(EntityType.ITEM_DISPLAY, level);
 			item.setPos(at.x, at.y, at.z);
@@ -80,7 +95,6 @@ public final class Markers {
 			TransientEntities.spawn(level, label);
 			ACTIVE.add(new Marker(label, expires, false));
 		}
-		level.sendParticles(ParticleTypes.TOTEM_OF_UNDYING, player.getX(), player.getY() + 1.0, player.getZ(), 80, 3.0, 1.0, 3.0, 0.3);
 	}
 
 	static int clear() {
