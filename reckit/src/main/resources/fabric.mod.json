@@ -1,0 +1,27 @@
+{
+	"schemaVersion": 1,
+	"id": "reckit",
+	"version": "${version}",
+	"name": "RecKit",
+	"description": "Baza przedmiotów do filmów: customowe przedmioty z datapacków i paczek tekstur, bez ich mechanik.",
+	"authors": [
+		"pikczu77"
+	],
+	"contact": {
+		"sources": "https://github.com/pikczu77/plugins"
+	},
+	"license": "MIT",
+	"icon": "assets/reckit/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"io.github.pikczu77.reckit.Reckit"
+		]
+	},
+	"depends": {
+		"fabricloader": ">=0.17.3",
+		"minecraft": "~1.21.11",
+		"java": ">=21",
+		"fabric-api": "*"
+	}
+}

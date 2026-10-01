@@ -1,0 +1,93 @@
+package io.github.pikczu77.reckit;
+
+import java.io.IOException;
+import java.io.Reader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.jspecify.annotations.Nullable;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
+import net.minecraft.resources.Identifier;
+
+import net.fabricmc.loader.api.FabricLoader;
+
+/**
+ * The list of props, read from {@code reckit/catalog.json} in the mod jar. Each pack becomes a creative tab and each
+ * entry an item {@code reckit:<id>}; the models, textures and names live in {@code assets/reckit}.
+ */
+public record Catalog(List<Pack> packs) {
+	public static final String PATH = "reckit/catalog.json";
+
+	/** A source datapack/resource pack. {@code source} is only for credits and is not used by the game. */
+	public record Pack(String id, List<Entry> items) {
+	}
+
+	/**
+	 * One prop.
+	 *
+	 * @param stack max stack size (1-99)
+	 * @param glint whether the item always has the enchantment glint
+	 * @param color RGB color of the item name, or null for the default white
+	 */
+	public record Entry(String id, int stack, boolean glint, @Nullable Integer color) {
+	}
+
+	public static Catalog load() {
+		Path path = FabricLoader.getInstance().getModContainer(Reckit.MOD_ID).orElseThrow().findPath(PATH)
+				.orElseThrow(() -> new IllegalStateException("Missing " + PATH));
+
+		try (Reader reader = Files.newBufferedReader(path)) {
+			return parse(JsonParser.parseReader(reader).getAsJsonObject());
+		} catch (IOException e) {
+			throw new IllegalStateException("Could not read " + PATH, e);
+		}
+	}
+
+	static Catalog parse(JsonObject json) {
+		List<Pack> packs = new ArrayList<>();
+		Set<String> packIds = new HashSet<>();
+		Set<String> itemIds = new HashSet<>();
+
+		for (JsonElement packElement : json.getAsJsonArray("packs")) {
+			JsonObject packJson = packElement.getAsJsonObject();
+			String packId = validId(packJson.get("id").getAsString(), "pack");
+			require(packIds.add(packId), "Duplicate pack id " + packId);
+			List<Entry> items = new ArrayList<>();
+
+			for (JsonElement itemElement : packJson.getAsJsonArray("items")) {
+				JsonObject itemJson = itemElement.getAsJsonObject();
+				String id = validId(itemJson.get("id").getAsString(), "item");
+				require(itemIds.add(id), "Duplicate item id " + id + " (pack " + packId + ")");
+				int stack = itemJson.has("stack") ? itemJson.get("stack").getAsInt() : 64;
+				require(stack >= 1 && stack <= 99, "Stack size of " + id + " must be 1-99");
+				boolean glint = itemJson.has("glint") && itemJson.get("glint").getAsBoolean();
+				Integer color = itemJson.has("color") ? Integer.parseInt(itemJson.get("color").getAsString().substring(1), 16) : null;
+				items.add(new Entry(id, stack, glint, color));
+			}
+
+			require(!items.isEmpty(), "Pack " + packId + " has no items");
+			packs.add(new Pack(packId, List.copyOf(items)));
+		}
+
+		return new Catalog(List.copyOf(packs));
+	}
+
+	private static String validId(String id, String what) {
+		require(Identifier.isValidPath(id) && !id.contains("/"), "Invalid " + what + " id '" + id + "' (use a-z, 0-9, _ . -)");
+		return id;
+	}
+
+	private static void require(boolean condition, String message) {
+		if (!condition) {
+			throw new IllegalStateException(PATH + ": " + message);
+		}
+	}
+}
